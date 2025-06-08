@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false)
@@ -15,7 +16,6 @@ const Header = () => {
 
   const navItems = [
     { name: "Projects", id: "projects" },
-    { name: "About me", id: "about" },
     { name: "Contact", id: "contact" },
   ]
 
@@ -40,7 +40,7 @@ const Header = () => {
         className="text-xl font-bold"
         transition={{ type: "spring", stiffness: 400, damping: 10 }}
       >
-        Sami T.
+        <Link to="/">Sami T.</Link>
       </motion.h2>
 
       <ul className="flex items-center space-x-2 md:space-x-4">
@@ -56,7 +56,9 @@ const Header = () => {
             whileTap={{ scale: 0.95 }}
             onClick={() => handleClick(item.id)}
           >
-            {item.name}
+            <Link to={"/" + item.id} className="hover:text-blue-500">
+              {item.name}
+            </Link>
             {activeTab === item.id && (
               <motion.div
                 layoutId="activeTab"

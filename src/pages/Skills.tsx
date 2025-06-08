@@ -21,16 +21,14 @@ import {
   SiVuedotjs,
   SiLaravel,
   SiReactquery,
+  SiSupabase,
+  SiShadcnui,
 } from "react-icons/si"
 
 const Skills = () => {
   const skills = [
     { icon: <SiReact size={32} />, name: "React", color: "text-[#61DAFB]" },
-    {
-      icon: <SiReact size={32} />,
-      name: "React Native",
-      color: "text-[#61DAFB]",
-    },
+
     {
       icon: <SiNextdotjs size={32} />,
       name: "Next.js",
@@ -84,7 +82,23 @@ const Skills = () => {
       color: "text-black dark:text-white",
     },
     { icon: <SiFigma size={32} />, name: "Figma", color: "text-[#F24E1E]" },
+    {
+      icon: <SiSupabase size={32} />,
+      name: "Supabase",
+      color: "text-[#3ECF8E]",
+    },
+    {
+      icon: <SiShadcnui size={32} />,
+      name: "Shadcn UI",
+      color: "text-[#3ECF8E]",
+    },
+
     { icon: <SiVite size={32} />, name: "Vite", color: "text-[#646CFF]" },
+    {
+      icon: <SiReact size={32} />,
+      name: "React Native",
+      color: "text-[#61DAFB]",
+    },
     {
       icon: <SiFramer size={32} />,
       name: "Framer Motion",
@@ -112,7 +126,7 @@ const Skills = () => {
         </span>
       </motion.h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-8 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-8 gap-2 items-center">
         {skills.map((skill, index) => (
           <motion.div
             key={skill.name}
