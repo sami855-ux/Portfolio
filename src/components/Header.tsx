@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
+import type { navItems } from "@/types/ui"
 
 const Header = () => {
-  const [scrolled, setScrolled] = useState(false)
-  const [activeTab, setActiveTab] = useState("")
+  const [scrolled, setScrolled] = useState<boolean>(false)
+  const [activeTab, setActiveTab] = useState<string>("")
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,12 +15,12 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const navItems = [
+  const navItems: navItems[] = [
     { name: "Projects", id: "projects" },
     { name: "Contact", id: "contact" },
   ]
 
-  const handleClick = (id) => {
+  const handleClick = (id: string) => {
     setActiveTab(id)
     const element = document.getElementById(id)
     if (element) {
