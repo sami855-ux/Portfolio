@@ -1,23 +1,13 @@
+import type { TimelineItem } from "@/types/ui"
 import {
   Briefcase,
   GraduationCap,
   Code,
   Rocket,
   User,
-  Code2,
   Users,
   TreePine,
 } from "lucide-react"
-
-type TimelineItem = {
-  id: number
-  title: string
-  description: string
-  date?: string
-  icon: React.ReactNode
-  side: "left" | "right"
-  color?: string
-}
 
 export function About() {
   const items: TimelineItem[] = [
