@@ -1,4 +1,3 @@
-import ProfileImage from "@/components/ProfileImage"
 import { motion } from "framer-motion"
 import {
   Github,
@@ -9,17 +8,20 @@ import {
   Facebook,
 } from "lucide-react"
 import { useState } from "react"
+
+import { PersonalCardHeader } from "@/components/PersonalCardHeader"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import ProfileImage from "@/components/ProfileImage"
 import { Button } from "@/components/ui/button"
 import { SiTelegram } from "react-icons/si"
-import { PersonalCardHeader } from "@/components/PersonalCardHeader"
+import type { socialLinks } from "@/types/ui"
 
-const socialLinks = [
+const socialLinks: socialLinks[] = [
   { name: "GitHub", url: "#", icon: "github" },
   { name: "LinkedIn", url: "#", icon: "linkedin" },
   { name: "Twitter", url: "#", icon: "twitter" },
@@ -30,7 +32,7 @@ const socialLinks = [
 ]
 
 export default function Home() {
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHovered, setIsHovered] = useState<boolean>(false)
 
   return (
     <>
