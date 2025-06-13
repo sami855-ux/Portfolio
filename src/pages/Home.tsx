@@ -1,12 +1,5 @@
 import { motion } from "framer-motion"
-import {
-  Github,
-  Linkedin,
-  Twitter,
-  Instagram,
-  Dribbble,
-  Facebook,
-} from "lucide-react"
+import { Github, Linkedin, Twitter, Instagram, Facebook } from "lucide-react"
 import { useState } from "react"
 
 import { PersonalCardHeader } from "@/components/PersonalCardHeader"

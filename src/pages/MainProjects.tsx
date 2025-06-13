@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { Code, ExternalLink, Github } from "lucide-react"
+import { ExternalLink, Github } from "lucide-react"
 import type { Project } from "@/types/ui" // Define your types
 import Header from "@/components/Header"
 
