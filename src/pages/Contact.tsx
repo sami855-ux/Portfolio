@@ -1,3 +1,4 @@
+import emailjs from "emailjs-com"
 import { motion } from "framer-motion"
 import { Mail, Phone, MapPin, Send } from "lucide-react"
 
@@ -6,8 +7,35 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import Header from "@/components/Header"
+import { useEffect } from "react"
 
 const Contact = () => {
+  const sendEmail = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    emailjs
+      .sendForm(
+        "your_service_id",
+        "your_template_id",
+        // e.target,
+        "your_user_id" // (public key)
+      )
+      .then(
+        (result) => {
+          console.log("Email sent!", result.text)
+        },
+        (error) => {
+          console.error("Failed to send email", error.text)
+        }
+      )
+  }
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }, [])
   return (
     <>
       <Header />
@@ -123,7 +151,7 @@ const Contact = () => {
                   Send a Message
                 </h2>
 
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={sendEmail}>
                   <div className="space-y-2">
                     <label
                       htmlFor="name"
