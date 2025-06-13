@@ -13,7 +13,7 @@ const clients = [
 export function ClientMarqueeRow() {
   return (
     <div
-      className="relative w-[55%] mx-auto overflow-hidden py-12"
+      className="relative w-[90%] md:w-[55%] mx-auto overflow-hidden py-12"
       style={{ backgroundColor: "#1a1a1a" }}
     >
       {/* Gradient fade effects */}
