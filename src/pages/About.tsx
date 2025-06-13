@@ -8,6 +8,7 @@ import {
   Users,
   TreePine,
 } from "lucide-react"
+import { motion } from "framer-motion"
 
 export function About() {
   const items: TimelineItem[] = [
@@ -16,7 +17,7 @@ export function About() {
       title: "Introduction",
       description:
         "Full-stack developer with 3+ years of experience building web applications using React, Next.js, Node.js and PostgreSQL. I have developed a strong foundation in front-end and back-end development, and I'm passionate about creating user-friendly and efficient applications that meet the needs of my clients.",
-      icon: <User className="w-6 h-6" />,
+      icon: <User className="w-5 h-5" />,
       side: "left",
       color: "text-blue-500",
     },
@@ -24,9 +25,9 @@ export function About() {
       id: 2,
       title: "Education",
       description:
-        "Software engineering degree from University of Debre brihan university (2022-2025). Graduated with honors.",
+        "Software engineering degree from Debre Brihan University (2022-2025). Graduated with honors.",
       date: "2022 - 2025",
-      icon: <GraduationCap className="w-6 h-6" />,
+      icon: <GraduationCap className="w-5 h-5" />,
       side: "right",
       color: "text-green-500",
     },
@@ -34,9 +35,9 @@ export function About() {
       id: 3,
       title: "Internship",
       description:
-        "Internship at Efuye gela, full-stack developer. I have worked on a range of projects, including web applications and mobile apps.",
+        "Internship at Efuye Gela as a full-stack developer. Worked on a range of projects including web applications and mobile apps.",
       date: "2018 - 2020",
-      icon: <Briefcase className="w-6 h-6" />,
+      icon: <Briefcase className="w-5 h-5" />,
       side: "left",
       color: "text-yellow-500",
     },
@@ -57,6 +58,7 @@ export function About() {
         "Continuously learning and growing as a developer. Working on personal projects and contributing to open-source projects. Seeking new opportunities to expand my skills and knowledge.",
       icon: <Rocket className="w-5 h-5" />,
       side: "left",
+      color: "text-purple-500",
     },
     {
       id: 21,
@@ -79,63 +81,76 @@ export function About() {
   ]
 
   return (
-    <div className="relative max-w-6xl mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold text-center mb-16 ">
+    <section className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+      <motion.h2
+        className="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-20"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
         My{" "}
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-600">
           Journey
         </span>
-      </h2>
+      </motion.h2>
 
-      {/* Central line */}
-      <div className="absolute left-1/2 w-0.5 h-[85%] mt-28 md:h-[77%] md:mt-24 bg-[#262727] transform -translate-x-1/2"></div>
+      {/* Central line - hidden on mobile */}
+      <div className="hidden md:block absolute left-1/2 w-0.5 h-[85%] top-28 bg-gradient-to-b from-transparent via-gray-400 to-transparent dark:via-gray-600 transform -translate-x-1/2"></div>
 
-      <div className="space-y-8">
-        {items.map((item) => (
-          <div
+      <div className="space-y-8 md:space-y-12">
+        {items.map((item, index) => (
+          <motion.div
             key={item.id}
             className={`relative flex ${
-              item.side === "left" ? "justify-start" : "justify-end"
+              item.side === "left" ? "md:justify-start" : "md:justify-end"
             }`}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
           >
             {/* Item container */}
             <div
-              className={`w-5/12 p-6 relative z-10 rounded-lg  border bg-[#1c1c1c] shadow-md ${
-                item.side === "left" ? "mr-auto" : "ml-auto"
-              } border-[#262727] dark:border-gray-700 -mt-7`}
+              className={`w-full md:w-5/12 p-5 md:p-6 relative z-10 rounded-xl border bg-[#1a1a1a] text-white dark:bg-[#1c1c1c] shadow-sm dark:shadow-md ${
+                item.side === "left" ? "md:mr-auto" : "md:ml-auto"
+              } border-[#272727] dark:border-[#262727] hover:border-primary/30 dark:hover:border-primary/50 transition-colors duration-300`}
             >
-              <div className="flex items-center gap-3 mb-2">
-                <div
-                  className={`"p-2 w-10 h-10 flex justify-center items-center rounded-full bg-[#1e1e1f] dark:bg-primary/20" ${item.color} text-[17px]`}
+              <div className="flex items-center gap-3 mb-3">
+                <motion.div
+                  className={`p-2 w-10 h-10 flex justify-center items-center rounded-full bg-gray-100 dark:bg-[#1e1e1f] ${item.color}`}
+                  whileHover={{ scale: 1.1 }}
                 >
                   {item.icon}
+                </motion.div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white dark:text-white">
+                    {item.title}
+                  </h3>
+                  {item.date && (
+                    <p className="text-sm text-slate-400 font-medium dark:text-primary-400">
+                      {item.date}
+                    </p>
+                  )}
                 </div>
-                <h3 className="text-lg font-semibold dark:text-white">
-                  {item.title}
-                </h3>
               </div>
-              <p className="text-muted-foreground dark:text-gray-300">
+              <p className="text-[#aaa9a9] dark:text-gray-300">
                 {item.description}
               </p>
-              {item.date && (
-                <div className="mt-2 text-sm text-primary font-medium dark:text-primary-300">
-                  {item.date}
-                </div>
-              )}
             </div>
 
-            {/* Connecting line */}
+            {/* Connecting line - hidden on mobile */}
             <div
-              className={`absolute top-1/2 w-1/4 h-0.5 bg-[#1f2126] z-5 dark:bg-gray-600 ${
+              className={`hidden md:block absolute top-1/2 w-1/4 h-0.5 bg-gray-200 dark:bg-gray-600 ${
                 item.side === "left" ? "right-1/2" : "left-1/2"
               }`}
             ></div>
 
-            {/* Central dot */}
-            <div className="absolute z-20 top-1/2 left-1/2 w-4 h-4 rounded-full bg-primary border-4 border-background dark:border-gray-900 transform -translate-x-1/2 -translate-y-1/2"></div>
-          </div>
+            {/* Central dot - hidden on mobile */}
+            <div className="hidden md:block absolute z-20 top-1/2 left-1/2 w-4 h-4 rounded-full bg-primary border-4 border-white dark:border-gray-900 transform -translate-x-1/2 -translate-y-1/2"></div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </section>
   )
 }
