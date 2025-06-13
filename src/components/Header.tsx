@@ -33,7 +33,7 @@ const Header = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, type: "spring" }}
-      className={`fixed top-0 left-0 w-full h-16 flex items-center justify-between px-4 md:px-20 z-50 transition-all duration-300
+      className={`fixed top-0 left-0 w-full  h-16 flex items-center justify-between px-4 md:px-20 z-50 transition-all duration-300
   ${scrolled ? "backdrop-blur-lg" : "bg-transparent"}
 `}
     >

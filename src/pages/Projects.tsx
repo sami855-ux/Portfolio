@@ -9,13 +9,15 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ArrowUpRight, Github, ExternalLink } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, useInView } from "framer-motion"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip"
+import { useRef } from "react"
+import { Link } from "react-router-dom"
 
 const projects = [
   {
@@ -59,12 +61,30 @@ const projects = [
 ]
 
 const Projects = () => {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  }
+
   return (
     <div className="min-h-screen w-full py-16 px-4 sm:px-6 lg:px-8">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8 }}
         className="max-w-7xl mx-auto"
       >
         <div className="text-center mb-16">
@@ -80,14 +100,15 @@ const Projects = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div
+          ref={ref}
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "show" : "hidden"}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
+            <motion.div key={index} variants={itemVariants}>
               <Card className="h-full flex flex-col group overflow-hidden bg-[#252424] border-none pt-0">
                 <div className="relative h-52 overflow-hidden">
                   <img
@@ -169,17 +190,19 @@ const Projects = () => {
               </Card>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <div className="mt-16 text-center">
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant="outline"
-              className="px-8 py-6 text-black rounded-full"
-            >
-              View All My Projects
-              <ArrowUpRight className="ml-2 h-4 w-4" />
-            </Button>
+            <Link to="/Projects">
+              <Button
+                variant="outline"
+                className="px-8 py-6 text-black rounded-full"
+              >
+                View All My Projects
+                <ArrowUpRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </motion.div>

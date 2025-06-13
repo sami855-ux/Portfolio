@@ -16,3 +16,17 @@ export interface TimelineItem {
   side: "left" | "right"
   color?: string
 }
+
+export type Project = {
+  id: number
+  title: string
+  description: string
+  technologies: string[]
+  features: string[]
+  challenges: string
+  solutions: string
+  results: string
+  githubUrl: string
+  liveUrl: string
+  imageUrl: string
+}

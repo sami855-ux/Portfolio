@@ -26,7 +26,6 @@ const socialLinks: socialLinks[] = [
   { name: "LinkedIn", url: "#", icon: "linkedin" },
   { name: "Twitter", url: "#", icon: "twitter" },
   { name: "Instagram", url: "#", icon: "instagram" },
-  { name: "Dribbble", url: "#", icon: "dribbble" },
   { name: "Facebook", url: "#", icon: "facebook" },
   { name: "Telegram", url: "#", icon: "telegram" },
 ]
@@ -89,6 +88,14 @@ export default function Home() {
             transition={{ delay: 0.3 }}
           >
             Full Stack Developer
+          </motion.p>
+          <motion.p
+            className="py-1 text-white"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            with 3+ years of experience.
           </motion.p>
 
           <motion.p
@@ -175,11 +182,6 @@ export default function Home() {
                             </div>
                           )}
 
-                          {social.icon === "dribbble" && (
-                            <div className="text-gray-400 hover:text-green-500 transition-colors">
-                              <Dribbble size={20} />
-                            </div>
-                          )}
                           {social.icon === "facebook" && (
                             <div className="text-gray-400 hover:text-green-500 transition-colors">
                               <Facebook size={20} />
