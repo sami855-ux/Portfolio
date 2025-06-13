@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="w-full min-h-screen flex items-center flex-col relative overflow-hidden">
+      <div className="w-full min-h-screen flex items-center flex-col relative overflow-hidden px-4 md:px-0">
         <motion.div
           className="absolute inset-0 -z-10"
           initial={{ opacity: 0 }}
@@ -47,7 +47,7 @@ export default function Home() {
         >
           {/* Profile image with playful interaction */}
 
-          <h2 className="font-bold text-5xl md:text-6xl text-white mb-2 relative">
+          <h2 className="font-bold text-4xl md:text-6xl text-white mb-2 relative mt-7 md:mt-0">
             Hi, I'm Samuel{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-600">
               Tale
@@ -75,7 +75,7 @@ export default function Home() {
           </h2>
 
           <motion.p
-            className="py-3 text-xl text-white font-semibold"
+            className="pt-3 text-lg md:text-xl text-white font-semibold"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -83,7 +83,7 @@ export default function Home() {
             Full Stack Developer
           </motion.p>
           <motion.p
-            className="py-1 text-white"
+            className="py-1 pb-3 text-slate-400 text-[14px] md:text-[16px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -97,8 +97,8 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            Turning ideas into sleek, fast, and responsive websites <br /> for
-            web users around the world.
+            Turning ideas into sleek, fast, and responsive websites for web
+            users around the world.
           </motion.p>
 
           <motion.div
