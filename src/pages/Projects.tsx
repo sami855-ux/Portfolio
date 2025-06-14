@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/tooltip"
 import { useRef } from "react"
 import { Link } from "react-router-dom"
+import taxImg from "../assets/ta.png"
+import itImg from "../assets/it.png"
 
 const projects = [
   {
@@ -43,20 +45,18 @@ const projects = [
     description:
       "Online tax payment platform with user authentication and payment gateway integration.",
     tags: ["Next.js", "Node.js", "MongoDB", "Cloudinary", "Stripe"],
-    github: "#",
-    live: "#",
-    image:
-      "https://images.ctfassets.net/hrltx12pl8hq/4aF6vvw0ruLgoBkSe6o6kJ/7d5a578c5eb569d018840eaedf036989/4.jpg",
+    github: "https://github.com/sami855-ux/Tax-payment-Website.git",
+    live: "https://tax-payment-website.vercel.app/",
+    image: taxImg,
   },
   {
     title: "Jobs Marketplace",
     description:
       "Online job marketplace with user authentication and job posting features. Inspired by LinkedIn and instagram.",
     tags: ["React", "Node.js", "MongoDB", "Socket.io", "Express", "Tailwind"],
-    github: "#",
-    live: "#",
-    image:
-      "https://images.ctfassets.net/hrltx12pl8hq/15YloW4hbQ1rwIQifBJpY3/bf986edcfe1a1211f041f96dde9855ee/music.png",
+    github: "https://github.com/sami855-ux/Itgram-social-network.git",
+    live: "https://itgram-social-network-w6pm.vercel.app/",
+    image: itImg,
   },
 ]
 
@@ -150,13 +150,15 @@ const Projects = () => {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-[#1a1a1a] hover:text-white"
-                            >
-                              <Github className="h-4 w-4 text-white" />
-                            </Button>
+                            <Link to={project.github} target="_blank">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:bg-[#1a1a1a] hover:text-white"
+                              >
+                                <Github className="h-4 w-4 text-white" />
+                              </Button>
+                            </Link>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>View code in Github</p>
@@ -168,13 +170,15 @@ const Projects = () => {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-[#1a1a1a] hover:text-white"
-                            >
-                              <ExternalLink className="h-4 w-4 text-white" />
-                            </Button>
+                            <Link to={project.live} target="_blank">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:bg-[#1a1a1a] hover:text-white"
+                              >
+                                <ExternalLink className="h-4 w-4 text-white" />
+                              </Button>
+                            </Link>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Live Demo</p>
