@@ -13,14 +13,22 @@ import ProfileImage from "@/components/ProfileImage"
 import { Button } from "@/components/ui/button"
 import { SiTelegram } from "react-icons/si"
 import type { socialLinks } from "@/types/ui"
+import { Link } from "react-router-dom"
 
 const socialLinks: socialLinks[] = [
-  { name: "GitHub", url: "#", icon: "github" },
-  { name: "LinkedIn", url: "#", icon: "linkedin" },
-  { name: "Twitter", url: "#", icon: "twitter" },
-  { name: "Instagram", url: "#", icon: "instagram" },
+  { name: "GitHub", url: "https://github.com/sami855-ux", icon: "github" },
+  {
+    name: "LinkedIn",
+    url: "https://www.linkedin.com/in/samiux855/",
+    icon: "linkedin",
+  },
+  {
+    name: "Instagram",
+    url: "https://www.instagram.com/sami.tale.18/",
+    icon: "instagram",
+  },
   { name: "Facebook", url: "#", icon: "facebook" },
-  { name: "Telegram", url: "#", icon: "telegram" },
+  { name: "Telegram", url: "https://t.me/Sami_hhtt", icon: "telegram" },
 ]
 
 export default function Home() {
@@ -218,15 +226,17 @@ export default function Home() {
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <Button
-                variant="outline"
-                className="w-40 rounded-full text-sm font-medium uppercase tracking-wider
+              <Link to="/contact">
+                <Button
+                  variant="outline"
+                  className="w-40 rounded-full text-sm font-medium uppercase tracking-wider
       transition-all duration-300  cursor-pointer
      text-gray-800 relative overflow-hidden group"
-              >
-                <span className="relative z-10">Contact me</span>
-                <span className="absolute inset-0 bg-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              </Button>
+                >
+                  <span className="relative z-10">Contact me</span>
+                  <span className="absolute inset-0 bg-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
         </motion.div>

@@ -13,7 +13,6 @@ const projects: Project[] = [
       "A modern real-time chat application that allows users to send and receive messages instantly, with typing indicators, read receipts, and online status updates.",
     technologies: ["React", "Node.js", "MongoDB", "Socket.io", "Express"],
     features: [
-      "1-on-1 and group chat support",
       "Real-time messaging with Socket.io",
       "User authentication and profile management",
       "Online status and typing indicators",
@@ -33,29 +32,54 @@ const projects: Project[] = [
   },
 
   {
-    id: 1,
-    title: "Email spam detector",
+    id: 2,
+    title: "Email Spam Detector",
     description:
-      "A full-featured online store with payment processing and inventory management.",
-    technologies: ["React", "Node.js", "MongoDB", "Stripe"],
+      "An intelligent email filtering tool that classifies incoming messages as spam or legitimate using machine learning.",
+    technologies: ["React", "Node.js", "MongoDB", "TensorFlow.js"],
     features: [
-      "Product catalog with filters",
-      "User authentication system",
-      "Shopping cart functionality",
-      "Admin dashboard",
+      "Real-time spam detection using trained ML models",
+      "Interactive dashboard to review flagged emails",
+      "User feedback system to improve model accuracy",
+      "Role-based access control for users and admins",
     ],
     challenges:
-      "Implementing real-time inventory updates during high traffic periods",
-    solutions: "Used Redis for caching and WebSockets for live updates",
+      "Training an accurate model with a high precision rate and integrating it seamlessly into the email pipeline",
+    solutions:
+      "Used TensorFlow.js to deploy a lightweight spam classifier in the browser and created a feedback loop to retrain with user input",
     results:
-      "Reduced checkout time by 40% and increased conversion rate by 25%",
+      "Achieved over 96% accuracy in spam classification and reduced false positives by 30%",
     githubUrl: "#",
     liveUrl: "#",
     imageUrl:
-      "https://images.ctfassets.net/hrltx12pl8hq/4aF6vvw0ruLgoBkSe6o6kJ/7d5a578c5eb569d018840eaedf036989/4.jpg",
+      "https://images.unsplash.com/photo-1607083200843-eac15f4b7de0?auto=format&fit=crop&w=1350&q=80",
   },
   {
-    id: 1,
+    id: 4,
+    title: "Tax Payment Web App",
+    description:
+      "A secure and user-friendly platform for managing tax filings, payments, and compliance for individuals and businesses.",
+    technologies: ["React", "Node.js", "MongoDB", "Framer Motion"],
+    features: [
+      "Taxpayer dashboard with due dates and payment history",
+      "Official panel for reviewing and approving filings",
+      "Dynamic tax rule configuration",
+      "Automated reminders and notifications",
+    ],
+    challenges:
+      "Handling complex tax rules while maintaining a simple user interface",
+    solutions:
+      "Implemented a flexible tax rule engine and used animations to guide user interactions step-by-step",
+    results:
+      "Increased on-time payments by 55% and reduced manual errors in filings by 70%",
+    githubUrl: "#",
+    liveUrl: "#",
+    imageUrl:
+      "https://images.unsplash.com/photo-1588776814546-4c07d1c9cbe0?auto=format&fit=crop&w=1350&q=80",
+  },
+
+  {
+    id: 3,
     title: "E-Commerce Platform",
     description:
       "A full-featured online store with payment processing and inventory management.",
@@ -76,6 +100,99 @@ const projects: Project[] = [
     imageUrl:
       "https://images.ctfassets.net/hrltx12pl8hq/4kzWG72Pi925q9Gtc6hBQh/6bdbb560251e188bab5d3ea1ad195d6b/1.jpg",
   },
+  {
+    id: 6,
+    title: "Learning Management System",
+    description:
+      "A full-featured LMS platform for managing online courses, quizzes, certifications, and student progress.",
+    technologies: ["React", "Node.js", "MongoDB", "Redux Toolkit"],
+    features: [
+      "Course creation and enrollment",
+      "Interactive quizzes and assessments",
+      "Progress tracking and certification",
+      "Admin dashboard for managing users and content",
+    ],
+    challenges:
+      "Ensuring real-time progress tracking and scalability for large numbers of users",
+    solutions:
+      "Used Redux Toolkit for efficient state management and optimized backend queries with MongoDB indexing",
+    results:
+      "Improved course completion rate by 42% and reduced admin overhead by automating content management",
+    githubUrl: "#",
+    liveUrl: "#",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600195077078-4cc9b0b8f67c?auto=format&fit=crop&w=1350&q=80",
+  },
+  {
+    id: 3,
+    title: "Tour Mobile App",
+    description:
+      "A comprehensive mobile application for booking and managing guided tours with real-time location tracking.",
+    technologies: ["Java", "Firebase", "Google Maps API", "SQLite"],
+    features: [
+      "Tour package browsing with filters",
+      "User authentication system",
+      "In-app tour booking and itinerary",
+      "Admin dashboard for managing tours",
+    ],
+    challenges:
+      "Implementing real-time location tracking while maintaining battery efficiency",
+    solutions:
+      "Used Google Maps API with optimized location services and Firebase for real-time data sync",
+    results:
+      "Improved user engagement by 45% and reduced booking process time by 60%",
+    githubUrl: "#",
+    liveUrl: "#",
+    imageUrl:
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1350&q=80",
+  },
+  {
+    id: 4,
+    title: "Animated To-Do Website",
+    description:
+      "A beautifully animated task management website that helps users organize and track daily tasks with smooth interactions.",
+    technologies: ["React", "Framer Motion", "Tailwind CSS", "LocalStorage"],
+    features: [
+      "Add, edit, and delete tasks",
+      "Drag-and-drop task reordering",
+      "Light/dark theme toggle",
+      "Smooth animations for all task interactions",
+    ],
+    challenges:
+      "Creating fluid animations while maintaining high performance on all devices",
+    solutions:
+      "Used Framer Motion with layout transitions and optimized re-renders for animation-heavy UI",
+    results:
+      "Enhanced user experience with 70% longer session duration and increased daily active users",
+    githubUrl: "#",
+    liveUrl: "#",
+    imageUrl:
+      "https://images.unsplash.com/photo-1611224885990-200a6727c759?auto=format&fit=crop&w=1350&q=80",
+  },
+  {
+    id: 5,
+    title: "Shopping Website Landing Page",
+    description:
+      "A modern, animated landing page for an online shopping platform, designed to attract users and promote featured products.",
+    technologies: ["React", "Tailwind CSS", "Framer Motion"],
+    features: [
+      "Hero section with promotional banners",
+      "Animated product highlights",
+      "Responsive design for mobile and desktop",
+      "Newsletter subscription and call-to-action sections",
+    ],
+    challenges:
+      "Creating smooth animations without sacrificing load speed or SEO performance",
+    solutions:
+      "Implemented Framer Motion for lightweight animations and optimized images using lazy loading",
+    results:
+      "Increased user engagement by 48% and improved sign-up conversions by 30%",
+    githubUrl: "#",
+    liveUrl: "#",
+    imageUrl:
+      "https://images.unsplash.com/photo-1607083200843-eac15f4b7de0?auto=format&fit=crop&w=1350&q=80",
+  },
+
   // Add more projects...
 ]
 
