@@ -5,6 +5,9 @@ import Header from "@/components/Header"
 import { cn } from "@/lib/utils"
 import { useEffect } from "react"
 
+import taxImg from "../assets/ta.png"
+// import itImg from "../assets/it.png"
+
 const projects: Project[] = [
   {
     id: 1,
@@ -74,8 +77,7 @@ const projects: Project[] = [
       "Increased on-time payments by 55% and reduced manual errors in filings by 70%",
     githubUrl: "#",
     liveUrl: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1588776814546-4c07d1c9cbe0?auto=format&fit=crop&w=1350&q=80",
+    imageUrl: taxImg,
   },
 
   {
@@ -243,7 +245,7 @@ export function MainProjects() {
                   <img
                     src={project.imageUrl}
                     alt={project.title}
-                    className="w-full h-full object-cover absolute inset-0"
+                    className="w-full h-full object-center  absolute inset-0"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                 </div>
