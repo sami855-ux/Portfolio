@@ -7,7 +7,6 @@ import { useEffect } from "react"
 
 import taxImg from "../assets/ta.png"
 import { Footer } from "./Footer"
-// import itImg from "../assets/it.png"
 
 const projects: Project[] = [
   {
@@ -53,7 +52,7 @@ const projects: Project[] = [
       "Used TensorFlow.js to deploy a lightweight spam classifier in the browser and created a feedback loop to retrain with user input",
     results:
       "Achieved over 96% accuracy in spam classification and reduced false positives by 30%",
-    githubUrl: "#",
+    githubUrl: "https://github.com/sami855-ux/Email-spam-classfication.git",
     liveUrl: "#",
     imageUrl:
       "https://images.unsplash.com/photo-1607083200843-eac15f4b7de0?auto=format&fit=crop&w=1350&q=80",
@@ -76,7 +75,7 @@ const projects: Project[] = [
       "Implemented a flexible tax rule engine and used animations to guide user interactions step-by-step",
     results:
       "Increased on-time payments by 55% and reduced manual errors in filings by 70%",
-    githubUrl: "#",
+    githubUrl: "https://github.com/sami855-ux/Tax-payment-Website.git",
     liveUrl: "#",
     imageUrl: taxImg,
   },
@@ -98,7 +97,7 @@ const projects: Project[] = [
     solutions: "Used Redis for caching and WebSockets for live updates",
     results:
       "Reduced checkout time by 40% and increased conversion rate by 25%",
-    githubUrl: "#",
+    githubUrl: "https://github.com/sami855-ux/E-commerce-Website.git",
     liveUrl: "#",
     imageUrl:
       "https://images.ctfassets.net/hrltx12pl8hq/4kzWG72Pi925q9Gtc6hBQh/6bdbb560251e188bab5d3ea1ad195d6b/1.jpg",
@@ -144,7 +143,7 @@ const projects: Project[] = [
       "Used Google Maps API with optimized location services and Firebase for real-time data sync",
     results:
       "Improved user engagement by 45% and reduced booking process time by 60%",
-    githubUrl: "#",
+    githubUrl: "https://github.com/sami855-ux/Tour-Mobile-App-Main.git",
     liveUrl: "#",
     imageUrl:
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1350&q=80",
@@ -167,7 +166,7 @@ const projects: Project[] = [
       "Used Framer Motion with layout transitions and optimized re-renders for animation-heavy UI",
     results:
       "Enhanced user experience with 70% longer session duration and increased daily active users",
-    githubUrl: "#",
+    githubUrl: "https://github.com/sami855-ux/animated-todo-app.git",
     liveUrl: "#",
     imageUrl:
       "https://images.unsplash.com/photo-1611224885990-200a6727c759?auto=format&fit=crop&w=1350&q=80",
@@ -190,13 +189,11 @@ const projects: Project[] = [
       "Implemented Framer Motion for lightweight animations and optimized images using lazy loading",
     results:
       "Increased user engagement by 48% and improved sign-up conversions by 30%",
-    githubUrl: "#",
+    githubUrl: "https://github.com/sami855-ux/Shopping-cart-website.git",
     liveUrl: "#",
     imageUrl:
       "https://images.unsplash.com/photo-1607083200843-eac15f4b7de0?auto=format&fit=crop&w=1350&q=80",
   },
-
-  // Add more projects...
 ]
 
 export function MainProjects() {
