@@ -4,34 +4,37 @@ import type { Project } from "@/types/ui" // Define your types
 import Header from "@/components/Header"
 import { cn } from "@/lib/utils"
 import { useEffect } from "react"
+import { Footer } from "./Footer"
 
 import taxImg from "../assets/ta.png"
-import { Footer } from "./Footer"
+import ecommerceImg from "../assets/ecommerce.png"
+import emailImg from "../assets/email.png"
+import tourImg from "../assets/tour.png"
+import todoImg from "../assets/todo.png"
+import lmsImg from "../assets/lms.png"
 
 const projects: Project[] = [
   {
     id: 1,
-    title: "Real Time Chat App",
+    title: "Learning Management System",
     description:
-      "A modern real-time chat application that allows users to send and receive messages instantly, with typing indicators, read receipts, and online status updates.",
-    technologies: ["React", "Node.js", "MongoDB", "Socket.io", "Express"],
+      "A full-featured LMS platform for managing online courses, quizzes, certifications, and student progress.",
+    technologies: ["React", "Node.js", "MongoDB", "Redux Toolkit"],
     features: [
-      "Real-time messaging with Socket.io",
-      "User authentication and profile management",
-      "Online status and typing indicators",
-      "Chat history and message persistence",
-      "Responsive UI with dark mode",
+      "Course creation and enrollment",
+      "Interactive quizzes and assessments",
+      "Progress tracking and certification",
+      "Admin dashboard for managing users and content",
     ],
     challenges:
-      "Handling real-time message delivery, presence tracking, and scaling Socket connections without latency under heavy load.",
+      "Ensuring real-time progress tracking and scalability for large numbers of users",
     solutions:
-      "Utilized Socket.io with rooms for efficient message broadcasting, implemented Redis for scalable pub/sub, and set up horizontal scaling with sticky sessions.",
+      "Used Redux Toolkit for efficient state management and optimized backend queries with MongoDB indexing",
     results:
-      "Achieved sub-second message delivery latency and supported over 10,000 concurrent users with smooth real-time interactions.",
-    githubUrl: "https://github.com/yourusername/realtime-chat-app",
-    liveUrl: "https://realtime-chat-app.vercel.app",
-    imageUrl:
-      "https://images.ctfassets.net/hrltx12pl8hq/4kzWG72Pi925q9Gtc6hBQh/6bdbb560251e188bab5d3ea1ad195d6b/1.jpg",
+      "Improved course completion rate by 42% and reduced admin overhead by automating content management",
+    githubUrl: "#",
+    liveUrl: "#",
+    imageUrl: lmsImg,
   },
 
   {
@@ -54,8 +57,7 @@ const projects: Project[] = [
       "Achieved over 96% accuracy in spam classification and reduced false positives by 30%",
     githubUrl: "https://github.com/sami855-ux/Email-spam-classfication.git",
     liveUrl: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1607083200843-eac15f4b7de0?auto=format&fit=crop&w=1350&q=80",
+    imageUrl: emailImg,
   },
   {
     id: 4,
@@ -99,32 +101,9 @@ const projects: Project[] = [
       "Reduced checkout time by 40% and increased conversion rate by 25%",
     githubUrl: "https://github.com/sami855-ux/E-commerce-Website.git",
     liveUrl: "#",
-    imageUrl:
-      "https://images.ctfassets.net/hrltx12pl8hq/4kzWG72Pi925q9Gtc6hBQh/6bdbb560251e188bab5d3ea1ad195d6b/1.jpg",
+    imageUrl: ecommerceImg,
   },
-  {
-    id: 6,
-    title: "Learning Management System",
-    description:
-      "A full-featured LMS platform for managing online courses, quizzes, certifications, and student progress.",
-    technologies: ["React", "Node.js", "MongoDB", "Redux Toolkit"],
-    features: [
-      "Course creation and enrollment",
-      "Interactive quizzes and assessments",
-      "Progress tracking and certification",
-      "Admin dashboard for managing users and content",
-    ],
-    challenges:
-      "Ensuring real-time progress tracking and scalability for large numbers of users",
-    solutions:
-      "Used Redux Toolkit for efficient state management and optimized backend queries with MongoDB indexing",
-    results:
-      "Improved course completion rate by 42% and reduced admin overhead by automating content management",
-    githubUrl: "#",
-    liveUrl: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1600195077078-4cc9b0b8f67c?auto=format&fit=crop&w=1350&q=80",
-  },
+
   {
     id: 3,
     title: "Tour Mobile App",
@@ -145,8 +124,31 @@ const projects: Project[] = [
       "Improved user engagement by 45% and reduced booking process time by 60%",
     githubUrl: "https://github.com/sami855-ux/Tour-Mobile-App-Main.git",
     liveUrl: "#",
+    imageUrl: tourImg,
+  },
+  {
+    id: 6,
+    title: "Real Time Chat App",
+    description:
+      "A modern real-time chat application that allows users to send and receive messages instantly, with typing indicators, read receipts, and online status updates.",
+    technologies: ["React", "Node.js", "MongoDB", "Socket.io", "Express"],
+    features: [
+      "Real-time messaging with Socket.io",
+      "User authentication and profile management",
+      "Online status and typing indicators",
+      "Chat history and message persistence",
+      "Responsive UI with dark mode",
+    ],
+    challenges:
+      "Handling real-time message delivery, presence tracking, and scaling Socket connections without latency under heavy load.",
+    solutions:
+      "Utilized Socket.io with rooms for efficient message broadcasting, implemented Redis for scalable pub/sub, and set up horizontal scaling with sticky sessions.",
+    results:
+      "Achieved sub-second message delivery latency and supported over 10,000 concurrent users with smooth real-time interactions.",
+    githubUrl: "https://github.com/yourusername/realtime-chat-app",
+    liveUrl: "https://realtime-chat-app.vercel.app",
     imageUrl:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1350&q=80",
+      "https://images.ctfassets.net/hrltx12pl8hq/4kzWG72Pi925q9Gtc6hBQh/6bdbb560251e188bab5d3ea1ad195d6b/1.jpg",
   },
   {
     id: 4,
@@ -168,8 +170,7 @@ const projects: Project[] = [
       "Enhanced user experience with 70% longer session duration and increased daily active users",
     githubUrl: "https://github.com/sami855-ux/animated-todo-app.git",
     liveUrl: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1611224885990-200a6727c759?auto=format&fit=crop&w=1350&q=80",
+    imageUrl: todoImg,
   },
   {
     id: 5,
@@ -240,11 +241,11 @@ export function MainProjects() {
                 <div
                   className={`${index % 2 === 0 ? "lg:order-1" : "lg:order-2"}`}
                 >
-                  <div className="relative rounded-xl overflow-hidden border border-gray-800 hover:border-purple-500/30 transition-all duration-500 h-96">
+                  <div className="group relative rounded-xl overflow-hidden border border-gray-800 hover:border-purple-500/30 transition-all duration-500 h-96">
                     <img
                       src={project.imageUrl}
                       alt={project.title}
-                      className="w-full h-full object-center  absolute inset-0"
+                      className="w-full h-full object-cover object-center absolute inset-0 transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                   </div>
