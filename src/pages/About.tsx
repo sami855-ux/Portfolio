@@ -16,7 +16,7 @@ export function About() {
       id: 1,
       title: "Introduction",
       description:
-        "Full-stack developer with 3+ years of experience building web applications using React, Next.js, Node.js and PostgreSQL. I have developed a strong foundation in front-end and back-end development, and I'm passionate about creating user-friendly and efficient applications that meet the needs of my clients.",
+        "Full-stack developer with 3+ years of experience building web applications using React, Next.js,Vue.js, laravel, Node.js and PostgreSQL. I have developed a strong foundation in front-end and back-end development, and I'm passionate about creating user-friendly and efficient applications that meet the needs of my clients.",
       icon: <User className="w-5 h-5" />,
       side: "left",
       color: "text-blue-500",
@@ -25,7 +25,7 @@ export function About() {
       id: 2,
       title: "Education",
       description:
-        "Software engineering degree from Debre Brihan University (2022-2025). Graduated with honors.",
+        "Software engineering degree from Debre Brihan University (2022-2025). Graduated with honors. and  have certificates from udemy for fundamental programming and Artificial Intelligence and alsion for MERN stack development. ",
       date: "2022 - 2025",
       icon: <GraduationCap className="w-5 h-5" />,
       side: "right",
@@ -35,7 +35,7 @@ export function About() {
       id: 3,
       title: "Internship",
       description:
-        "Internship at Efuye Gela as a full-stack developer. Worked on a range of projects including web applications and mobile apps.",
+        "Internship at Efuye Gela as a full-stack developer and as a frontend developer at melfan tech. Worked on a range of projects including web applications using React, Next.js, Vue.js, Laravel Node.js and PostgreSQL.",
       date: "2018 - 2020",
       icon: <Briefcase className="w-5 h-5" />,
       side: "left",
@@ -44,8 +44,10 @@ export function About() {
     {
       id: 4,
       title: "Currently",
-      description:
-        "Actively learning and working on personal projects. Developing web applications using React, Next.js, Node.js and PostgreSQL.",
+      description: `Working in a node package for ethiopian that uses telebirr and fayda to help with payments, 
+      and actively learning and working on personal projects. Developing web applications using React, Next.js, Node.js and PostgreSQL.  
+        
+       `,
       date: "2020 - Present",
       icon: <Code className="w-5 h-5" />,
       side: "right",
@@ -118,13 +120,13 @@ export function About() {
             >
               <div className="flex items-center gap-3 mb-3">
                 <motion.div
-                  className={`p-2 w-10 h-10 flex justify-center items-center rounded-full bg-gray-100 dark:bg-[#1e1e1f] ${item.color}`}
+                  className={`p-2 w-10 h-10 flex justify-center items-center rounded-full bg-[#2f2f30] dark:bg-[#1e1e1f] ${item.color}`}
                   whileHover={{ scale: 1.1 }}
                 >
                   {item.icon}
                 </motion.div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white dark:text-white">
+                  <h3 className="text-lg font-semibold text-slate-200 dark:text-white">
                     {item.title}
                   </h3>
                   {item.date && (
