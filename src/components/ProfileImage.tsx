@@ -1,6 +1,8 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
 
+import mineImg from "../assets/mine.png"
+
 export default function ProfileImage() {
   const [isHovered, setIsHovered] = useState(false)
   const [isClicked, setIsClicked] = useState(false)
@@ -60,7 +62,7 @@ export default function ProfileImage() {
         }}
       >
         <img
-          src="https://images.pexels.com/photos/1181672/pexels-photo-1181672.jpeg"
+          src={mineImg}
           alt="Samuel Tale"
           className="w-full h-full object-cover"
         />
