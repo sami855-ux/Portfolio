@@ -1,6 +1,7 @@
 import { Github, Linkedin, Mail, Heart, ExternalLink } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
 
 export function Footer() {
   return (
@@ -13,50 +14,50 @@ export function Footer() {
             asChild
             className="hover:bg-[#262626] hover:text-white"
           >
-            <a href="#projects" className="flex items-center gap-2">
+            <Link to="/projects" className="flex items-center gap-2">
               <ExternalLink className="w-4 h-4" />
               Projects
-            </a>
+            </Link>
           </Button>
           <Button
             variant="ghost"
             asChild
             className="hover:bg-[#262626] hover:text-white"
           >
-            <a href="#contact" className="flex items-center gap-2">
+            <Link to="/contact" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
               Contact
-            </a>
+            </Link>
           </Button>
           <Button
             variant="ghost"
             asChild
             className="hover:bg-[#262626] hover:text-white"
           >
-            <a
-              href="https://github.com/yourusername"
+            <Link
+              to="https://github.com/sami855-ux"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
               <Github className="w-4 h-4" />
               GitHub
-            </a>
+            </Link>
           </Button>
           <Button
             variant="ghost"
             asChild
             className="hover:bg-[#262626] hover:text-white"
           >
-            <a
-              href="https://linkedin.com/in/yourusername"
+            <Link
+              to="https://www.linkedin.com/in/samiux855/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
               <Linkedin className="w-4 h-4" />
               LinkedIn
-            </a>
+            </Link>
           </Button>
         </div>
 
