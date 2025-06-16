@@ -1,5 +1,7 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
+import { LazyLoadImage } from "react-lazy-load-image-component"
+import "react-lazy-load-image-component/src/effects/blur.css"
 
 import mineImg from "../assets/mine.png"
 
@@ -61,9 +63,10 @@ export default function ProfileImage() {
           borderColor: { duration: 3 },
         }}
       >
-        <img
+        <LazyLoadImage
           src={mineImg}
           alt="Samuel Tale"
+          effect="blur"
           className="w-full h-full object-cover"
         />
 
