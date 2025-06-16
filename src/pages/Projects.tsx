@@ -20,6 +20,7 @@ import { useRef } from "react"
 import { Link } from "react-router-dom"
 import taxImg from "../assets/ta.png"
 import itImg from "../assets/it.png"
+import lmsImg from "../assets/lms.png"
 
 const projects = [
   {
@@ -37,8 +38,7 @@ const projects = [
     ],
     github: "#",
     live: "#",
-    image:
-      "https://images.ctfassets.net/hrltx12pl8hq/4kzWG72Pi925q9Gtc6hBQh/6bdbb560251e188bab5d3ea1ad195d6b/1.jpg",
+    image: lmsImg,
   },
   {
     title: "Tax Payment Web App",
