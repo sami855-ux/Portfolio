@@ -1,11 +1,14 @@
 import { motion } from "framer-motion"
 import { ExternalLink, Github } from "lucide-react"
-import type { Project } from "@/types/ui" // Define your types
+import type { Project } from "@/types/ui"
 import Header from "@/components/Header"
 import { cn } from "@/lib/utils"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Footer } from "./Footer"
+import { LazyLoadImage } from "react-lazy-load-image-component"
+import "react-lazy-load-image-component/src/effects/blur.css"
 
+// Import your images
 import taxImg from "../assets/ta.png"
 import ecommerceImg from "../assets/ecommerce.png"
 import emailImg from "../assets/email.png"
@@ -198,17 +201,55 @@ const projects: Project[] = [
 ]
 
 export function MainProjects() {
+  const [loaded, setLoaded] = useState(false)
+
   useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     })
+    setLoaded(true)
   }, [])
+
+  // Animation variants
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  }
+
+  const imageVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+    hover: {
+      scale: 1.03,
+      transition: {
+        duration: 0.3,
+      },
+    },
+  }
 
   return (
     <>
       <div className="min-h-screen bg-[#1a1a1a] text-white py-20 px-4 sm:px-8">
         <Header />
+        {/* Background elements */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           {[...Array(10)].map((_, i) => (
             <motion.div
@@ -236,6 +277,7 @@ export function MainProjects() {
             />
           ))}
         </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -243,39 +285,73 @@ export function MainProjects() {
           className="max-w-6xl mx-auto pt-5"
         >
           <header className="mb-16">
-            <h1 className="font-semibold text-3xl py-2 ">
+            <motion.h1
+              className="font-semibold text-3xl py-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               My main{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-600">
                 projects
               </span>
-            </h1>
-            <p className=" text-gray-400 max-w-3xl">
+            </motion.h1>
+            <motion.p
+              className="text-gray-400 max-w-3xl"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
               Detailed case studies of my most significant work, including
               technical challenges and measurable outcomes.
-            </p>
+            </motion.p>
           </header>
 
-          <div className="space-y-24">
+          <motion.div
+            className="space-y-24"
+            variants={container}
+            initial="hidden"
+            animate={loaded ? "show" : "hidden"}
+          >
             {projects.map((project, index) => (
               <motion.section
                 key={project.id}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                variants={item}
                 className="grid grid-cols-1 lg:grid-cols-2 gap-12"
               >
                 <div
                   className={`${index % 2 === 0 ? "lg:order-1" : "lg:order-2"}`}
                 >
-                  <div className="relative h-96 overflow-hidden rounded-2xl">
-                    <img
+                  <motion.div
+                    className="relative h-96 overflow-hidden rounded-2xl group"
+                    variants={imageVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+                    whileHover="hover"
+                  >
+                    <LazyLoadImage
                       src={project.imageUrl}
                       alt={project.title}
-                      className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105"
+                      effect="blur"
+                      className="w-full h-full object-cover"
+                      wrapperClassName="w-full h-full"
+                      placeholderSrc={project.imageUrl}
                     />
-                    <div className="absolute rounded-2xl inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"></div>
-                  </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-white"
+                      >
+                        <h3 className="text-xl font-bold">{project.title}</h3>
+                        <p className="text-sm text-gray-300">
+                          {project.technologies.join(", ")}
+                        </p>
+                      </motion.div>
+                    </div>
+                  </motion.div>
                 </div>
 
                 <div
@@ -535,7 +611,7 @@ export function MainProjects() {
                 </div>
               </motion.section>
             ))}
-          </div>
+          </motion.div>
         </motion.div>
       </div>
       <Footer />
