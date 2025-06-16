@@ -77,6 +77,33 @@ const Contact = () => {
   return (
     <>
       <Header />
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {[...Array(10)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-[#3a5a40]/20"
+            initial={{
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+              scale: Math.random() * 0.5 + 0.5,
+              opacity: 0.3,
+            }}
+            animate={{
+              x: [null, Math.random() * window.innerWidth],
+              y: [null, Math.random() * window.innerHeight],
+              transition: {
+                duration: Math.random() * 20 + 20,
+                repeat: Infinity,
+                repeatType: "reverse",
+              },
+            }}
+            style={{
+              width: `${Math.random() * 200 + 100}px`,
+              height: `${Math.random() * 200 + 100}px`,
+            }}
+          />
+        ))}
+      </div>
       <div className="min-h-screen py-12 px-4 mt-7 sm:px-6 lg:px-8 bg-[#1a1a1a]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
