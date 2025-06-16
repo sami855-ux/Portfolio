@@ -12,6 +12,7 @@ import emailImg from "../assets/email.png"
 import tourImg from "../assets/tour.png"
 import todoImg from "../assets/todo.png"
 import lmsImg from "../assets/lms.png"
+import realImg from "../assets/real.png"
 
 const projects: Project[] = [
   {
@@ -37,28 +38,6 @@ const projects: Project[] = [
     imageUrl: lmsImg,
   },
 
-  {
-    id: 2,
-    title: "Email Spam Detector",
-    description:
-      "An intelligent email filtering tool that classifies incoming messages as spam or legitimate using machine learning.",
-    technologies: ["React", "Node.js", "MongoDB", "TensorFlow.js"],
-    features: [
-      "Real-time spam detection using trained ML models",
-      "Interactive dashboard to review flagged emails",
-      "User feedback system to improve model accuracy",
-      "Role-based access control for users and admins",
-    ],
-    challenges:
-      "Training an accurate model with a high precision rate and integrating it seamlessly into the email pipeline",
-    solutions:
-      "Used TensorFlow.js to deploy a lightweight spam classifier in the browser and created a feedback loop to retrain with user input",
-    results:
-      "Achieved over 96% accuracy in spam classification and reduced false positives by 30%",
-    githubUrl: "https://github.com/sami855-ux/Email-spam-classfication.git",
-    liveUrl: "#",
-    imageUrl: emailImg,
-  },
   {
     id: 4,
     title: "Tax Payment Web App",
@@ -147,8 +126,7 @@ const projects: Project[] = [
       "Achieved sub-second message delivery latency and supported over 10,000 concurrent users with smooth real-time interactions.",
     githubUrl: "https://github.com/yourusername/realtime-chat-app",
     liveUrl: "https://realtime-chat-app.vercel.app",
-    imageUrl:
-      "https://images.ctfassets.net/hrltx12pl8hq/4kzWG72Pi925q9Gtc6hBQh/6bdbb560251e188bab5d3ea1ad195d6b/1.jpg",
+    imageUrl: realImg,
   },
   {
     id: 4,
@@ -171,6 +149,28 @@ const projects: Project[] = [
     githubUrl: "https://github.com/sami855-ux/animated-todo-app.git",
     liveUrl: "#",
     imageUrl: todoImg,
+  },
+  {
+    id: 2,
+    title: "Email Spam Detector",
+    description:
+      "An intelligent email filtering tool that classifies incoming messages as spam or legitimate using machine learning.",
+    technologies: ["React", "Node.js", "MongoDB", "TensorFlow.js"],
+    features: [
+      "Real-time spam detection using trained ML models",
+      "Interactive dashboard to review flagged emails",
+      "User feedback system to improve model accuracy",
+      "Role-based access control for users and admins",
+    ],
+    challenges:
+      "Training an accurate model with a high precision rate and integrating it seamlessly into the email pipeline",
+    solutions:
+      "Used TensorFlow.js to deploy a lightweight spam classifier in the browser and created a feedback loop to retrain with user input",
+    results:
+      "Achieved over 96% accuracy in spam classification and reduced false positives by 30%",
+    githubUrl: "https://github.com/sami855-ux/Email-spam-classfication.git",
+    liveUrl: "#",
+    imageUrl: emailImg,
   },
   {
     id: 5,
@@ -209,6 +209,33 @@ export function MainProjects() {
     <>
       <div className="min-h-screen bg-[#1a1a1a] text-white py-20 px-4 sm:px-8">
         <Header />
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          {[...Array(10)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-[#3a5a40]/20"
+              initial={{
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                scale: Math.random() * 0.5 + 0.5,
+                opacity: 0.3,
+              }}
+              animate={{
+                x: [null, Math.random() * window.innerWidth],
+                y: [null, Math.random() * window.innerHeight],
+                transition: {
+                  duration: Math.random() * 20 + 20,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                },
+              }}
+              style={{
+                width: `${Math.random() * 200 + 100}px`,
+                height: `${Math.random() * 200 + 100}px`,
+              }}
+            />
+          ))}
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -241,13 +268,13 @@ export function MainProjects() {
                 <div
                   className={`${index % 2 === 0 ? "lg:order-1" : "lg:order-2"}`}
                 >
-                  <div className="group relative rounded-xl overflow-hidden border border-gray-800 hover:border-purple-500/30 transition-all duration-500 h-96">
+                  <div className="relative h-96 overflow-hidden rounded-2xl">
                     <img
                       src={project.imageUrl}
                       alt={project.title}
-                      className="w-full h-full object-cover object-center absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                    <div className="absolute rounded-2xl inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"></div>
                   </div>
                 </div>
 
