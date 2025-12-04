@@ -3,7 +3,7 @@ import { useState } from "react"
 import { LazyLoadImage } from "react-lazy-load-image-component"
 import "react-lazy-load-image-component/src/effects/blur.css"
 
-import mineImg from "../assets/mine.png"
+import mineImg from "../../public/image.jpeg"
 
 export default function ProfileImage() {
   const [isHovered, setIsHovered] = useState(false)
