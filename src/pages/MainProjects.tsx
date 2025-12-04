@@ -16,10 +16,43 @@ import tourImg from "../assets/tour.png"
 import todoImg from "../assets/todo.png"
 import lmsImg from "../assets/lms.png"
 import realImg from "../assets/real.png"
+import negariImg from "../assets/negari.png"
 
 const projects: Project[] = [
   {
     id: 1,
+    title: "Negari - Community Issue Reporting",
+    description:
+      "A mobile and web platform for citizens to report urban issues, track resolutions, and communicate with local authorities.",
+    technologies: [
+      "React Native",
+      "Next.js",
+      "Node.js",
+      "Express",
+      "PostgreSQL",
+      "Leaflet",
+      "Socket.io",
+    ],
+    features: [
+      "Region-based report assignment to officials",
+      "Priority-based issue routing",
+      "Real-time notifications and messaging between users and officials",
+      "Interactive map view of reported issues",
+      "Admin dashboard for managing users, reports, and system settings",
+    ],
+    challenges:
+      "Handling real-time updates, secure voice transcription, and prioritization of reports in a scalable system",
+    solutions:
+      "Integrated Socket.io for real-time communication, used OpenAI Whisper for voice-to-text, implemented custom ML models for spam and priority detection, and optimized MongoDB queries for fast data retrieval",
+    results:
+      "Reduced issue response time by 35% and improved citizen engagement by providing transparent tracking and notifications",
+    githubUrl: "https://github.com/sami855-ux/Negari.git",
+    liveUrl: "https://negari-ten.vercel.app/",
+    imageUrl: negariImg,
+  },
+
+  {
+    id: 2,
     title: "Learning Management System",
     description:
       "A full-featured LMS platform for managing online courses, quizzes, certifications, and student progress.",
