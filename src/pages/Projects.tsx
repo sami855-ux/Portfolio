@@ -22,11 +22,14 @@ import taxImg from "../assets/ta.png"
 import itImg from "../assets/it.png"
 import lmsImg from "../assets/lms.png"
 
+export const defaultImg =
+  "https://placehold.co/600x400/0f172a/ffffff?text=Project+Preview"
+
 const projects = [
   {
     title: "Learning Management System",
     description:
-      "Online learning platform with user authentication and course management.",
+      "Online learning platform with authentication, course management, quizzes, and progress tracking.",
     tags: [
       "React",
       "Prisma",
@@ -43,20 +46,66 @@ const projects = [
   {
     title: "Tax Payment Web App",
     description:
-      "Online tax payment platform with user authentication and payment gateway integration.",
+      "Online tax payment system with authentication, tax filing, admin dashboard, and payment integration.",
     tags: ["Next.js", "Node.js", "MongoDB", "Cloudinary", "Stripe"],
     github: "https://github.com/sami855-ux/Tax-payment-Website.git",
     live: "https://tax-payment-website.vercel.app/",
     image: taxImg,
   },
   {
-    title: "Jobs Marketplace",
+    title: "Jobs Marketplace (Itgram)",
     description:
-      "Online job marketplace with user authentication and job posting features. Inspired by LinkedIn and instagram.",
+      "Social job platform inspired by LinkedIn and Instagram with posts, job listings, real-time interactions, and messaging.",
     tags: ["React", "Node.js", "MongoDB", "Socket.io", "Express", "Tailwind"],
     github: "https://github.com/sami855-ux/Itgram-social-network.git",
     live: "https://itgram-social-network-w6pm.vercel.app/",
     image: itImg,
+  },
+
+  {
+    title: "Negari - Community Issue Reporting System",
+    description:
+      "AI-powered community reporting platform for submitting, tracking, and prioritizing public issues with real-time updates and admin management.",
+    tags: ["Next.js", "Node.js", "MongoDB", "Socket.io", "AI", "Tailwind"],
+    github: "#",
+    live: "#",
+    image: defaultImg,
+  },
+  {
+    title: "Project & Task Management System",
+    description:
+      "Collaborative task management platform with project tracking, task assignment, progress monitoring, and real-time updates.",
+    tags: [
+      "Next.js",
+      "Node.js",
+      "MongoDB",
+      "Socket.io",
+      "Redux",
+      "Tailwind",
+      "Leaflet",
+    ],
+    github: "#",
+    live: "#",
+    image: defaultImg,
+  },
+  {
+    title: "HabeshaGo - Transport & Ticketing System",
+    description:
+      "Smart transport system with ticket booking, real-time vehicle tracking, and route management for public transportation.",
+    tags: [
+      "Next.js",
+      "React Native (Expo)",
+      "Node.js",
+      "PostgreSQL",
+      "Socket.io",
+      "Maps API",
+      "Tailwind",
+      "Socket.io",
+      "React query",
+    ],
+    github: "#",
+    live: "#",
+    image: defaultImg,
   },
 ]
 

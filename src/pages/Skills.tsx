@@ -23,6 +23,15 @@ import {
   SiReactquery,
   SiSupabase,
   SiShadcnui,
+  SiSocketdotio,
+  SiJsonwebtokens,
+  SiCloudinary,
+  SiStripe,
+  SiZod,
+  SiAxios,
+  SiExpo,
+  SiAndroid,
+  SiApple,
 } from "react-icons/si"
 
 const Skills = () => {
@@ -92,7 +101,6 @@ const Skills = () => {
       name: "Shadcn UI",
       color: "text-[#3ECF8E]",
     },
-
     { icon: <SiVite size={32} />, name: "Vite", color: "text-[#646CFF]" },
     {
       icon: <SiReact size={32} />,
@@ -109,12 +117,61 @@ const Skills = () => {
       name: "Firebase",
       color: "text-[#FFCA28]",
     },
+
+    // 🔥 Backend / Tools additions
+    {
+      icon: <SiSocketdotio size={32} />,
+      name: "Socket.io",
+      color: "text-black dark:text-white",
+    },
+    {
+      icon: <SiJsonwebtokens size={32} />,
+      name: "JWT",
+      color: "text-[#000000]",
+    },
+    {
+      icon: <SiCloudinary size={32} />,
+      name: "Cloudinary",
+      color: "text-[#3448C5]",
+    },
+    {
+      icon: <SiStripe size={32} />,
+      name: "Stripe",
+      color: "text-[#635BFF]",
+    },
+    {
+      icon: <SiZod size={32} />,
+      name: "Zod",
+      color: "text-[#3E67B1]",
+    },
+    {
+      icon: <SiAxios size={32} />,
+      name: "Axios",
+      color: "text-[#5A29E4]",
+    },
+
+    // 📱 Mobile stack additions
+    {
+      icon: <SiExpo size={32} />,
+      name: "Expo",
+      color: "text-black dark:text-white",
+    },
+    {
+      icon: <SiAndroid size={32} />,
+      name: "Android",
+      color: "text-[#3DDC84]",
+    },
+    {
+      icon: <SiApple size={32} />,
+      name: "iOS",
+      color: "text-white",
+    },
   ]
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-4xl mx-auto px-4 py-12 relative">
       <motion.h2
-        className="text-3xl font-bold text-center mb-8 text-white dark:text-white"
+        className="text-3xl font-bold text-center mb-8 text-white"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -126,7 +183,7 @@ const Skills = () => {
         </span>
       </motion.h2>
 
-      <div className="grid grid-cols-3 sm:grid-cols-8 gap-2 items-center">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
         {skills.map((skill, index) => (
           <motion.div
             key={skill.name}
@@ -135,55 +192,20 @@ const Skills = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{
               duration: 0.5,
-              delay: index * 0.05,
+              delay: index * 0.04,
             }}
             viewport={{ once: true }}
           >
             <motion.div
-              className={`p-4 rounded-xl bg-[#232323]  flex items-center justify-center ${skill.color} hover:shadow-lg transition-all duration-300 cursor-default`}
+              className={`p-4 rounded-xl bg-[#232323] flex items-center justify-center ${skill.color} hover:shadow-lg transition-all duration-300`}
               whileTap={{ scale: 0.9 }}
             >
               {skill.icon}
             </motion.div>
-            <motion.p
-              className="mt-3 text-sm font-medium text-white"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: index * 0.05 + 0.3 }}
-              viewport={{ once: true }}
-            >
-              {skill.name}
-            </motion.p>
+            <p className="mt-2 text-sm text-white">{skill.name}</p>
           </motion.div>
         ))}
       </div>
-
-      {/* Animated background elements */}
-      <motion.div
-        className="absolute left-0 top-1/3 w-32 h-32 rounded-full bg-green-500/10 blur-3xl -z-10"
-        animate={{
-          x: [0, 50, 0],
-          y: [0, -30, 0],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute right-0 bottom-1/4 w-40 h-40 rounded-full bg-blue-500/10 blur-3xl -z-10"
-        animate={{
-          x: [0, -40, 0],
-          y: [0, 40, 0],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 3,
-        }}
-      />
     </div>
   )
 }

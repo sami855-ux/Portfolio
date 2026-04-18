@@ -24,7 +24,7 @@ const socialLinks: socialLinks[] = [
   },
   {
     name: "Instagram",
-    url: "https://www.instagram.com/sami.tale.18/",
+    url: "https://www.instagram.com/samii_211912/",
     icon: "instagram",
   },
   { name: "Facebook", url: "#", icon: "facebook" },
@@ -51,7 +51,7 @@ export default function Home() {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="flex flex-col items-center pt-24 mt-4"
+          className="flex flex-col items-center pt-32 mt-4"
         >
           {/* Profile image with playful interaction */}
 
@@ -88,7 +88,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            Full Stack Developer
+            Full Stack Web and Mobile Developer
           </motion.p>
           <motion.p
             className="py-1 pb-3 text-slate-400 text-[14px] md:text-[16px]"

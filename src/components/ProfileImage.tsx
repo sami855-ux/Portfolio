@@ -47,7 +47,7 @@ export default function ProfileImage() {
 
       {/* Main profile image with multiple interactive elements */}
       <motion.div
-        className="w-48 h-48 rounded-full overflow-hidden border-4 border-white/20 relative cursor-pointer"
+        className="w-56 h-56 rounded-full overflow-hidden border-4 border-white/20 relative cursor-pointer"
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         onClick={() => setIsClicked(!isClicked)}

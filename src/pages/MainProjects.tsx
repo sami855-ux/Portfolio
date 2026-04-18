@@ -17,42 +17,12 @@ import todoImg from "../assets/todo.png"
 import lmsImg from "../assets/lms.png"
 import realImg from "../assets/real.png"
 import negariImg from "../assets/negari.png"
+import { defaultImg } from "./Projects"
 
 const projects: Project[] = [
+  // 🔥 CORE PROJECTS (Top Priority)
   {
     id: 1,
-    title: "Negari - Community Issue Reporting",
-    description:
-      "A mobile and web platform for citizens to report urban issues, track resolutions, and communicate with local authorities.",
-    technologies: [
-      "React Native",
-      "Next.js",
-      "Node.js",
-      "Express",
-      "PostgreSQL",
-      "Leaflet",
-      "Socket.io",
-    ],
-    features: [
-      "Region-based report assignment to officials",
-      "Priority-based issue routing",
-      "Real-time notifications and messaging between users and officials",
-      "Interactive map view of reported issues",
-      "Admin dashboard for managing users, reports, and system settings",
-    ],
-    challenges:
-      "Handling real-time updates, secure voice transcription, and prioritization of reports in a scalable system",
-    solutions:
-      "Integrated Socket.io for real-time communication, used OpenAI Whisper for voice-to-text, implemented custom ML models for spam and priority detection, and optimized MongoDB queries for fast data retrieval",
-    results:
-      "Reduced issue response time by 35% and improved citizen engagement by providing transparent tracking and notifications",
-    githubUrl: "https://github.com/sami855-ux/Negari.git",
-    liveUrl: "https://negari-ten.vercel.app/",
-    imageUrl: negariImg,
-  },
-
-  {
-    id: 2,
     title: "Learning Management System",
     description:
       "A full-featured LMS platform for managing online courses, quizzes, certifications, and student progress.",
@@ -73,159 +43,190 @@ const projects: Project[] = [
     liveUrl: "#",
     imageUrl: lmsImg,
   },
-
   {
-    id: 4,
-    title: "Tax Payment Web App",
+    id: 2,
+    title: "Negari - Community Issue Reporting",
     description:
-      "A secure and user-friendly platform for managing tax filings, payments, and compliance for individuals and businesses.",
-    technologies: ["React", "Node.js", "MongoDB", "Framer Motion"],
+      "AI-powered platform for citizens to report issues, track resolutions, and communicate with authorities.",
+    technologies: [
+      "React Native",
+      "Next.js",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "Socket.io",
+    ],
     features: [
-      "Taxpayer dashboard with due dates and payment history",
-      "Official panel for reviewing and approving filings",
-      "Dynamic tax rule configuration",
-      "Automated reminders and notifications",
+      "Region-based report assignment",
+      "Priority-based routing",
+      "Real-time notifications and messaging",
+      "Interactive issue map",
+      "Admin dashboard",
     ],
     challenges:
-      "Handling complex tax rules while maintaining a simple user interface",
+      "Handling real-time updates and intelligent prioritization at scale",
     solutions:
-      "Implemented a flexible tax rule engine and used animations to guide user interactions step-by-step",
-    results:
-      "Increased on-time payments by 55% and reduced manual errors in filings by 70%",
+      "Used Socket.io for real-time communication and integrated AI-based filtering and prioritization",
+    results: "Reduced response time by 35% and improved citizen engagement",
+    githubUrl: "https://github.com/sami855-ux/Negari.git",
+    liveUrl: "https://negari-ten.vercel.app/",
+    imageUrl: negariImg,
+  },
+  {
+    id: 4,
+    title: "Project & Task Management System",
+    description:
+      "Collaborative task management platform with real-time updates, task assignment, and progress tracking.",
+    technologies: [
+      "React",
+      "Node.js",
+      "MongoDB",
+      "Socket.io",
+      "Redux",
+      "Tailwind",
+    ],
+    features: [
+      "Project creation and team collaboration",
+      "Task assignment and tracking",
+      "Real-time updates",
+      "Dashboard analytics",
+    ],
+    challenges: "Managing real-time collaboration across multiple users",
+    solutions: "Implemented Socket.io with efficient state synchronization",
+    results: "Improved team productivity and task tracking efficiency",
+    githubUrl: "#",
+    liveUrl: "#",
+    imageUrl: defaultImg,
+  },
+  {
+    id: 3,
+    title: "HabeshaGo - Transport & Ticketing System",
+    description:
+      "Smart transport platform with ticket booking, real-time tracking, and route management.",
+    technologies: ["Next.js", "Node.js", "MongoDB", "Socket.io", "Maps API"],
+    features: [
+      "Online ticket booking",
+      "Real-time vehicle tracking",
+      "Route management",
+      "Admin dashboard",
+    ],
+    challenges: "Handling live GPS tracking and scalability",
+    solutions: "Used WebSockets and optimized backend for real-time data flow",
+    results: "Enhanced transport efficiency and user convenience",
+    githubUrl: "#",
+    liveUrl: "#",
+    imageUrl: defaultImg,
+  },
+
+  // ⚡ OTHER PROJECTS
+  {
+    id: 5,
+    title: "Tax Payment Web App",
+    description:
+      "Secure platform for managing tax filings, payments, and compliance.",
+    technologies: ["React", "Node.js", "MongoDB", "Framer Motion"],
+    features: [
+      "Tax dashboard",
+      "Official approval system",
+      "Dynamic tax rules",
+      "Notifications",
+    ],
+    challenges: "Handling complex tax logic with a simple UI",
+    solutions: "Built a flexible rule engine and guided UI flows",
+    results: "Increased on-time payments by 55%",
     githubUrl: "https://github.com/sami855-ux/Tax-payment-Website.git",
     liveUrl: "#",
     imageUrl: taxImg,
   },
-
   {
-    id: 3,
+    id: 6,
     title: "E-Commerce Platform",
     description:
-      "A full-featured online store with payment processing and inventory management.",
+      "Online store with payment processing and inventory management.",
     technologies: ["React", "Node.js", "MongoDB", "Stripe"],
     features: [
-      "Product catalog with filters",
-      "User authentication system",
-      "Shopping cart functionality",
+      "Product catalog",
+      "Authentication",
+      "Cart system",
       "Admin dashboard",
     ],
-    challenges:
-      "Implementing real-time inventory updates during high traffic periods",
-    solutions: "Used Redis for caching and WebSockets for live updates",
-    results:
-      "Reduced checkout time by 40% and increased conversion rate by 25%",
+    challenges: "Handling real-time inventory updates",
+    solutions: "Used caching and WebSockets",
+    results: "Improved conversion rate by 25%",
     githubUrl: "https://github.com/sami855-ux/E-commerce-Website.git",
     liveUrl: "#",
     imageUrl: ecommerceImg,
   },
-
   {
-    id: 3,
+    id: 7,
+    title: "Real Time Chat App",
+    description:
+      "Real-time messaging app with typing indicators and online status.",
+    technologies: ["React", "Node.js", "MongoDB", "Socket.io"],
+    features: [
+      "Instant messaging",
+      "Typing indicators",
+      "Online presence",
+      "Chat history",
+    ],
+    challenges: "Scaling real-time communication",
+    solutions: "Used Socket.io rooms and Redis",
+    results: "Handled 10k+ concurrent users",
+    githubUrl: "https://github.com/yourusername/realtime-chat-app",
+    liveUrl: "#",
+    imageUrl: realImg,
+  },
+  {
+    id: 8,
     title: "Tour Mobile App",
     description:
-      "A comprehensive mobile application for booking and managing guided tours with real-time location tracking.",
-    technologies: ["Java", "Firebase", "Google Maps API", "SQLite"],
-    features: [
-      "Tour package browsing with filters",
-      "User authentication system",
-      "In-app tour booking and itinerary",
-      "Admin dashboard for managing tours",
-    ],
-    challenges:
-      "Implementing real-time location tracking while maintaining battery efficiency",
-    solutions:
-      "Used Google Maps API with optimized location services and Firebase for real-time data sync",
-    results:
-      "Improved user engagement by 45% and reduced booking process time by 60%",
+      "Mobile app for booking and managing tours with real-time tracking.",
+    technologies: ["Java", "Firebase", "Google Maps API"],
+    features: ["Tour booking", "User authentication", "Admin dashboard"],
+    challenges: "Efficient location tracking",
+    solutions: "Optimized GPS usage",
+    results: "Improved engagement by 45%",
     githubUrl: "https://github.com/sami855-ux/Tour-Mobile-App-Main.git",
     liveUrl: "#",
     imageUrl: tourImg,
   },
   {
-    id: 6,
-    title: "Real Time Chat App",
-    description:
-      "A modern real-time chat application that allows users to send and receive messages instantly, with typing indicators, read receipts, and online status updates.",
-    technologies: ["React", "Node.js", "MongoDB", "Socket.io", "Express"],
-    features: [
-      "Real-time messaging with Socket.io",
-      "User authentication and profile management",
-      "Online status and typing indicators",
-      "Chat history and message persistence",
-      "Responsive UI with dark mode",
-    ],
-    challenges:
-      "Handling real-time message delivery, presence tracking, and scaling Socket connections without latency under heavy load.",
-    solutions:
-      "Utilized Socket.io with rooms for efficient message broadcasting, implemented Redis for scalable pub/sub, and set up horizontal scaling with sticky sessions.",
-    results:
-      "Achieved sub-second message delivery latency and supported over 10,000 concurrent users with smooth real-time interactions.",
-    githubUrl: "https://github.com/yourusername/realtime-chat-app",
-    liveUrl: "https://realtime-chat-app.vercel.app",
-    imageUrl: realImg,
-  },
-  {
-    id: 4,
-    title: "Animated To-Do Website",
-    description:
-      "A beautifully animated task management website that helps users organize and track daily tasks with smooth interactions.",
-    technologies: ["React", "Framer Motion", "Tailwind CSS", "LocalStorage"],
-    features: [
-      "Add, edit, and delete tasks",
-      "Drag-and-drop task reordering",
-      "Light/dark theme toggle",
-      "Smooth animations for all task interactions",
-    ],
-    challenges:
-      "Creating fluid animations while maintaining high performance on all devices",
-    solutions:
-      "Used Framer Motion with layout transitions and optimized re-renders for animation-heavy UI",
-    results:
-      "Enhanced user experience with 70% longer session duration and increased daily active users",
-    githubUrl: "https://github.com/sami855-ux/animated-todo-app.git",
-    liveUrl: "#",
-    imageUrl: todoImg,
-  },
-  {
-    id: 2,
+    id: 9,
     title: "Email Spam Detector",
     description:
-      "An intelligent email filtering tool that classifies incoming messages as spam or legitimate using machine learning.",
-    technologies: ["React", "Node.js", "MongoDB", "TensorFlow.js"],
-    features: [
-      "Real-time spam detection using trained ML models",
-      "Interactive dashboard to review flagged emails",
-      "User feedback system to improve model accuracy",
-      "Role-based access control for users and admins",
-    ],
-    challenges:
-      "Training an accurate model with a high precision rate and integrating it seamlessly into the email pipeline",
-    solutions:
-      "Used TensorFlow.js to deploy a lightweight spam classifier in the browser and created a feedback loop to retrain with user input",
-    results:
-      "Achieved over 96% accuracy in spam classification and reduced false positives by 30%",
+      "Machine learning system for classifying emails as spam or legitimate.",
+    technologies: ["React", "Node.js", "TensorFlow.js"],
+    features: ["Spam detection", "Dashboard", "User feedback loop"],
+    challenges: "Achieving high accuracy",
+    solutions: "Used ML model with feedback retraining",
+    results: "96% accuracy",
     githubUrl: "https://github.com/sami855-ux/Email-spam-classfication.git",
     liveUrl: "#",
     imageUrl: emailImg,
   },
   {
-    id: 5,
-    title: "Shopping Website Landing Page",
+    id: 10,
+    title: "Animated To-Do Website",
     description:
-      "A modern, animated landing page for an online shopping platform, designed to attract users and promote featured products.",
-    technologies: ["React", "Tailwind CSS", "Framer Motion"],
-    features: [
-      "Hero section with promotional banners",
-      "Animated product highlights",
-      "Responsive design for mobile and desktop",
-      "Newsletter subscription and call-to-action sections",
-    ],
-    challenges:
-      "Creating smooth animations without sacrificing load speed or SEO performance",
-    solutions:
-      "Implemented Framer Motion for lightweight animations and optimized images using lazy loading",
-    results:
-      "Increased user engagement by 48% and improved sign-up conversions by 30%",
+      "Task manager with smooth animations and drag-and-drop features.",
+    technologies: ["React", "Framer Motion", "Tailwind"],
+    features: ["Task CRUD", "Drag & drop", "Dark mode"],
+    challenges: "Smooth animations",
+    solutions: "Optimized Framer Motion usage",
+    results: "Increased engagement",
+    githubUrl: "https://github.com/sami855-ux/animated-todo-app.git",
+    liveUrl: "#",
+    imageUrl: todoImg,
+  },
+  {
+    id: 11,
+    title: "Shopping Website Landing Page",
+    description: "Modern animated landing page for an e-commerce platform.",
+    technologies: ["React", "Tailwind", "Framer Motion"],
+    features: ["Hero section", "Product highlights", "Responsive design"],
+    challenges: "Balancing animation and performance",
+    solutions: "Optimized assets and lazy loading",
+    results: "Increased engagement by 48%",
     githubUrl: "https://github.com/sami855-ux/Shopping-cart-website.git",
     liveUrl: "#",
     imageUrl:
@@ -528,7 +529,7 @@ export function MainProjects() {
                             "border border-gray-700 hover:border-blue-400/50",
                             "transition-all duration-200",
                             "flex items-center gap-1.5",
-                            "cursor-default"
+                            "cursor-default",
                           )}
                         >
                           <span className="w-2 h-2 bg-blue-400 rounded-full" />

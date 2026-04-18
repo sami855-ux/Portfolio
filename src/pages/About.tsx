@@ -16,7 +16,7 @@ export function About() {
       id: 1,
       title: "Introduction",
       description:
-        "Full-stack developer with 3+ years of experience building web applications using React, Next.js,Vue.js, laravel, Node.js and PostgreSQL. I have developed a strong foundation in front-end and back-end development, and I'm passionate about creating user-friendly and efficient applications that meet the needs of my clients.",
+        "Full-stack developer with 3+ years of experience designing and building scalable web and mobile applications using React, Next.js, Vue.js, Laravel, Node.js, PostgreSQL, and React Native (Expo). Experienced across the full development lifecycle, from UI/UX implementation to backend architecture and real-time systems.",
       icon: <User className="w-5 h-5" />,
       side: "left",
       color: "text-blue-500",
@@ -25,7 +25,7 @@ export function About() {
       id: 2,
       title: "Education",
       description:
-        "Software engineering degree from Debre Brihan University (2022-2025). Graduated with honors. and  have certificates from udemy for fundamental programming and Artificial Intelligence and alsion for MERN stack development. ",
+        "Software engineering degree from Debre Brihan University (2022-2026). Graduated with honors. and  have certificates from udemy for fundamental programming and Artificial Intelligence and alsion for MERN stack development. ",
       date: "2022 - 2025",
       icon: <GraduationCap className="w-5 h-5" />,
       side: "right",
@@ -35,7 +35,7 @@ export function About() {
       id: 3,
       title: "Internship",
       description:
-        "Internship at Efuye Gela as a full-stack developer and as a frontend developer at melfan tech. Worked on a range of projects including web applications using React, Next.js, Vue.js, Laravel Node.js and PostgreSQL.",
+        "Interned at Efuye Gela as a Full-Stack Developer and worked as a Frontend Developer at Melfan Tech. Built and contributed to several production-level applications, including a Learning Management System (LMS), a social media platform with interactive features, and an online tax payment system. Played a key role in developing user-centric interfaces and scalable backend functionalities.",
       date: "2018 - 2020",
       icon: <Briefcase className="w-5 h-5" />,
       side: "left",
@@ -44,10 +44,8 @@ export function About() {
     {
       id: 4,
       title: "Currently",
-      description: `Working in a node package for ethiopian that uses telebirr and fayda to help with payments, 
-      and actively learning and working on personal projects. Developing web applications using React, Next.js, Node.js and PostgreSQL.  
-        
-       `,
+      description:
+        "Building a Node.js package tailored for Ethiopia, integrating Telebirr and Fayda to simplify digital payments. Actively developing web and mobile applications using React, Next.js, React Native (Expo), Node.js, and PostgreSQL, while continuously improving through hands-on projects.",
       date: "2020 - Present",
       icon: <Code className="w-5 h-5" />,
       side: "right",
@@ -57,7 +55,7 @@ export function About() {
       id: 5,
       title: "Future Goals",
       description:
-        "Continuously learning and growing as a developer. Working on personal projects and contributing to open-source projects. Seeking new opportunities to expand my skills and knowledge.",
+        "Continuously learning and growing as a developer, with a dedicated focus on the AI sector. Building personal and open-source projects that incorporate machine learning and intelligent features, while exploring ways to integrate AI into scalable web and mobile applications.",
       icon: <Rocket className="w-5 h-5" />,
       side: "left",
       color: "text-purple-500",
