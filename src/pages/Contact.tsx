@@ -10,6 +10,22 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import Header from "@/components/Header"
 
+const socialLinks = [
+  { name: "GitHub", url: "https://github.com/sami855-ux", icon: "github" },
+  {
+    name: "LinkedIn",
+    url: "https://www.linkedin.com/in/samiux855/",
+    icon: "linkedin",
+  },
+  {
+    name: "Instagram",
+    url: "https://www.instagram.com/samii_211912/",
+    icon: "instagram",
+  },
+  { name: "Facebook", url: "#", icon: "facebook" },
+  { name: "Telegram", url: "https://t.me/Sami_hhtt", icon: "telegram" },
+]
+
 interface FormData {
   name: string
   email: string
@@ -28,7 +44,7 @@ const Contact = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -46,7 +62,7 @@ const Contact = () => {
         "service_8oby0sa",
         "template_jrk5rq9",
         e.target as HTMLFormElement,
-        "Ddw-YUU_qHVSVYCjv" // (public key)
+        "Ddw-YUU_qHVSVYCjv", // (public key)
       )
       .then(
         (result) => {
@@ -63,7 +79,7 @@ const Contact = () => {
         (error) => {
           console.error("Failed to send email", error.text)
           setIsLoading(false)
-        }
+        },
       )
   }
 
@@ -186,19 +202,19 @@ const Contact = () => {
                     Connect with me
                   </h3>
                   <div className="flex gap-4 flex-wrap">
-                    {["Telegram", "Instagram", "GitHub", "LinkedIn"].map(
-                      (social, index) => (
-                        <motion.a
-                          key={social}
-                          href="#"
-                          className="px-4 py-2 rounded-md bg-[#201f1f] text-slate-100 dark:bg-gray-800 transition-colors text-sm font-medium"
-                          whileHover={{ y: -2 }}
-                          transition={{ delay: index * 0.1 }}
-                        >
-                          {social}
-                        </motion.a>
-                      )
-                    )}
+                    {socialLinks.map((social, index) => (
+                      <motion.a
+                        key={social.name}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 rounded-md bg-[#201f1f] text-slate-100 dark:bg-gray-800 transition-colors text-sm font-medium"
+                        whileHover={{ y: -2 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        {social.name}
+                      </motion.a>
+                    ))}
                   </div>
                 </motion.div>
               </Card>
