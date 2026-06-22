@@ -83,20 +83,12 @@ export default function Home() {
           </h2>
 
           <motion.p
-            className="pt-3 text-lg md:text-xl text-white font-semibold"
+            className="py-3 text-lg md:text-xl text-white font-bold"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
             Full Stack Web and Mobile Developer
-          </motion.p>
-          <motion.p
-            className="py-1 pb-3 text-slate-400 text-[14px] md:text-[16px]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            with 3+ years of experience.
           </motion.p>
 
           <motion.p
@@ -211,14 +203,19 @@ export default function Home() {
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <Button
-                className="w-40 rounded-full text-sm font-medium uppercase tracking-wider
+              <Link
+                to="https://drive.google.com/file/d/1h6SUTIz3tbCsdRVEBmsmZFrrrg3HEMS7/view?usp=sharing"
+                target="_blank"
+              >
+                <Button
+                  className="w-40 rounded-full text-sm font-medium uppercase tracking-wider
       text-white  transition-all duration-300 cursor-pointer
       border-2 border-transparent hover:border-white/20 relative overflow-hidden group"
-              >
-                <span className="relative z-10">See my CV</span>
-                <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              </Button>
+                >
+                  <span className="relative z-10">See my CV</span>
+                  <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                </Button>
+              </Link>
             </motion.div>
 
             <motion.div

@@ -21,6 +21,8 @@ import { Link } from "react-router-dom"
 import taxImg from "../assets/ta.png"
 import itImg from "../assets/it.png"
 import lmsImg from "../assets/lms.png"
+import negariImg from "../assets/negari.png"
+import HabeshaGoImg from "../assets/habeshaGo.png"
 
 export const defaultImg =
   "https://placehold.co/600x400/0f172a/ffffff?text=Project+Preview"
@@ -39,8 +41,8 @@ const projects = [
       "Socket.io",
       "Shadcn",
     ],
-    github: "#",
-    live: "#",
+    github: "https://github.com/sami855-ux/LMS-Template.git",
+    live: "http://lms-mini-app-ir5c-git-main-daniel-kumilachews-projects.vercel.app",
     image: lmsImg,
   },
   {
@@ -67,9 +69,9 @@ const projects = [
     description:
       "AI-powered community reporting platform for submitting, tracking, and prioritizing public issues with real-time updates and admin management.",
     tags: ["Next.js", "Node.js", "MongoDB", "Socket.io", "AI", "Tailwind"],
-    github: "#",
-    live: "#",
-    image: defaultImg,
+    github: "https://github.com/sami855-ux/Negari.git",
+    live: "https://negari-ten.vercel.app/",
+    image: negariImg,
   },
   {
     title: "Project & Task Management System",
@@ -84,7 +86,7 @@ const projects = [
       "Tailwind",
       "Leaflet",
     ],
-    github: "#",
+    github: "https://github.com/sami855-ux/Project-and-Task-Manager.git",
     live: "#",
     image: defaultImg,
   },
@@ -103,9 +105,9 @@ const projects = [
       "Socket.io",
       "React query",
     ],
-    github: "#",
-    live: "#",
-    image: defaultImg,
+    github: "https://github.com/sami855-ux/HabeshaGo.git",
+    live: "https://habesha-go-v2.vercel.app/",
+    image: HabeshaGoImg,
   },
 ]
 

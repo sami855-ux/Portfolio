@@ -36,25 +36,14 @@ import {
 
 const Skills = () => {
   const skills = [
+    // 🎨 Frontend
     { icon: <SiReact size={32} />, name: "React", color: "text-[#61DAFB]" },
-
     {
       icon: <SiNextdotjs size={32} />,
       name: "Next.js",
       color: "text-black dark:text-white",
     },
     { icon: <SiVuedotjs size={32} />, name: "Vue.js", color: "text-[#42B883]" },
-    { icon: <SiLaravel size={32} />, name: "Laravel", color: "text-[#FF2D20]" },
-    {
-      icon: <SiTailwindcss size={32} />,
-      name: "Tailwind",
-      color: "text-[#38BDF8]",
-    },
-    {
-      icon: <SiReactquery size={32} />,
-      name: "React Query",
-      color: "text-[#FF4154]",
-    },
     {
       icon: <SiTypescript size={32} />,
       name: "TypeScript",
@@ -66,91 +55,38 @@ const Skills = () => {
       color: "text-[#F7DF1E]",
     },
     {
-      icon: <SiNodedotjs size={32} />,
-      name: "Node.js",
-      color: "text-[#339933]",
+      icon: <SiTailwindcss size={32} />,
+      name: "Tailwind CSS",
+      color: "text-[#38BDF8]",
     },
     {
-      icon: <SiExpress size={32} />,
-      name: "Express",
-      color: "text-black dark:text-white",
+      icon: <SiRedux size={32} />,
+      name: "Redux Toolkit",
+      color: "text-[#764ABC]",
     },
-    { icon: <SiMongodb size={32} />, name: "MongoDB", color: "text-[#47A248]" },
     {
-      icon: <SiPostgresql size={32} />,
-      name: "PostgreSQL",
-      color: "text-[#4169E1]",
-    },
-    { icon: <SiPrisma size={32} />, name: "Prisma", color: "text-[#0C344B]" },
-    { icon: <SiRedux size={32} />, name: "Redux", color: "text-[#764ABC]" },
-    { icon: <SiDocker size={32} />, name: "Docker", color: "text-[#2496ED]" },
-    { icon: <SiGit size={32} />, name: "Git", color: "text-[#F05032]" },
-    {
-      icon: <SiGithub size={32} />,
-      name: "GitHub",
-      color: "text-black dark:text-white",
-    },
-    { icon: <SiFigma size={32} />, name: "Figma", color: "text-[#F24E1E]" },
-    {
-      icon: <SiSupabase size={32} />,
-      name: "Supabase",
-      color: "text-[#3ECF8E]",
+      icon: <SiReactquery size={32} />,
+      name: "React Query",
+      color: "text-[#FF4154]",
     },
     {
       icon: <SiShadcnui size={32} />,
       name: "Shadcn UI",
-      color: "text-[#3ECF8E]",
-    },
-    { icon: <SiVite size={32} />, name: "Vite", color: "text-[#646CFF]" },
-    {
-      icon: <SiReact size={32} />,
-      name: "React Native",
-      color: "text-[#61DAFB]",
+      color: "text-black dark:text-white",
     },
     {
       icon: <SiFramer size={32} />,
       name: "Framer Motion",
       color: "text-black dark:text-white",
     },
-    {
-      icon: <SiFirebase size={32} />,
-      name: "Firebase",
-      color: "text-[#FFCA28]",
-    },
+    { icon: <SiVite size={32} />, name: "Vite", color: "text-[#646CFF]" },
 
-    // 🔥 Backend / Tools additions
+    // 📱 Mobile Development
     {
-      icon: <SiSocketdotio size={32} />,
-      name: "Socket.io",
-      color: "text-black dark:text-white",
+      icon: <SiReact size={32} />,
+      name: "React Native",
+      color: "text-[#61DAFB]",
     },
-    {
-      icon: <SiJsonwebtokens size={32} />,
-      name: "JWT",
-      color: "text-[#000000]",
-    },
-    {
-      icon: <SiCloudinary size={32} />,
-      name: "Cloudinary",
-      color: "text-[#3448C5]",
-    },
-    {
-      icon: <SiStripe size={32} />,
-      name: "Stripe",
-      color: "text-[#635BFF]",
-    },
-    {
-      icon: <SiZod size={32} />,
-      name: "Zod",
-      color: "text-[#3E67B1]",
-    },
-    {
-      icon: <SiAxios size={32} />,
-      name: "Axios",
-      color: "text-[#5A29E4]",
-    },
-
-    // 📱 Mobile stack additions
     {
       icon: <SiExpo size={32} />,
       name: "Expo",
@@ -165,6 +101,98 @@ const Skills = () => {
       icon: <SiApple size={32} />,
       name: "iOS",
       color: "text-white",
+    },
+
+    // ⚙️ Backend
+    {
+      icon: <SiNodedotjs size={32} />,
+      name: "Node.js",
+      color: "text-[#339933]",
+    },
+    {
+      icon: <SiExpress size={32} />,
+      name: "Express.js",
+      color: "text-black dark:text-white",
+    },
+    {
+      icon: <SiLaravel size={32} />,
+      name: "Laravel",
+      color: "text-[#FF2D20]",
+    },
+    {
+      icon: <SiSocketdotio size={32} />,
+      name: "Socket.io",
+      color: "text-black dark:text-white",
+    },
+    {
+      icon: <SiJsonwebtokens size={32} />,
+      name: "JWT ",
+      color: "text-black",
+    },
+    {
+      icon: <SiAxios size={32} />,
+      name: "Axios",
+      color: "text-[#5A29E4]",
+    },
+    {
+      icon: <SiZod size={32} />,
+      name: "Zod",
+      color: "text-[#3E67B1]",
+    },
+
+    // 🗄️ Database & Cloud
+    { icon: <SiMongodb size={32} />, name: "MongoDB", color: "text-[#47A248]" },
+    {
+      icon: <SiPostgresql size={32} />,
+      name: "PostgreSQL",
+      color: "text-[#4169E1]",
+    },
+    {
+      icon: <SiPrisma size={32} />,
+      name: "Prisma ORM",
+      color: "text-[#0C344B]",
+    },
+    {
+      icon: <SiSupabase size={32} />,
+      name: "Supabase",
+      color: "text-[#3ECF8E]",
+    },
+    {
+      icon: <SiFirebase size={32} />,
+      name: "Firebase",
+      color: "text-[#FFCA28]",
+    },
+    {
+      icon: <SiCloudinary size={32} />,
+      name: "Cloudinary",
+      color: "text-[#3448C5]",
+    },
+
+    // 🛠️ Tools & Others
+    {
+      icon: <SiDocker size={32} />,
+      name: "Docker",
+      color: "text-[#2496ED]",
+    },
+    {
+      icon: <SiGit size={32} />,
+      name: "Git",
+      color: "text-[#F05032]",
+    },
+    {
+      icon: <SiGithub size={32} />,
+      name: "GitHub",
+      color: "text-black dark:text-white",
+    },
+    {
+      icon: <SiFigma size={32} />,
+      name: "Figma",
+      color: "text-[#F24E1E]",
+    },
+    {
+      icon: <SiStripe size={32} />,
+      name: "Stripe",
+      color: "text-[#635BFF]",
     },
   ]
 
