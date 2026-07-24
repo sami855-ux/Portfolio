@@ -4,12 +4,14 @@ import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react"
 import { useState, useEffect } from "react"
 import type { ChangeEvent, FormEvent } from "react"
 
+import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import Header from "@/components/Header"
 import { submitContactMessage } from "@/lib/supabase"
+import { useSubmitContactMessageMutation } from "@/hooks/usePortfolioQueries"
 
 const socialLinks = [
   { name: "GitHub", url: "https://github.com/sami855-ux", icon: "github" },
@@ -34,7 +36,7 @@ interface FormData {
   message: string
 }
 
-const Contact = () => {
+export default function Contact() {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -43,6 +45,7 @@ const Contact = () => {
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const submitMutation = useSubmitContactMessageMutation()
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -57,36 +60,46 @@ const Contact = () => {
   const sendEmail = async (e: FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    const toastId = toast.loading("Sending your message...")
+    const formEl = e.target as HTMLFormElement
 
-    // Save message to Supabase database
-    await submitContactMessage(formData)
-
-    emailjs
-      .sendForm(
-        "service_8oby0sa",
-        "template_jrk5rq9",
-        e.target as HTMLFormElement,
-        "Ddw-YUU_qHVSVYCjv", // (public key)
-      )
-      .then(
-        (result) => {
-          console.log("Email sent!", result.text)
-          setIsSubmitted(true)
-          setIsLoading(false)
-          setFormData({
-            name: "",
-            email: "",
-            subject: "",
-            message: "",
-          })
-        },
-        (error) => {
-          console.error("Failed to send email", error.text)
-          // Even if emailjs fails, message was stored in Supabase
-          setIsSubmitted(true)
-          setIsLoading(false)
-        },
-      )
+    submitMutation.mutate(formData, {
+      onSuccess: () => {
+        emailjs
+          .sendForm(
+            "service_8oby0sa",
+            "template_jrk5rq9",
+            formEl,
+            "Ddw-YUU_qHVSVYCjv", // (public key)
+          )
+          .then(
+            (result) => {
+              console.log("Email sent!", result.text)
+              setIsSubmitted(true)
+              setIsLoading(false)
+              toast.success("Message sent successfully! I will get back to you soon.", { id: toastId })
+              setFormData({
+                name: "",
+                email: "",
+                subject: "",
+                message: "",
+              })
+            },
+            (error) => {
+              console.error("Failed to send email", error.text)
+              // Even if emailjs fails, message was stored in Supabase
+              setIsSubmitted(true)
+              setIsLoading(false)
+              toast.success("Message recorded successfully!", { id: toastId })
+            },
+          )
+      },
+      onError: (err: any) => {
+        console.error("Submit error:", err)
+        toast.error("Failed to send message: " + (err?.message || "Please try again."), { id: toastId })
+        setIsLoading(false)
+      },
+    })
   }
 
   useEffect(() => {
@@ -387,4 +400,4 @@ const Contact = () => {
   )
 }
 
-export default Contact
+
