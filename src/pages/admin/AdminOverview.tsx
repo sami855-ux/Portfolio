@@ -28,74 +28,67 @@ interface AdminContext {
   loadHeaderData: () => void
 }
 
+import {
+  useProjectsQuery,
+  useSkillsQuery,
+  useContactLinksQuery,
+  useProfileSettingsQuery,
+} from "@/hooks/usePortfolioQueries"
+
 export default function AdminOverview() {
   const navigate = useNavigate()
   const context = useOutletContext<AdminContext>()
   const triggerToast = context?.triggerToast || (() => { })
   const loadHeaderData = context?.loadHeaderData || (() => { })
-  const [loading, setLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState("")
-  const [projects, setProjects] = useState<Project[]>([])
-  const [skills, setSkills] = useState<Skill[]>([])
-  const [contactLinks, setContactLinks] = useState<ContactLink[]>([])
   const [messages, setMessages] = useState<Message[]>([])
-  const [profile, setProfile] = useState<ProfileSettings | null>(null)
+
+  const { data: projectsData, isLoading: pLoading } = useProjectsQuery()
+  const { data: skillsData, isLoading: sLoading } = useSkillsQuery()
+  const { data: linksData, isLoading: lLoading } = useContactLinksQuery()
+  const { data: profileData, isLoading: profLoading } = useProfileSettingsQuery()
+
+  const projects = projectsData || []
+  const skills = skillsData || []
+  const contactLinks = linksData || []
+  const profile = profileData || null
+  const loading = pLoading || sLoading || lLoading || profLoading
 
   useEffect(() => {
-    const loadOverviewData = async () => {
-      setLoading(true)
-      setErrorMsg("")
-      try {
-        const [projData, skillData, linksData, profileData] = await Promise.all([
-          getProjects(),
-          getSkills(),
-          getContactLinks(),
-          getProfileSettings(),
-        ])
-        setProjects(projData || [])
-        setSkills(skillData || [])
-        setContactLinks(linksData || [])
-        setProfile(profileData || null)
+    const loadOverviewMessages = async () => {
+      if (isSupabaseConfigured) {
+        try {
+          const { data: msgData, error: msgErr } = await supabase
+            .from("messages")
+            .select("*")
+            .order("created_at", { ascending: false })
 
-        if (isSupabaseConfigured) {
-          try {
-            const { data: msgData, error: msgErr } = await supabase
-              .from("messages")
-              .select("*")
-              .order("created_at", { ascending: false })
-
-            if (msgErr) {
-              console.warn("Supabase messages fetch error:", msgErr.message)
-              setErrorMsg("Could not fetch messages from Supabase: " + msgErr.message)
-            } else if (msgData) {
-              setMessages(msgData as Message[])
-            }
-          } catch (e: any) {
-            console.error("Messages fetch exception:", e)
-            setErrorMsg("Network error loading messages. Displaying offline data.")
+          if (msgErr) {
+            console.warn("Supabase messages fetch error:", msgErr.message)
+            setErrorMsg("Could not fetch messages from Supabase: " + msgErr.message)
+          } else if (msgData) {
+            setMessages(msgData as Message[])
           }
-        } else {
-          setMessages([
-            {
-              id: "demo-1",
-              name: "Alexander Vance",
-              email: "alex@example.com",
-              subject: "Project Collaboration Inquiry",
-              message:
-                "Hi Samuel, I checked out your portfolio and loved your LMS and Negari projects! Would love to discuss a full-stack collaboration opportunity.",
-              is_read: false,
-              created_at: new Date().toISOString(),
-            },
-          ])
+        } catch (e: any) {
+          console.error("Messages fetch exception:", e)
+          setErrorMsg("Network error loading messages. Displaying offline data.")
         }
-      } catch (err: any) {
-        console.error("Error loading overview data:", err)
-        setErrorMsg(err?.message || "Failed to load dashboard overview data.")
-      } finally {
-        setLoading(false)
+      } else {
+        setMessages([
+          {
+            id: "demo-1",
+            name: "Alexander Vance",
+            email: "alex@example.com",
+            subject: "Project Collaboration Inquiry",
+            message:
+              "Hi Samuel, I checked out your portfolio and loved your LMS and Negari projects! Would love to discuss a full-stack collaboration opportunity.",
+            is_read: false,
+            created_at: new Date().toISOString(),
+          },
+        ])
       }
     }
-    loadOverviewData()
+    loadOverviewMessages()
   }, [])
 
   const unreadCount = (messages || []).filter((m) => !m?.is_read).length
