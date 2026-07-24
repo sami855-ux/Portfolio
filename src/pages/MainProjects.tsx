@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { ExternalLink, Github } from "lucide-react"
+import { ExternalLink, Github, Cpu } from "lucide-react"
 import type { Project } from "@/types/ui"
 import Header from "@/components/Header"
 import { cn } from "@/lib/utils"
@@ -440,7 +440,12 @@ export function MainProjects() {
                     </motion.h3>
 
                     <ul className="space-y-3">
-                      {project.features.map((feature, i) => (
+                      {(Array.isArray(project.features)
+                        ? project.features
+                        : typeof project.features === "string"
+                        ? (project.features as string).split("\n").filter((f) => f.trim().length > 0)
+                        : []
+                      ).map((feature: string, i: number) => (
                         <motion.li
                           key={i}
                           className="flex items-start group"
@@ -490,20 +495,65 @@ export function MainProjects() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div>
                       <h3 className="font-semibold mb-2">Challenges</h3>
-                      <p className="text-gray-400 text-sm">
-                        {project.challenges}
-                      </p>
+                      <div className="text-gray-400 text-sm whitespace-pre-line leading-relaxed">
+                        {Array.isArray(project.challenges)
+                          ? project.challenges.join("\n• ")
+                          : typeof project.challenges === "object" && project.challenges !== null
+                          ? JSON.stringify(project.challenges, null, 2)
+                          : project.challenges || "N/A"}
+                      </div>
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">Solutions</h3>
-                      <p className="text-gray-400 text-sm">
-                        {project.solutions}
-                      </p>
+                      <div className="text-gray-400 text-sm whitespace-pre-line leading-relaxed">
+                        {Array.isArray(project.solutions)
+                          ? project.solutions.join("\n• ")
+                          : typeof project.solutions === "object" && project.solutions !== null
+                          ? JSON.stringify(project.solutions, null, 2)
+                          : project.solutions || "N/A"}
+                      </div>
                     </div>
-                    <div className="md:col-span-2">
-                      <h3 className="font-semibold mb-2">Results</h3>
-                      <p className="text-gray-400 text-sm">{project.results}</p>
-                    </div>
+                    {project.architecture && (
+                      <div className="md:col-span-2 bg-[#171717] p-5 rounded-2xl border border-purple-500/20 shadow-inner">
+                        <h3 className="font-semibold text-purple-400 mb-3 text-sm flex items-center gap-2">
+                          <Cpu className="w-4 h-4 text-purple-400" /> System Architecture & Tech Design
+                        </h3>
+                        <div className="space-y-2">
+                          {(typeof project.architecture === "string"
+                            ? project.architecture.split("\n").filter((l) => l.trim().length > 0)
+                            : Array.isArray(project.architecture)
+                            ? project.architecture
+                            : [String(project.architecture || "")]
+                          ).map((line, idx) => {
+                            const colonIdx = line.indexOf(":")
+                            if (colonIdx !== -1) {
+                              const layerName = line.slice(0, colonIdx).trim()
+                              const layerTech = line.slice(colonIdx + 1).trim()
+                              return (
+                                <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-1.5 text-xs bg-[#111111] border border-[#262626] p-2.5 px-3.5 rounded-xl font-mono">
+                                  <span className="text-purple-300 font-bold shrink-0 flex items-center gap-1.5">
+                                    <span className="w-2 h-2 rounded-full bg-purple-500" />
+                                    {layerName}:
+                                  </span>
+                                  <span className="text-gray-300">{layerTech}</span>
+                                </div>
+                              )
+                            }
+                            return (
+                              <div key={idx} className="text-gray-300 text-xs font-mono leading-relaxed bg-[#111111] border border-[#262626] p-2.5 px-3.5 rounded-xl">
+                                {line}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    {project.results && (
+                      <div className="md:col-span-2">
+                        <h3 className="font-semibold mb-2 text-green-400">Results & Impact</h3>
+                        <p className="text-gray-300 text-sm font-medium">{project.results}</p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="mb-8">
