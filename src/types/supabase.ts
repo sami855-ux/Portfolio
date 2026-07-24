@@ -9,8 +9,9 @@ export interface Project {
   featured?: boolean
   category?: string
   features?: string[]
-  challenges?: string
-  solutions?: string
+  challenges?: string[]
+  solutions?: string[]
+  architecture?: string
   results?: string
   created_at?: string
 }
@@ -70,4 +71,41 @@ export interface ProfileSettings {
   location?: string
   avatar_url?: string
   created_at?: string
+}
+
+export interface Database {
+  public: {
+    Tables: {
+      projects: {
+        Row: Project
+        Insert: Omit<Project, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<Project>
+      }
+      skills: {
+        Row: Skill
+        Insert: Omit<Skill, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<Skill>
+      }
+      journey_timeline: {
+        Row: JourneyItem
+        Insert: Omit<JourneyItem, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<JourneyItem>
+      }
+      contact_links: {
+        Row: ContactLink
+        Insert: Omit<ContactLink, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<ContactLink>
+      }
+      messages: {
+        Row: Message
+        Insert: Omit<Message, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<Message>
+      }
+      profile_settings: {
+        Row: ProfileSettings
+        Insert: Omit<ProfileSettings, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<ProfileSettings>
+      }
+    }
+  }
 }
