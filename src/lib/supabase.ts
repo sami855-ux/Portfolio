@@ -8,8 +8,8 @@ import type {
   ProfileSettings,
 } from "@/types/supabase"
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ""
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ""
+const supabaseUrl = "https://ghraybxwhooroumzgslx.supabase.co"
+const supabaseAnonKey = "sb_publishable_qEI4-pI2AFKZwupIhxqncQ_jAEe_Kwq"
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 
@@ -247,11 +247,83 @@ export async function getProfileSettings(): Promise<ProfileSettings> {
     const { data, error } = await supabase
       .from("profile_settings")
       .select("*")
-      .single()
+      .limit(1)
+      .maybeSingle()
     if (error || !data) return defaultProfileSettings
     return data as ProfileSettings
   } catch {
     return defaultProfileSettings
+  }
+}
+
+export async function updateProfileSettings(
+  profile: Partial<ProfileSettings>
+): Promise<{ success: boolean; error?: string; data?: ProfileSettings }> {
+  if (!isSupabaseConfigured) {
+    return { success: true, data: profile as ProfileSettings }
+  }
+  try {
+    const payload = {
+      full_name: profile.full_name,
+      hero_title: profile.hero_title,
+      hero_description: profile.hero_description,
+      about_bio: profile.about_bio,
+      email: profile.email,
+      phone: profile.phone || "",
+      location: profile.location || "",
+      avatar_url: profile.avatar_url || "",
+      resume_url: profile.resume_url || "",
+    }
+
+    const { data: existing } = await supabase
+      .from("profile_settings")
+      .select("id")
+      .limit(1)
+      .maybeSingle()
+
+    if (existing?.id) {
+      const { data, error } = await supabase
+        .from("profile_settings")
+        .update(payload)
+        .eq("id", existing.id)
+        .select()
+        .limit(1)
+        .maybeSingle()
+
+      if (error) {
+        const { error: directErr } = await supabase
+          .from("profile_settings")
+          .update(payload)
+          .eq("id", existing.id)
+
+        if (directErr) return { success: false, error: directErr.message }
+        return { success: true, data: { ...profile, ...payload, id: existing.id } as ProfileSettings }
+      }
+
+      const updatedData = data || ({ ...profile, ...payload, id: existing.id } as ProfileSettings)
+      return { success: true, data: updatedData }
+    } else {
+      const { data, error } = await supabase
+        .from("profile_settings")
+        .insert([payload])
+        .select()
+        .limit(1)
+        .maybeSingle()
+
+      if (error) {
+        const { error: directErr } = await supabase
+          .from("profile_settings")
+          .insert([payload])
+
+        if (directErr) return { success: false, error: directErr.message }
+        return { success: true, data: { ...profile, ...payload } as ProfileSettings }
+      }
+
+      const insertedData = data || ({ ...profile, ...payload } as ProfileSettings)
+      return { success: true, data: insertedData }
+    }
+  } catch (err: any) {
+    return { success: false, error: err.message || "Failed to update profile settings" }
   }
 }
 
