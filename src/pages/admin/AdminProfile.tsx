@@ -3,15 +3,20 @@ import { useOutletContext } from "react-router-dom"
 import { motion } from "framer-motion"
 import { UserCheck, Upload } from "lucide-react"
 
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { AlertDialog } from "@/components/ui/alert-dialog"
 import {
   supabase,
   isSupabaseConfigured,
-  getProfileSettings,
   defaultProfileSettings,
 } from "@/lib/supabase"
+import {
+  useProfileSettingsQuery,
+  useUpdateProfileSettingsMutation,
+} from "@/hooks/usePortfolioQueries"
 import type { ProfileSettings } from "@/types/supabase"
 
 interface AdminContext {
@@ -23,24 +28,23 @@ export default function AdminProfile() {
   const context = useOutletContext<AdminContext>()
   const triggerToast = context?.triggerToast || (() => { })
   const loadHeaderData = context?.loadHeaderData || (() => { })
-  const [loading, setLoading] = useState(true)
+  
+  const { data: queryProfile, isLoading } = useProfileSettingsQuery()
+  const updateProfileMutation = useUpdateProfileSettingsMutation()
+  const isSaving = updateProfileMutation.isPending
+
   const [profile, setProfile] = useState<ProfileSettings>(defaultProfileSettings)
+  const [initialProfile, setInitialProfile] = useState<ProfileSettings>(defaultProfileSettings)
+  const [removeAvatarDialogOpen, setRemoveAvatarDialogOpen] = useState(false)
 
   useEffect(() => {
-    const loadProfile = async () => {
-      setLoading(true)
-      try {
-        const data = await getProfileSettings()
-        setProfile(data)
-
-      } catch (err) {
-        console.error("Error loading profile:", err)
-      } finally {
-        setLoading(false)
-      }
+    if (queryProfile) {
+      setProfile(queryProfile)
+      setInitialProfile(queryProfile)
     }
-    loadProfile()
-  }, [])
+  }, [queryProfile])
+
+  const hasChanges = JSON.stringify(profile) !== JSON.stringify(initialProfile)
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -57,18 +61,33 @@ export default function AdminProfile() {
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (isSupabaseConfigured) {
-      if (profile.id) {
-        await supabase.from("profile_settings").update(profile).eq("id", profile.id)
-      } else {
-        await supabase.from("profile_settings").insert([profile])
-      }
-    }
-    triggerToast("Profile settings saved successfully!")
-    loadHeaderData()
+    if (!hasChanges) return
+
+    const toastId = toast.loading("Saving profile settings...")
+
+    updateProfileMutation.mutate(profile, {
+      onSuccess: (res) => {
+        if (!res.success) {
+          toast.error("Failed to save profile: " + (res.error || "Unknown error"), { id: toastId })
+          return
+        }
+        if (res.data) {
+          setProfile(res.data)
+          setInitialProfile(res.data)
+        } else {
+          setInitialProfile(profile)
+        }
+        toast.success("Profile settings saved successfully!", { id: toastId })
+        loadHeaderData()
+      },
+      onError: (err: any) => {
+        console.error("Save profile error:", err)
+        toast.error("Failed to save profile: " + (err?.message || "Unknown error"), { id: toastId })
+      },
+    })
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="h-64 flex flex-col items-center justify-center gap-3">
         <div className="animate-spin rounded-full h-9 w-9 border-t-2 border-b-2 border-green-500" />
@@ -85,19 +104,34 @@ export default function AdminProfile() {
     >
       <form onSubmit={handleSaveProfile} className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#202020] border-none p-6 rounded-3xl">
-          <div>
-            <h2 className="text-2xl font-bold text-white">Profile & Site Settings</h2>
-            <p className="text-xs text-gray-400 mt-1">
-              Manage your identity, avatar image, and contact details
-            </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 shrink-0">
+              <UserCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Profile & Site Settings</h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Manage your identity, avatar image, and contact details
+              </p>
+            </div>
           </div>
 
           <Button
             type="submit"
-            className="bg-green-500 hover:bg-green-400 text-slate-950 font-bold px-6 py-3 rounded-2xl text-xs flex items-center justify-center gap-2 border-none shadow-lg shadow-green-500/20 cursor-pointer"
+            disabled={isSaving || !hasChanges}
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-6 py-3 rounded-2xl text-xs flex items-center justify-center gap-2 border-none shadow-lg shadow-green-500/20 shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
           >
-            <UserCheck className="w-4 h-4" /> Save Profile Settings
+            {isSaving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                <span>Saving Profile...</span>
+              </>
+            ) : (
+              <>
+                <UserCheck className="w-4 h-4" /> Save Profile Settings
+              </>
+            )}
           </Button>
         </div>
 
@@ -151,7 +185,7 @@ export default function AdminProfile() {
                 {profile.avatar_url && (
                   <Button
                     type="button"
-                    onClick={() => setProfile({ ...profile, avatar_url: "" })}
+                    onClick={() => setRemoveAvatarDialogOpen(true)}
                     className="w-full h-9 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold rounded-xl border-none cursor-pointer"
                   >
                     Remove Avatar
@@ -244,6 +278,22 @@ export default function AdminProfile() {
           </div>
         </div>
       </form>
+
+      {/* Remove Avatar Confirmation Alert Dialog */}
+      <AlertDialog
+        open={removeAvatarDialogOpen}
+        onOpenChange={setRemoveAvatarDialogOpen}
+        variant="warning"
+        title="Remove Avatar Image?"
+        description="Are you sure you want to remove your profile avatar image? Click Save Profile Settings to make changes permanent."
+        confirmText="Remove Avatar"
+        cancelText="Keep Avatar"
+        onConfirm={() => {
+          setProfile({ ...profile, avatar_url: "" })
+          setRemoveAvatarDialogOpen(false)
+          triggerToast("Avatar image removed. Click Save Profile Settings to apply changes.")
+        }}
+      />
     </motion.div>
   )
 }
