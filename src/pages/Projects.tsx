@@ -25,6 +25,7 @@ import itImg from "../assets/it.png"
 import lmsImg from "../assets/lms.png"
 import negariImg from "../assets/negari.png"
 import HabeshaGoImg from "../assets/habeshaGo.png"
+import { useProjectsQuery } from "@/hooks/usePortfolioQueries"
 
 export const defaultImg =
   "https://placehold.co/600x400/0f172a/ffffff?text=Project+Preview"
@@ -113,18 +114,17 @@ const projects = [
   },
 ]
 
-const Projects = () => {
+export const Projects = () => {
   const [projectList, setProjectList] = useState<Project[]>(defaultProjects)
+  const { data: dbProjects } = useProjectsQuery()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   useEffect(() => {
-    getProjects().then((data) => {
-      if (data && data.length > 0) {
-        setProjectList(data)
-      }
-    })
-  }, [])
+    if (dbProjects && dbProjects.length > 0) {
+      setProjectList(dbProjects)
+    }
+  }, [dbProjects])
 
   const containerVariants = {
     hidden: { opacity: 0 },
