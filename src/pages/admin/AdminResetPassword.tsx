@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
+import { toast } from "sonner"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,17 +17,22 @@ export default function AdminResetPassword() {
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newPassword !== confirmPassword) {
-      setErrorMsg("Passwords do not match.")
+      const err = "Passwords do not match."
+      setErrorMsg(err)
+      toast.error(err)
       return
     }
     if (newPassword.length < 6) {
-      setErrorMsg("Password must be at least 6 characters long.")
+      const err = "Password must be at least 6 characters long."
+      setErrorMsg(err)
+      toast.error(err)
       return
     }
 
     setLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
+    const toastId = toast.loading("Updating password...")
 
     if (isSupabaseConfigured) {
       const { error } = await supabase.auth.updateUser({
@@ -35,12 +41,15 @@ export default function AdminResetPassword() {
 
       if (error) {
         setErrorMsg(error.message)
+        toast.error(error.message, { id: toastId })
         setLoading(false)
         return
       }
     }
 
-    setSuccessMsg("Password updated successfully! Redirecting to Admin Dashboard...")
+    const msg = "Password updated successfully! Redirecting to Admin Dashboard..."
+    setSuccessMsg(msg)
+    toast.success(msg, { id: toastId })
     sessionStorage.setItem("admin_authenticated", "true")
     setTimeout(() => {
       navigate("/admin")
