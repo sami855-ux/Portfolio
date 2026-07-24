@@ -22,4 +22,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# Environment Variables
 .env
+.env.*
+!.env.example
+
+# Database files
+*.db
+*.sqlite
+
+# Supabase CLI
+.supabase
