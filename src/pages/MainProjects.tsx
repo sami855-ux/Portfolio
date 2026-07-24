@@ -234,8 +234,11 @@ const projects: Project[] = [
   },
 ]
 
+import { getProjects } from "@/lib/supabase"
+
 export function MainProjects() {
   const [loaded, setLoaded] = useState(false)
+  const [projectList, setProjectList] = useState<any[]>(projects)
 
   useEffect(() => {
     window.scrollTo({
@@ -243,6 +246,22 @@ export function MainProjects() {
       behavior: "smooth",
     })
     setLoaded(true)
+    getProjects().then((dbProjects) => {
+      if (dbProjects && dbProjects.length > 0) {
+        // Map database projects format to MainProjects format
+        const formatted = dbProjects.map((p, idx) => ({
+          id: p.id || idx + 100,
+          title: p.title,
+          description: p.description,
+          technologies: p.tags || [],
+          features: ["Full Stack Feature", "Interactive UI"],
+          githubUrl: p.github,
+          liveUrl: p.live,
+          imageUrl: p.image || defaultImg,
+        }))
+        setProjectList(formatted)
+      }
+    })
   }, [])
 
   // Animation variants
@@ -347,7 +366,7 @@ export function MainProjects() {
             initial="hidden"
             animate={loaded ? "show" : "hidden"}
           >
-            {projects.map((project, index) => (
+            {projectList.map((project, index) => (
               <motion.section
                 key={project.id}
                 variants={item}

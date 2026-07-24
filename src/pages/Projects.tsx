@@ -16,7 +16,9 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip"
-import { useRef } from "react"
+import { useState, useEffect, useRef } from "react"
+import { getProjects, defaultProjects } from "@/lib/supabase"
+import type { Project } from "@/types/supabase"
 import { Link } from "react-router-dom"
 import taxImg from "../assets/ta.png"
 import itImg from "../assets/it.png"
@@ -112,8 +114,17 @@ const projects = [
 ]
 
 const Projects = () => {
+  const [projectList, setProjectList] = useState<Project[]>(defaultProjects)
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  useEffect(() => {
+    getProjects().then((data) => {
+      if (data && data.length > 0) {
+        setProjectList(data)
+      }
+    })
+  }, [])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -158,7 +169,7 @@ const Projects = () => {
           animate={isInView ? "show" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {projects.map((project, index) => (
+          {projectList.map((project, index) => (
             <motion.div key={index} variants={itemVariants}>
               <Card className="h-full flex flex-col group overflow-hidden bg-[#252424] border-none pt-0">
                 <div className="relative h-52 overflow-hidden">

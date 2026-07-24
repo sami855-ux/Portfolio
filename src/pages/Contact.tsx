@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import Header from "@/components/Header"
+import { submitContactMessage } from "@/lib/supabase"
 
 const socialLinks = [
   { name: "GitHub", url: "https://github.com/sami855-ux", icon: "github" },
@@ -53,9 +54,12 @@ const Contact = () => {
     }))
   }
 
-  const sendEmail = (e: FormEvent) => {
+  const sendEmail = async (e: FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+
+    // Save message to Supabase database
+    await submitContactMessage(formData)
 
     emailjs
       .sendForm(
@@ -78,6 +82,8 @@ const Contact = () => {
         },
         (error) => {
           console.error("Failed to send email", error.text)
+          // Even if emailjs fails, message was stored in Supabase
+          setIsSubmitted(true)
           setIsLoading(false)
         },
       )
