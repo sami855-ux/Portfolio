@@ -18,13 +18,14 @@ export interface TimelineItem {
 }
 
 export type Project = {
-  id: number
+  id: number | string
   title: string
   description: string
   technologies: string[]
   features: string[]
-  challenges: string
-  solutions: string
+  challenges: string[] | string
+  solutions: string[] | string
+  architecture?: string
   results: string
   githubUrl: string
   liveUrl: string
