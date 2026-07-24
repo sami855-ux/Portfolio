@@ -19,7 +19,9 @@ import {
   PanelLeftOpen,
 } from "lucide-react"
 
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { AlertDialog } from "@/components/ui/alert-dialog"
 import {
   supabase,
   isSupabaseConfigured,
@@ -87,17 +89,33 @@ export default function AdminLayout() {
     loadHeaderData()
   }, [location.pathname])
 
-  const triggerToast = (msg: string) => {
-    setStatusMsg(msg)
-    setTimeout(() => setStatusMsg(""), 3500)
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const triggerToast = (msg: string, type: "success" | "error" | "info" = "success") => {
+    if (type === "error") {
+      toast.error(msg)
+    } else if (type === "info") {
+      toast.info(msg)
+    } else {
+      toast.success(msg)
+    }
   }
 
   const handleLogout = async () => {
-    sessionStorage.removeItem("admin_authenticated")
-    if (isSupabaseConfigured) {
-      await supabase.auth.signOut()
+    setIsLoggingOut(true)
+    try {
+      sessionStorage.removeItem("admin_authenticated")
+      if (isSupabaseConfigured) {
+        await supabase.auth.signOut()
+      }
+      setLogoutDialogOpen(false)
+      navigate("/admin/login")
+    } catch (err) {
+      console.error("Logout failed:", err)
+    } finally {
+      setIsLoggingOut(false)
     }
-    navigate("/admin/login")
   }
 
   const navItems = [
@@ -138,16 +156,14 @@ export default function AdminLayout() {
       <motion.aside
         animate={{ width: isCollapsed ? 80 : 256 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`bg-[#1a1a1a] border-r border-[#262626] flex flex-col justify-between shrink-0 h-screen sticky top-0 ${
-          isCollapsed ? "p-3" : "p-5"
-        } overflow-hidden z-40`}
+        className={`bg-[#1a1a1a] border-r border-[#262626] flex flex-col justify-between shrink-0 h-screen sticky top-0 ${isCollapsed ? "p-3" : "p-5"
+          } overflow-hidden z-40`}
       >
         <div>
           {/* Brand Logo & Collapse Toggle */}
           <div
-            className={`flex ${
-              isCollapsed ? "flex-col items-center gap-3" : "items-center justify-between gap-3"
-            } mb-8`}
+            className={`flex ${isCollapsed ? "flex-col items-center gap-3" : "items-center justify-between gap-3"
+              } mb-8`}
           >
             {profile?.avatar_url ? (
               <img
@@ -198,13 +214,11 @@ export default function AdminLayout() {
                   key={tab.id}
                   onClick={() => navigate(tab.path)}
                   title={isCollapsed ? tab.label : undefined}
-                  className={`w-full flex items-center ${
-                    isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
-                  } py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${
-                    isActive
+                  className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
+                    } py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${isActive
                       ? "bg-[#252424] text-white shadow-sm"
                       : "text-gray-400 hover:text-white hover:bg-[#202020]"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-green-500" : "text-gray-400"}`} />
@@ -212,11 +226,10 @@ export default function AdminLayout() {
                   </div>
                   {!isCollapsed && tab.count !== undefined && tab.count > 0 && (
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        tab.hasBadge
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${tab.hasBadge
                           ? "bg-green-500 text-slate-950 animate-bounce"
                           : "bg-[#2d2d2d] text-gray-300"
-                      }`}
+                        }`}
                     >
                       {tab.count}
                     </span>
@@ -232,9 +245,8 @@ export default function AdminLayout() {
           <button
             onClick={() => navigate("/")}
             title={isCollapsed ? "View Live Site" : undefined}
-            className={`w-full flex items-center ${
-              isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
-            } py-2.5 rounded-xl text-xs text-gray-400 hover:text-white hover:bg-[#202020] transition-colors cursor-pointer`}
+            className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
+              } py-2.5 rounded-xl text-xs text-gray-400 hover:text-white hover:bg-[#202020] transition-colors cursor-pointer`}
           >
             <span className="flex items-center gap-2">
               <Globe className="w-4 h-4 text-green-500 shrink-0" />
@@ -243,11 +255,10 @@ export default function AdminLayout() {
             {!isCollapsed && <ArrowUpRight className="w-3.5 h-3.5" />}
           </button>
           <button
-            onClick={handleLogout}
+            onClick={() => setLogoutDialogOpen(true)}
             title={isCollapsed ? "Sign Out" : undefined}
-            className={`w-full flex items-center ${
-              isCollapsed ? "justify-center" : ""
-            } gap-2 px-3.5 py-2.5 rounded-xl text-xs text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer`}
+            className={`w-full flex items-center ${isCollapsed ? "justify-center" : ""
+              } gap-2 px-3.5 py-2.5 rounded-xl text-xs text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
             {!isCollapsed && <span>Sign Out</span>}
@@ -303,6 +314,20 @@ export default function AdminLayout() {
           <Outlet context={{ triggerToast, loadHeaderData }} />
         </div>
       </main>
+
+      {/* Logout Confirmation Alert Dialog */}
+      <AlertDialog
+        open={logoutDialogOpen}
+        onOpenChange={setLogoutDialogOpen}
+        variant="danger"
+        title="Sign Out of Admin?"
+        description="Are you sure you want to sign out? You will need to log in again to access the admin dashboard."
+        confirmText="Sign Out"
+        cancelText="Stay Signed In"
+        onConfirm={handleLogout}
+        isLoading={isLoggingOut}
+        loadingText="Signing out..."
+      />
     </div>
   )
 }
