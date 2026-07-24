@@ -19,6 +19,11 @@ import AdminJourney from "./pages/admin/AdminJourney.tsx"
 import AdminLinks from "./pages/admin/AdminLinks.tsx"
 import AdminMessages from "./pages/admin/AdminMessages.tsx"
 
+import { Toaster } from "@/components/ui/sonner"
+import { QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { queryClient } from "@/lib/queryClient"
+
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   {
@@ -58,5 +63,9 @@ const router = createBrowserRouter([
 ])
 
 createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+    <Toaster position="top-center" closeButton={false} />
+    <ReactQueryDevtools initialIsOpen={false} />
+  </QueryClientProvider>
 )
