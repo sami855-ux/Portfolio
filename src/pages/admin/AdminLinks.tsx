@@ -1,10 +1,45 @@
 import { useState, useEffect } from "react"
 import { useOutletContext } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Plus, Edit, Trash2 } from "lucide-react"
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Share2,
+  Globe,
+  Mail,
+  ExternalLink,
+  Search,
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react"
+import {
+  FaGithub,
+  FaLinkedin,
+  FaTwitter,
+  FaTelegram,
+  FaInstagram,
+  FaGlobe,
+  FaEnvelope,
+  FaYoutube,
+  FaDiscord,
+} from "react-icons/fa"
 
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { AlertDialog } from "@/components/ui/alert-dialog"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from "@/components/ui/sheet"
 import {
   supabase,
   isSupabaseConfigured,
@@ -17,22 +52,67 @@ interface AdminContext {
   loadHeaderData: () => void
 }
 
+const SOCIAL_PRESETS = [
+  { name: "GitHub", icon_name: "github", icon: FaGithub, color: "text-slate-200" },
+  { name: "LinkedIn", icon_name: "linkedin", icon: FaLinkedin, color: "text-blue-400" },
+  { name: "Twitter / X", icon_name: "twitter", icon: FaTwitter, color: "text-sky-400" },
+  { name: "Telegram", icon_name: "telegram", icon: FaTelegram, color: "text-cyan-400" },
+  { name: "Email", icon_name: "email", icon: FaEnvelope, color: "text-emerald-400" },
+  { name: "Instagram", icon_name: "instagram", icon: FaInstagram, color: "text-rose-400" },
+  { name: "YouTube", icon_name: "youtube", icon: FaYoutube, color: "text-red-400" },
+  { name: "Discord", icon_name: "discord", icon: FaDiscord, color: "text-indigo-400" },
+  { name: "Portfolio", icon_name: "globe", icon: FaGlobe, color: "text-green-400" },
+]
+
 export default function AdminLinks() {
   const context = useOutletContext<AdminContext>()
   const triggerToast = context?.triggerToast || (() => { })
   const loadHeaderData = context?.loadHeaderData || (() => { })
   const [loading, setLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [contactLinks, setContactLinks] = useState<ContactLink[]>([])
   const [isEditingLink, setIsEditingLink] = useState<ContactLink | null>(null)
-  const [showModal, setShowModal] = useState(false)
+  const [showSheet, setShowSheet] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  // Drag & drop reordering state
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean
+    id?: string
+    name?: string
+    isLoading: boolean
+    isError: boolean
+    errorMessage?: string
+  }>({ open: false, isLoading: false, isError: false })
 
   const loadData = async () => {
     setLoading(true)
     try {
-      const data = await getContactLinks()
-      setContactLinks(data)
+      if (isSupabaseConfigured) {
+        const { data, error } = await supabase
+          .from("contact_links")
+          .select("*")
+          .order("display_order", { ascending: true })
+        if (error) {
+          console.warn("Error fetching contact links:", error.message)
+          const fallback = await getContactLinks()
+          setContactLinks(fallback)
+        } else if (data && data.length > 0) {
+          setContactLinks(data as ContactLink[])
+        } else {
+          const fallback = await getContactLinks()
+          setContactLinks(fallback)
+        }
+      } else {
+        const fallback = await getContactLinks()
+        setContactLinks(fallback)
+      }
     } catch (err) {
       console.error("Error loading contact links:", err)
+      const fallback = await getContactLinks()
+      setContactLinks(fallback)
     } finally {
       setLoading(false)
     }
@@ -42,48 +122,160 @@ export default function AdminLinks() {
     loadData()
   }, [])
 
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = "move"
+    e.dataTransfer.setData("text/plain", index.toString())
+  }
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === index) return
+    const updated = [...contactLinks]
+    const [draggedItem] = updated.splice(draggedIndex, 1)
+    updated.splice(index, 0, draggedItem)
+    setDraggedIndex(index)
+    setContactLinks(updated)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
+  }
+
+  const moveLink = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= contactLinks.length) return
+    const updated = [...contactLinks]
+    const [moved] = updated.splice(fromIndex, 1)
+    updated.splice(toIndex, 0, moved)
+    setContactLinks(updated)
+  }
+
   const handleSaveLink = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!isEditingLink) return
+    if (!isEditingLink || !isEditingLink.name || !isEditingLink.url) {
+      toast.error("Please provide both channel name and URL.")
+      return
+    }
 
-    if (isSupabaseConfigured) {
-      if (isEditingLink.id && !isEditingLink.id.startsWith("demo")) {
-        await supabase
-          .from("contact_links")
-          .update(isEditingLink)
-          .eq("id", isEditingLink.id)
+    setIsSaving(true)
+    const isNew = !isEditingLink.id || !(isEditingLink.id.length > 20 && isEditingLink.id.includes("-"))
+    const toastId = toast.loading(isNew ? "Creating new social link..." : "Saving link changes...")
+
+    try {
+      if (isSupabaseConfigured) {
+        const isUUID = isEditingLink.id && isEditingLink.id.length > 20 && isEditingLink.id.includes("-")
+        if (isUUID) {
+          const { error: updateErr } = await supabase
+            .from("contact_links")
+            .update({
+              name: isEditingLink.name,
+              url: isEditingLink.url,
+              icon_name: isEditingLink.icon_name,
+              is_active: isEditingLink.is_active ?? true,
+            })
+            .eq("id", isEditingLink.id)
+
+          if (updateErr) throw new Error(updateErr.message)
+        } else {
+          const { id, ...newLinkData } = isEditingLink
+          const { data: inserted, error: insertErr } = await supabase
+            .from("contact_links")
+            .insert([{
+              name: newLinkData.name,
+              url: newLinkData.url,
+              icon_name: newLinkData.icon_name || "github",
+              is_active: newLinkData.is_active ?? true,
+              display_order: contactLinks.length + 1,
+            }])
+            .select()
+
+          if (insertErr) throw new Error(insertErr.message)
+
+          if (inserted && inserted[0]) {
+            setContactLinks((prev) => [...prev, inserted[0] as ContactLink])
+            setShowSheet(false)
+            setIsEditingLink(null)
+            toast.success("Social link created successfully!", { id: toastId })
+            loadHeaderData()
+            return
+          }
+        }
+      }
+
+      // Update state locally
+      if (isEditingLink.id) {
+        setContactLinks((prev) =>
+          prev.map((l) => (l.id === isEditingLink.id ? isEditingLink : l))
+        )
       } else {
-        const { id, ...newLink } = isEditingLink
-        await supabase.from("contact_links").insert([newLink])
+        const newLink = { ...isEditingLink, id: Date.now().toString() }
+        setContactLinks((prev) => [...prev, newLink])
       }
-    }
 
-    if (isEditingLink.id) {
-      setContactLinks((prev) =>
-        prev.map((l) => (l.id === isEditingLink.id ? isEditingLink : l))
-      )
-    } else {
-      const newLink = { ...isEditingLink, id: Date.now().toString() }
-      setContactLinks((prev) => [...prev, newLink])
-    }
-
-    setShowModal(false)
-    setIsEditingLink(null)
-    triggerToast("Social link saved!")
-    loadHeaderData()
-  }
-
-  const handleDeleteLink = async (id?: string) => {
-    if (!id) return
-    if (confirm("Are you sure you want to delete this link?")) {
-      if (isSupabaseConfigured && !id.startsWith("demo")) {
-        await supabase.from("contact_links").delete().eq("id", id)
-      }
-      setContactLinks((prev) => prev.filter((l) => l.id !== id))
-      triggerToast("Social link deleted.")
+      setShowSheet(false)
+      setIsEditingLink(null)
+      toast.success(isNew ? "Social link created successfully!" : "Social link updated successfully!", { id: toastId })
       loadHeaderData()
+    } catch (err: any) {
+      console.error("Save link error:", err)
+      toast.error("Failed to save link: " + (err?.message || "Unknown error"), { id: toastId })
+    } finally {
+      setIsSaving(false)
     }
   }
+
+  const promptDeleteLink = (link: ContactLink) => {
+    setDeleteDialog({
+      open: true,
+      id: link.id,
+      name: link.name,
+      isLoading: false,
+      isError: false,
+    })
+  }
+
+  const confirmDeleteLink = async () => {
+    if (!deleteDialog.id) return
+    setDeleteDialog((prev) => ({ ...prev, isLoading: true, isError: false }))
+    const toastId = toast.loading("Deleting social link...")
+    try {
+      if (isSupabaseConfigured && !deleteDialog.id.startsWith("demo")) {
+        const { error } = await supabase.from("contact_links").delete().eq("id", deleteDialog.id)
+        if (error) throw error
+      }
+      setContactLinks((prev) => prev.filter((l) => l.id !== deleteDialog.id))
+      toast.success("Social link deleted successfully.", { id: toastId })
+      loadHeaderData()
+      setDeleteDialog({ open: false, isLoading: false, isError: false })
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete link.", { id: toastId })
+      setDeleteDialog((prev) => ({
+        ...prev,
+        isLoading: false,
+        isError: true,
+        errorMessage: err.message || "Failed to delete link. Please try again.",
+      }))
+    }
+  }
+
+  const renderSocialIcon = (iconName?: string, name?: string) => {
+    const key = (iconName || name || "").toLowerCase()
+    if (key.includes("github")) return <FaGithub className="w-5 h-5 text-slate-200" />
+    if (key.includes("linkedin")) return <FaLinkedin className="w-5 h-5 text-blue-400" />
+    if (key.includes("twitter") || key.includes("x")) return <FaTwitter className="w-5 h-5 text-sky-400" />
+    if (key.includes("telegram")) return <FaTelegram className="w-5 h-5 text-cyan-400" />
+    if (key.includes("email") || key.includes("mail")) return <FaEnvelope className="w-5 h-5 text-emerald-400" />
+    if (key.includes("instagram")) return <FaInstagram className="w-5 h-5 text-rose-400" />
+    if (key.includes("youtube")) return <FaYoutube className="w-5 h-5 text-red-400" />
+    if (key.includes("discord")) return <FaDiscord className="w-5 h-5 text-indigo-400" />
+    return <FaGlobe className="w-5 h-5 text-green-400" />
+  }
+
+  const filteredLinks = contactLinks.filter(
+    (l) =>
+      l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      l.url.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   if (loading) {
     return (
@@ -100,13 +292,20 @@ export default function AdminLinks() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-white">Social & Contact Links</h2>
-          <p className="text-xs text-gray-400 mt-1">
-            Manage your social media channels & profile URLs
-          </p>
+      {/* Top Suite Header & Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 shrink-0">
+            <Share2 className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Social & Contact Links</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Configure profile channels, social links, email, and external portfolio handles
+            </p>
+          </div>
         </div>
+
         <Button
           onClick={() => {
             setIsEditingLink({
@@ -115,108 +314,231 @@ export default function AdminLinks() {
               icon_name: "github",
               is_active: true,
             })
-            setShowModal(true)
+            setShowSheet(true)
           }}
-          className="bg-green-500 hover:bg-green-600 text-slate-950 font-bold px-4 py-2 rounded-2xl flex items-center gap-2 text-xs cursor-pointer"
+          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] shrink-0"
         >
-          <Plus className="w-4 h-4" /> Add Link
+          <Plus className="w-4 h-4 stroke-[3]" /> Add Social Link
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {contactLinks.map((l) => (
-          <div
-            key={l.id}
-            className="bg-[#202020] border-none p-4 rounded-2xl flex items-center justify-between"
-          >
-            <div>
-              <div className="font-bold text-white text-sm">{l.name}</div>
-              <a
-                href={l.url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs text-green-500 hover:underline truncate max-w-[200px] block"
-              >
-                {l.url}
-              </a>
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => {
-                  setIsEditingLink(l)
-                  setShowModal(true)
-                }}
-                className="p-1.5 text-gray-400 hover:text-white cursor-pointer"
-              >
-                <Edit className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleDeleteLink(l.id)}
-                className="p-1.5 text-red-400 hover:text-red-300 cursor-pointer"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
 
-      {/* Link Modal */}
-      {showModal && isEditingLink && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-[#202020] border-none rounded-3xl p-6 w-full max-w-md space-y-4"
-          >
-            <h3 className="text-lg font-bold text-white">
-              {isEditingLink.id ? "Edit Social Link" : "Add Social Link"}
-            </h3>
 
-            <form onSubmit={handleSaveLink} className="space-y-4">
+      {/* Social Links Cards Grid */}
+      {contactLinks.length === 0 ? (
+        <div className="bg-[#181818] border border-[#262626] rounded-3xl p-10 text-center space-y-3">
+          <p className="text-sm text-gray-400">No social links added yet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {contactLinks.map((l, idx) => (
+            <motion.div
+              key={l.id || idx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.03 }}
+              className="bg-[#1b1b1b] border border-[#262626] hover:border-green-500/40 p-5 rounded-3xl space-y-3 shadow-xl transition-all duration-300 group flex flex-col justify-between"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-2xl bg-[#141414] border border-[#282828] flex items-center justify-center shrink-0 group-hover:border-green-500/30 transition-colors">
+                    {renderSocialIcon(l.icon_name, l.name)}
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-white text-sm truncate group-hover:text-green-400 transition-colors">
+                        {l.name}
+                      </h3>
+                      {l.is_active !== false ? (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-normal text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full">
+                          <CheckCircle2 className="w-2.5 h-2.5" /> Active
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-normal text-gray-400 bg-gray-500/10 border border-gray-500/20 px-2 py-0.5 rounded-full">
+                          <XCircle className="w-2.5 h-2.5" /> Hidden
+                        </span>
+                      )}
+                    </div>
+                    <a
+                      href={l.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-gray-400 hover:text-green-400 truncate max-w-[180px] block transition-colors flex items-center gap-1 mt-0.5"
+                    >
+                      <span className="truncate">{l.url}</span>
+                      <ExternalLink className="w-3 h-3 shrink-0 opacity-60" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => {
+                      setIsEditingLink(l)
+                      setShowSheet(true)
+                    }}
+                    className="p-1.5 text-gray-400 hover:text-green-400 cursor-pointer transition-colors"
+                    title="Edit Link"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => promptDeleteLink(l)}
+                    className="p-1.5 text-red-400 hover:text-red-300 cursor-pointer transition-colors"
+                    title="Delete Link"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Social Link Edit / Create Shadcn Sheet Drawer */}
+      <Sheet open={showSheet} onOpenChange={setShowSheet}>
+        {isEditingLink && (
+          <SheetContent side="right" className="w-full sm:max-w-md bg-[#181818] p-6 sm:p-8 border-l border-[#282828] overflow-y-auto no-scrollbar">
+            <SheetHeader className="pb-4 border-b border-[#262626]">
+              <SheetTitle className="text-xl font-bold text-white flex items-center gap-2">
+                {isEditingLink.id ? "Edit Social Link" : "Add Social Link"}
+              </SheetTitle>
+              <SheetDescription className="text-xs text-gray-400">
+                Choose a platform preset or enter custom channel details.
+              </SheetDescription>
+            </SheetHeader>
+
+            <form onSubmit={handleSaveLink} className="space-y-5 pt-6">
+              {/* Quick Social Presets */}
               <div>
-                <label className="block text-xs font-semibold text-gray-400 mb-1">Platform Name</label>
+                <label className="block text-xs font-semibold text-gray-300 mb-2">
+                  Quick Platform Presets
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {SOCIAL_PRESETS.map((preset) => {
+                    const PresetIcon = preset.icon
+                    const isSelected = isEditingLink.icon_name === preset.icon_name || isEditingLink.name === preset.name
+                    return (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => {
+                          setIsEditingLink({
+                            ...isEditingLink,
+                            name: preset.name.split(" / ")[0],
+                            icon_name: preset.icon_name,
+                          })
+                        }}
+                        className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-green-500/20 border-green-500 text-green-400 font-bold shadow-md shadow-green-500/10"
+                            : "bg-[#141414] border-[#2a2a2a] text-gray-400 hover:text-white hover:border-[#383838]"
+                        }`}
+                      >
+                        <PresetIcon className={`w-4 h-4 mb-1 ${preset.color}`} />
+                        <span className="text-[10px] truncate max-w-[80px]">{preset.name}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Platform Name Input */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Platform / Channel Name
+                </label>
                 <Input
                   value={isEditingLink.name}
                   onChange={(e) =>
                     setIsEditingLink({ ...isEditingLink, name: e.target.value })
                   }
-                  placeholder="GitHub / LinkedIn / Twitter"
+                  placeholder="e.g. GitHub, LinkedIn, Telegram, Personal Email"
                   required
-                  className="bg-[#181818] border-none text-white text-xs rounded-xl"
+                  className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl h-11 px-3.5"
                 />
               </div>
 
+              {/* Target URL Input */}
               <div>
-                <label className="block text-xs font-semibold text-gray-400 mb-1">URL</label>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Target URL / Link
+                </label>
                 <Input
                   value={isEditingLink.url}
                   onChange={(e) =>
                     setIsEditingLink({ ...isEditingLink, url: e.target.value })
                   }
-                  placeholder="https://..."
+                  placeholder="https://github.com/username or mailto:you@domain.com"
                   required
-                  className="bg-[#181818] border-none text-white text-xs rounded-xl"
+                  className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl h-11 px-3.5 font-mono"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3">
+              {/* Active Toggle Switch */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#141414] border border-[#2a2a2a]">
+                <div>
+                  <label className="text-xs font-bold text-white block">Active Status</label>
+                  <span className="text-[11px] text-gray-400">Display this social link on your public portfolio</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={isEditingLink.is_active !== false}
+                  onChange={(e) =>
+                    setIsEditingLink({ ...isEditingLink, is_active: e.target.checked })
+                  }
+                  className="w-4 h-4 accent-green-500 rounded cursor-pointer"
+                />
+              </div>
+
+              <SheetFooter className="pt-4">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setShowModal(false)}
-                  className="bg-[#181818] border-none text-xs rounded-xl"
+                  onClick={() => setShowSheet(false)}
+                  className="bg-[#252525] border-none hover:bg-[#303030] text-gray-300 text-xs font-bold rounded-xl h-11 px-4 cursor-pointer"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-green-500 text-slate-950 font-bold text-xs rounded-xl">
-                  Save Link
+                <Button
+                  type="submit"
+                  disabled={isSaving}
+                  className="bg-green-500 hover:bg-green-400 text-slate-950 font-bold text-xs rounded-xl h-11 px-6 border-none cursor-pointer shadow-lg shadow-green-500/20 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isSaving ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                      <span>Saving Link...</span>
+                    </>
+                  ) : (
+                    <span>Save Link</span>
+                  )}
                 </Button>
-              </div>
+              </SheetFooter>
             </form>
-          </motion.div>
-        </div>
-      )}
+          </SheetContent>
+        )}
+      </Sheet>
+
+      {/* Delete Confirmation Alert Dialog */}
+      <AlertDialog
+        open={deleteDialog.open}
+        onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open }))}
+        variant="danger"
+        title="Delete Social Link?"
+        description={`Are you sure you want to delete "${deleteDialog.name || "this link"}"? This action cannot be undone.`}
+        confirmText="Delete Link"
+        cancelText="Cancel"
+        onConfirm={confirmDeleteLink}
+        onCancel={() => setDeleteDialog((prev) => ({ ...prev, open: false }))}
+        isLoading={deleteDialog.isLoading}
+        loadingText="Deleting social link..."
+        isError={deleteDialog.isError}
+        errorTitle="Deletion Failed"
+        errorMessage={deleteDialog.errorMessage}
+      />
     </motion.div>
   )
 }
