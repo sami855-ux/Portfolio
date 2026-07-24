@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { FcGoogle } from "react-icons/fc"
+import { toast } from "sonner"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,6 +23,7 @@ export default function AdminLogin() {
     setLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
+    const toastId = toast.loading("Authenticating admin access...")
 
     if (isSupabaseConfigured) {
       const { error } = await supabase.auth.signInWithPassword({
@@ -31,15 +33,18 @@ export default function AdminLogin() {
 
       if (error) {
         setErrorMsg(error.message)
+        toast.error(error.message, { id: toastId })
         setLoading(false)
         return
       }
 
+      toast.success("Welcome back! Signing in...", { id: toastId })
       sessionStorage.setItem("admin_authenticated", "true")
       navigate("/admin")
       return
     }
 
+    toast.success("Signed in to Admin Dashboard!", { id: toastId })
     sessionStorage.setItem("admin_authenticated", "true")
     navigate("/admin")
     setLoading(false)
@@ -49,8 +54,10 @@ export default function AdminLogin() {
     setLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
+    const toastId = toast.loading("Redirecting to Google auth...")
 
     if (!isSupabaseConfigured) {
+      toast.success("Signed in to Admin Dashboard!", { id: toastId })
       sessionStorage.setItem("admin_authenticated", "true")
       navigate("/admin")
       return
@@ -65,6 +72,7 @@ export default function AdminLogin() {
 
     if (error) {
       setErrorMsg(error.message)
+      toast.error(error.message, { id: toastId })
       setLoading(false)
     }
   }
@@ -73,12 +81,14 @@ export default function AdminLogin() {
     e.preventDefault()
     if (!email) {
       setErrorMsg("Please enter your email address")
+      toast.error("Please enter your email address")
       return
     }
 
     setLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
+    const toastId = toast.loading("Sending reset email...")
 
     if (isSupabaseConfigured) {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -87,12 +97,15 @@ export default function AdminLogin() {
 
       if (error) {
         setErrorMsg(error.message)
+        toast.error(error.message, { id: toastId })
         setLoading(false)
         return
       }
     }
 
-    setSuccessMsg("Password reset link sent to your email!")
+    const msg = "Password reset link sent to your email!"
+    setSuccessMsg(msg)
+    toast.success(msg, { id: toastId })
     setLoading(false)
   }
 
