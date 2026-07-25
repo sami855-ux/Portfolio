@@ -4,11 +4,12 @@ import {
   getSkills,
   getJourney,
   getContactLinks,
+  getFloatingCards,
   getProfileSettings,
   updateProfileSettings,
   submitContactMessage,
 } from "@/lib/supabase"
-import type { Project, Skill, JourneyItem, ContactLink, ProfileSettings } from "@/types/supabase"
+import type { Project, Skill, JourneyItem, ContactLink, FloatingCard, ProfileSettings } from "@/types/supabase"
 
 // QUERY KEYS CONSTANTS FOR REUSE & INVALIDATION
 export const QUERY_KEYS = {
@@ -16,6 +17,7 @@ export const QUERY_KEYS = {
   skills: ["skills"] as const,
   journey: ["journey"] as const,
   contactLinks: ["contactLinks"] as const,
+  floatingCards: ["floatingCards"] as const,
   profileSettings: ["profileSettings"] as const,
   messages: ["messages"] as const,
 }
@@ -46,6 +48,13 @@ export function useContactLinksQuery() {
   return useQuery<ContactLink[]>({
     queryKey: QUERY_KEYS.contactLinks,
     queryFn: getContactLinks,
+  })
+}
+
+export function useFloatingCardsQuery() {
+  return useQuery<FloatingCard[]>({
+    queryKey: QUERY_KEYS.floatingCards,
+    queryFn: getFloatingCards,
   })
 }
 
