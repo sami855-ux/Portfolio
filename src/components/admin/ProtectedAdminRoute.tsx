@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Navigate, Outlet } from "react-router-dom"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
+import { isAllowedAdminEmail } from "@/lib/adminAuth"
 
 export const ProtectedAdminRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
@@ -20,13 +21,28 @@ export const ProtectedAdminRoute = () => {
 
     // Check Supabase session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsAuthenticated(!!session)
+      const email = session?.user?.email
+      if (session && isAllowedAdminEmail(email)) {
+        setIsAuthenticated(true)
+      } else if (session) {
+        // Log out un-whitelisted accounts
+        supabase.auth.signOut()
+        sessionStorage.removeItem("admin_authenticated")
+        setIsAuthenticated(false)
+      } else {
+        setIsAuthenticated(false)
+      }
     })
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session)
+      const email = session?.user?.email
+      if (session && isAllowedAdminEmail(email)) {
+        setIsAuthenticated(true)
+      } else {
+        setIsAuthenticated(false)
+      }
     })
 
     return () => subscription.unsubscribe()
