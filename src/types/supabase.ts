@@ -73,6 +73,16 @@ export interface ProfileSettings {
   created_at?: string
 }
 
+export interface FloatingCard {
+  id?: string
+  name: string
+  title: string
+  position?: string
+  is_active?: boolean
+  display_order?: number
+  created_at?: string
+}
+
 export interface Database {
   public: {
     Tables: {
