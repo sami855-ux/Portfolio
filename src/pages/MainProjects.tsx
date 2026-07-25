@@ -235,10 +235,29 @@ const projects: Project[] = [
 ]
 
 import { getProjects } from "@/lib/supabase"
+import { useProjectsQuery } from "@/hooks/usePortfolioQueries"
 
 export function MainProjects() {
   const [loaded, setLoaded] = useState(false)
-  const [projectList, setProjectList] = useState<any[]>(projects)
+  const { data: dbProjects, isLoading: isQueryLoading, isError, refetch } = useProjectsQuery()
+
+  // Use dynamic database projects if available, otherwise fall back to curated static list
+  const projectList = dbProjects && dbProjects.length > 0
+    ? dbProjects.map((p, idx) => ({
+        id: p.id || idx + 100,
+        title: p.title,
+        description: p.description,
+        technologies: p.tags || [],
+        features: Array.isArray(p.features) && p.features.length > 0 ? p.features : ["Full Stack Architecture", "Interactive UI"],
+        challenges: Array.isArray(p.challenges) ? p.challenges.join(". ") : p.challenges || "Optimizing data sync and UI responsiveness",
+        solutions: Array.isArray(p.solutions) ? p.solutions.join(". ") : p.solutions || "Implemented caching and modular architecture",
+        results: p.results || "Enhanced performance and user engagement",
+        githubUrl: p.github || "#",
+        liveUrl: p.live || "#",
+        imageUrl: p.image || defaultImg,
+        architecture: p.architecture || "",
+      }))
+    : projects
 
   useEffect(() => {
     window.scrollTo({
@@ -246,22 +265,6 @@ export function MainProjects() {
       behavior: "smooth",
     })
     setLoaded(true)
-    getProjects().then((dbProjects) => {
-      if (dbProjects && dbProjects.length > 0) {
-        // Map database projects format to MainProjects format
-        const formatted = dbProjects.map((p, idx) => ({
-          id: p.id || idx + 100,
-          title: p.title,
-          description: p.description,
-          technologies: p.tags || [],
-          features: ["Full Stack Feature", "Interactive UI"],
-          githubUrl: p.github,
-          liveUrl: p.live,
-          imageUrl: p.image || defaultImg,
-        }))
-        setProjectList(formatted)
-      }
-    })
   }, [])
 
   // Animation variants
@@ -360,6 +363,22 @@ export function MainProjects() {
             </motion.p>
           </header>
 
+          {isError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm flex items-center justify-between"
+            >
+              <span>Notice: Operating in fallback cache mode. Live updates could not be fetched from Supabase.</span>
+              <button
+                onClick={() => refetch()}
+                className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs rounded-xl transition-all cursor-pointer"
+              >
+                Retry
+              </button>
+            </motion.div>
+          )}
+
           <motion.div
             className="space-y-24"
             variants={container}
@@ -376,7 +395,7 @@ export function MainProjects() {
                   className={`${index % 2 === 0 ? "lg:order-1" : "lg:order-2"}`}
                 >
                   <motion.div
-                    className="relative h-96 overflow-hidden rounded-2xl group"
+                    className="relative h-[460px] overflow-hidden rounded-2xl group shadow-2xl"
                     variants={imageVariants}
                     initial="hidden"
                     whileInView="visible"
