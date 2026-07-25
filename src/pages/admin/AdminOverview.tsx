@@ -65,7 +65,11 @@ export default function AdminOverview() {
 
           if (msgErr) {
             console.warn("Supabase messages fetch error:", msgErr.message)
-            setErrorMsg("Could not fetch messages from Supabase: " + msgErr.message)
+            if (msgErr.message.includes("JWT issued at future") || msgErr.message.includes("jwt")) {
+              setErrorMsg("Authentication token synchronizing... Please refresh the page in a few seconds.")
+            } else {
+              setErrorMsg("Could not fetch messages: " + msgErr.message)
+            }
           } else if (msgData) {
             setMessages(msgData as Message[])
           }
