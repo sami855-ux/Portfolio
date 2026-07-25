@@ -115,16 +115,11 @@ const projects = [
 ]
 
 export const Projects = () => {
-  const [projectList, setProjectList] = useState<Project[]>(defaultProjects)
-  const { data: dbProjects } = useProjectsQuery()
+  const { data: dbProjects, isLoading, isError, refetch } = useProjectsQuery()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
-  useEffect(() => {
-    if (dbProjects && dbProjects.length > 0) {
-      setProjectList(dbProjects)
-    }
-  }, [dbProjects])
+  const projectList = dbProjects && dbProjects.length > 0 ? dbProjects : defaultProjects
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -162,6 +157,18 @@ export const Projects = () => {
           </p>
         </div>
 
+        {isError && (
+          <div className="mb-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm flex items-center justify-between max-w-4xl mx-auto">
+            <span>Notice: Displaying offline cached projects catalog.</span>
+            <button
+              onClick={() => refetch()}
+              className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs rounded-xl transition-all cursor-pointer"
+            >
+              Retry Sync
+            </button>
+          </div>
+        )}
+
         <motion.div
           ref={ref}
           variants={containerVariants}
@@ -172,11 +179,11 @@ export const Projects = () => {
           {projectList.map((project, index) => (
             <motion.div key={index} variants={itemVariants}>
               <Card className="h-full flex flex-col group overflow-hidden bg-[#252424] border-none pt-0">
-                <div className="relative h-52 overflow-hidden">
+                <div className="relative h-64 overflow-hidden">
                   <img
                     src={project.image}
                     alt={project.title}
-                    className="w-full h-52 object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                     <p className="text-white ">{project.description}</p>
