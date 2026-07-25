@@ -8,8 +8,8 @@ import type {
   ProfileSettings,
 } from "@/types/supabase"
 
-const supabaseUrl = "https://ghraybxwhooroumzgslx.supabase.co"
-const supabaseAnonKey = "sb_publishable_qEI4-pI2AFKZwupIhxqncQ_jAEe_Kwq"
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://ghraybxwhooroumzgslx.supabase.co"
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "sb_publishable_qEI4-pI2AFKZwupIhxqncQ_jAEe_Kwq"
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 
@@ -183,6 +183,33 @@ export const defaultProfileSettings: ProfileSettings = {
   avatar_url: "",
 }
 
+export const defaultFloatingCards: FloatingCard[] = [
+  {
+    id: "1",
+    name: "samitale86@gmail.com",
+    title: "+251 978109304",
+    position: "top-2/3 -right-5",
+    is_active: true,
+    display_order: 1,
+  },
+  {
+    id: "2",
+    name: "Big Tech lover",
+    title: "Programmer",
+    position: "top-1/6 -right-5",
+    is_active: true,
+    display_order: 2,
+  },
+  {
+    id: "3",
+    name: "Samuel 'The Bug Whisperer' Tale",
+    title: "Chief Coffee Consumer",
+    position: "top-[25%] left-[20%]",
+    is_active: true,
+    display_order: 3,
+  },
+]
+
 // DATA FETCHERS WITH FALLBACKS
 export async function getProjects(): Promise<Project[]> {
   if (!isSupabaseConfigured) return defaultProjects
@@ -238,6 +265,21 @@ export async function getContactLinks(): Promise<ContactLink[]> {
     return data as ContactLink[]
   } catch {
     return defaultContactLinks
+  }
+}
+
+export async function getFloatingCards(): Promise<FloatingCard[]> {
+  if (!isSupabaseConfigured) return defaultFloatingCards
+  try {
+    const { data, error } = await supabase
+      .from("floating_cards")
+      .select("*")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true })
+    if (error || !data || data.length === 0) return defaultFloatingCards
+    return data as FloatingCard[]
+  } catch {
+    return defaultFloatingCards
   }
 }
 
