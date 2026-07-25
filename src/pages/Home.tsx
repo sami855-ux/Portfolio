@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { Github, Linkedin, Twitter, Instagram, Facebook } from "lucide-react"
+import { Github, Linkedin, Twitter, Instagram, Facebook, Globe, Mail, FileText, Send } from "lucide-react"
 import { useState } from "react"
 
 import { PersonalCardHeader } from "@/components/PersonalCardHeader"
@@ -11,11 +11,14 @@ import {
 } from "@/components/ui/tooltip"
 import ProfileImage from "@/components/ProfileImage"
 import { Button } from "@/components/ui/button"
-import { SiTelegram } from "react-icons/si"
+import { SiTelegram, SiYoutube, SiDiscord, SiWhatsapp, SiMedium, SiGmail } from "react-icons/si"
 import type { socialLinks } from "@/types/ui"
 import { Link } from "react-router-dom"
 
-const socialLinks: socialLinks[] = [
+import { useProfileSettingsQuery, useContactLinksQuery, useFloatingCardsQuery } from "@/hooks/usePortfolioQueries"
+import { defaultFloatingCards } from "@/lib/supabase"
+
+const defaultSocialLinks: socialLinks[] = [
   { name: "GitHub", url: "https://github.com/sami855-ux", icon: "github" },
   {
     name: "LinkedIn",
@@ -33,10 +36,36 @@ const socialLinks: socialLinks[] = [
 
 export default function Home() {
   const [isHovered, setIsHovered] = useState<boolean>(false)
+  const { data: profile } = useProfileSettingsQuery()
+  const { data: dbContactLinks } = useContactLinksQuery()
+  const { data: dbFloatingCards } = useFloatingCardsQuery()
+
+  const floatingCards = dbFloatingCards && dbFloatingCards.length > 0
+    ? dbFloatingCards
+    : defaultFloatingCards
+
+  const socialLinks = dbContactLinks && dbContactLinks.length > 0
+    ? dbContactLinks.map((link) => ({
+      name: link.name,
+      url: link.url,
+      icon: (link.icon_name || link.name.toLowerCase()).replace(/[^a-z]/g, ""),
+    }))
+    : defaultSocialLinks
+
+  const fullName = profile?.full_name || "Samuel Tale"
+  const titleText = profile?.hero_title || (profile as any)?.title || "Full Stack Web and Mobile Developer"
+  const bioText = profile?.hero_description || (profile as any)?.bio || "Turning ideas into sleek, fast, and responsive websites for web users around the world."
+  const cvUrl = profile?.resume_url || (profile as any)?.cv_url || "https://drive.google.com/file/d/1h6SUTIz3tbCsdRVEBmsmZFrrrg3HEMS7/view?usp=sharing"
+  const avatarUrl = profile?.avatar_url
+
+  // Parse name into first and last for styling
+  const nameParts = fullName.split(" ")
+  const firstName = nameParts[0] || "Samuel"
+  const lastName = nameParts.slice(1).join(" ") || "Tale"
 
   return (
     <>
-      <div className="w-full min-h-screen flex items-center flex-col relative overflow-hidden px-4 md:px-0">
+      <div className="w-full min-h-screen flex items-center justify-center flex-col relative overflow-hidden px-4 md:px-0 py-6 mb-4 md:mb-8">
         <motion.div
           className="absolute inset-0 -z-10"
           initial={{ opacity: 0 }}
@@ -51,14 +80,14 @@ export default function Home() {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="flex flex-col items-center pt-32 mt-4"
+          className="flex flex-col items-center justify-start pt-4 md:pt-8 mb-auto"
         >
           {/* Profile image with playful interaction */}
 
           <h2 className="font-bold text-4xl md:text-6xl text-white mb-2 relative mt-7 md:mt-0">
-            Hi, I'm Samuel{" "}
+            Hi, I'm {firstName}{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-600">
-              Tale
+              {lastName}
             </span>
             <motion.span
               className="absolute md:inline-block hidden -top-7 -right-4 text-4xl"
@@ -88,7 +117,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            Full Stack Web and Mobile Developer
+            {titleText}
           </motion.p>
 
           <motion.p
@@ -97,8 +126,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            Turning ideas into sleek, fast, and responsive websites for web
-            users around the world.
+            {bioText}
           </motion.p>
 
           <motion.div
@@ -107,7 +135,15 @@ export default function Home() {
             onHoverEnd={() => setIsHovered(false)}
             whileHover={{ scale: 1.05 }}
           >
-            <ProfileImage />
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={fullName}
+                className="w-44 h-44 rounded-full object-cover border-4 border-green-500/30 shadow-2xl"
+              />
+            ) : (
+              <ProfileImage />
+            )}
             {/* Animated ring */}
             <motion.div
               className="absolute inset-0 rounded-full border-4 border-transparent"
@@ -146,38 +182,53 @@ export default function Home() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="inline-flex items-center">
-                          {social.icon === "github" && (
+                          {social.icon === "github" ? (
                             <div className="text-gray-400 hover:text-green-500 transition-colors">
                               <Github size={20} />
                             </div>
-                          )}
-
-                          {social.icon === "linkedin" && (
-                            <div className="text-gray-400 hover:text-green-500 transition-colors">
+                          ) : social.icon === "linkedin" ? (
+                            <div className="text-gray-400 hover:text-blue-400 transition-colors">
                               <Linkedin size={20} />
                             </div>
-                          )}
-                          {social.icon === "telegram" && (
-                            <div className="text-gray-400 hover:text-green-500 transition-colors">
+                          ) : social.icon === "telegram" ? (
+                            <div className="text-gray-400 hover:text-cyan-400 transition-colors">
                               <SiTelegram size={20} />
                             </div>
-                          )}
-
-                          {social.icon === "twitter" && (
-                            <div className="text-gray-400 hover:text-green-500 transition-colors">
+                          ) : social.icon === "twitter" || social.icon === "x" ? (
+                            <div className="text-gray-400 hover:text-sky-400 transition-colors">
                               <Twitter size={20} />
                             </div>
-                          )}
-
-                          {social.icon === "instagram" && (
-                            <div className="text-gray-400 hover:text-green-500 transition-colors">
+                          ) : social.icon === "instagram" ? (
+                            <div className="text-gray-400 hover:text-rose-400 transition-colors">
                               <Instagram size={20} />
                             </div>
-                          )}
-
-                          {social.icon === "facebook" && (
-                            <div className="text-gray-400 hover:text-green-500 transition-colors">
+                          ) : social.icon === "facebook" ? (
+                            <div className="text-gray-400 hover:text-blue-500 transition-colors">
                               <Facebook size={20} />
+                            </div>
+                          ) : social.icon === "youtube" ? (
+                            <div className="text-gray-400 hover:text-red-500 transition-colors">
+                              <SiYoutube size={20} />
+                            </div>
+                          ) : social.icon === "discord" ? (
+                            <div className="text-gray-400 hover:text-indigo-400 transition-colors">
+                              <SiDiscord size={20} />
+                            </div>
+                          ) : social.icon === "whatsapp" ? (
+                            <div className="text-gray-400 hover:text-green-400 transition-colors">
+                              <SiWhatsapp size={20} />
+                            </div>
+                          ) : social.icon === "medium" ? (
+                            <div className="text-gray-400 hover:text-white transition-colors">
+                              <SiMedium size={20} />
+                            </div>
+                          ) : social.icon === "email" || social.icon === "gmail" || social.icon === "mail" ? (
+                            <div className="text-gray-400 hover:text-emerald-400 transition-colors">
+                              <Mail size={20} />
+                            </div>
+                          ) : (
+                            <div className="text-gray-400 hover:text-green-500 transition-colors">
+                              <Globe size={20} />
                             </div>
                           )}
                         </span>
@@ -193,66 +244,45 @@ export default function Home() {
           </motion.div>
 
           <motion.div
-            className="flex gap-4 mt-7"
+            className="flex flex-wrap items-center justify-center gap-4 mt-7"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, staggerChildren: 0.1 }}
           >
-            <motion.div
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              <Link
-                to="https://drive.google.com/file/d/1h6SUTIz3tbCsdRVEBmsmZFrrrg3HEMS7/view?usp=sharing"
+            {/* Minimalist See My CV Button */}
+            <div>
+              <a
+                href={cvUrl}
                 target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider text-slate-950 bg-gradient-to-r from-green-400 to-blue-500 hover:opacity-90 transition-opacity cursor-pointer"
               >
-                <Button
-                  className="w-40 rounded-full text-sm font-medium uppercase tracking-wider
-      text-white  transition-all duration-300 cursor-pointer
-      border-2 border-transparent hover:border-white/20 relative overflow-hidden group"
-                >
-                  <span className="relative z-10">See my CV</span>
-                  <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                </Button>
-              </Link>
-            </motion.div>
+                <FileText className="w-3.5 h-3.5 text-slate-950" />
+                <span>See My CV</span>
+              </a>
+            </div>
 
-            <motion.div
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              <Link to="/contact">
-                <Button
-                  variant="outline"
-                  className="w-40 rounded-full text-sm font-medium uppercase tracking-wider
-      transition-all duration-300  cursor-pointer
-     text-gray-800 relative overflow-hidden group"
-                >
-                  <span className="relative z-10">Contact me</span>
-                  <span className="absolute inset-0 bg-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                </Button>
+            {/* Minimalist Contact Me Button */}
+            <div>
+              <Link
+                to="/contact"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider text-white border border-white/20 hover:border-white/40 transition-colors cursor-pointer"
+              >
+                <Send className="w-3.5 h-3.5 text-green-400" />
+                <span>Contact Me</span>
               </Link>
-            </motion.div>
+            </div>
           </motion.div>
         </motion.div>
       </div>
-      <PersonalCardHeader
-        name="samitale86@gmail.com"
-        title="+251 978109304"
-        position="top-2/3 -right-5"
-      />
-      <PersonalCardHeader
-        name="Big Tech lover"
-        title="Programmer"
-        position="top-1/6 -right-5"
-      />
-      <PersonalCardHeader
-        name="Samuel 'The Bug Whisperer' Tale"
-        title="Chief Coffee Consumer"
-        position="top-[25%] left-[20%]"
-      />
+      {floatingCards.map((card, idx) => (
+        <PersonalCardHeader
+          key={card.id || idx}
+          name={card.name}
+          title={card.title}
+          position={card.position || "top-1/2 left-1/2"}
+        />
+      ))}
     </>
   )
 }
