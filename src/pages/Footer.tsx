@@ -3,7 +3,13 @@ import { Github, Linkedin, Mail, Heart, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 
+import { useProfileSettingsQuery } from "@/hooks/usePortfolioQueries"
+
 export function Footer() {
+  const { data: profile } = useProfileSettingsQuery()
+  const email = profile?.contact_email || "samitale86@gmail.com"
+  const fullName = profile?.full_name || "Samuel Tale"
+
   return (
     <footer className="mt-16 border-t border-[#262626] dark:border-gray-800 py-8">
       <div className="max-w-4xl mx-auto px-4">
@@ -64,14 +70,14 @@ export function Footer() {
         {/* Email and Copyright */}
         <div className="text-center mb-4">
           <a
-            href="mailto:your.email@example.com"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground  transition-colors"
+            href={`mailto:${email}`}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-green-400"
           >
             <Mail className="w-4 h-4" />
-            samitale86@gmail.com
+            {email}
           </a>
           <p className="mt-2 text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Samuel tale. All rights reserved.
+            © {new Date().getFullYear()} {fullName}. All rights reserved.
           </p>
         </div>
 
