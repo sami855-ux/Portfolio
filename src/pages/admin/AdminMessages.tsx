@@ -56,7 +56,11 @@ export default function AdminMessages() {
 
         if (fetchErr) {
           console.warn("Error fetching messages:", fetchErr.message)
-          setErrorMsg("Could not connect to Supabase inbox: " + fetchErr.message)
+          if (fetchErr.message.includes("JWT issued at future") || fetchErr.message.includes("jwt")) {
+            setErrorMsg("Authentication token synchronizing... Please refresh the page in a few seconds.")
+          } else {
+            setErrorMsg("Could not connect to Supabase inbox: " + fetchErr.message)
+          }
         } else if (msgData) {
           setMessages(msgData as Message[])
         }
