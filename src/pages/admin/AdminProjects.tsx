@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useOutletContext } from "react-router-dom"
 import { motion, Reorder } from "framer-motion"
-import { Globe, Plus, Edit, Trash2, ExternalLink, Github, Upload, Image as ImageIcon, GripVertical, ArrowUp, ArrowDown, Search, Folder, FolderGit2, Layers, Star, CheckCircle2, Terminal, Cpu, Code2, Wand2 } from "lucide-react"
+import { Globe, Plus, Edit, Trash2, ExternalLink, Github, Upload, Image as ImageIcon, GripVertical, ArrowUp, ArrowDown, Search, Folder, FolderGit2, Layers, Star, CheckCircle2, Terminal, Cpu, Code2, Wand2, Zap, Network, TrendingUp } from "lucide-react"
 
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -118,8 +118,8 @@ export default function AdminProjects() {
     const current = Array.isArray(isEditingProject?.challenges)
       ? isEditingProject!.challenges
       : typeof isEditingProject?.challenges === "string"
-      ? isEditingProject!.challenges.split("\n").filter(Boolean)
-      : []
+        ? isEditingProject!.challenges.split("\n").filter(Boolean)
+        : []
     if (toIndex < 0 || toIndex >= current.length) return
     const updated = [...current]
     const [movedItem] = updated.splice(fromIndex, 1)
@@ -138,8 +138,8 @@ export default function AdminProjects() {
     const current = Array.isArray(isEditingProject?.challenges)
       ? isEditingProject!.challenges
       : typeof isEditingProject?.challenges === "string"
-      ? isEditingProject!.challenges.split("\n").filter(Boolean)
-      : []
+        ? isEditingProject!.challenges.split("\n").filter(Boolean)
+        : []
     const updated = [...current]
     const [draggedItem] = updated.splice(draggedChallengeIndex, 1)
     updated.splice(index, 0, draggedItem)
@@ -156,8 +156,8 @@ export default function AdminProjects() {
     const current = Array.isArray(isEditingProject?.solutions)
       ? isEditingProject!.solutions
       : typeof isEditingProject?.solutions === "string"
-      ? isEditingProject!.solutions.split("\n").filter(Boolean)
-      : []
+        ? isEditingProject!.solutions.split("\n").filter(Boolean)
+        : []
     if (toIndex < 0 || toIndex >= current.length) return
     const updated = [...current]
     const [movedItem] = updated.splice(fromIndex, 1)
@@ -176,8 +176,8 @@ export default function AdminProjects() {
     const current = Array.isArray(isEditingProject?.solutions)
       ? isEditingProject!.solutions
       : typeof isEditingProject?.solutions === "string"
-      ? isEditingProject!.solutions.split("\n").filter(Boolean)
-      : []
+        ? isEditingProject!.solutions.split("\n").filter(Boolean)
+        : []
     const updated = [...current]
     const [draggedItem] = updated.splice(draggedSolutionIndex, 1)
     updated.splice(index, 0, draggedItem)
@@ -270,8 +270,8 @@ export default function AdminProjects() {
       const rawChallenges = Array.isArray(isEditingProject.challenges)
         ? isEditingProject.challenges
         : typeof isEditingProject.challenges === "string"
-        ? (isEditingProject.challenges as string).split("\n")
-        : []
+          ? (isEditingProject.challenges as string).split("\n")
+          : []
       const cleanChallenges = rawChallenges
         .map((c) => (typeof c === "string" ? c.trim() : c))
         .filter(Boolean)
@@ -279,8 +279,8 @@ export default function AdminProjects() {
       const rawSolutions = Array.isArray(isEditingProject.solutions)
         ? isEditingProject.solutions
         : typeof isEditingProject.solutions === "string"
-        ? (isEditingProject.solutions as string).split("\n")
-        : []
+          ? (isEditingProject.solutions as string).split("\n")
+          : []
       const cleanSolutions = rawSolutions
         .map((s) => (typeof s === "string" ? s.trim() : s))
         .filter(Boolean)
@@ -388,12 +388,12 @@ export default function AdminProjects() {
           <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 shrink-0">
             <FolderGit2 className="w-5 h-5" />
           </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white tracking-tight">Projects Manager</h2>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Curate, showcase, and edit portfolio case studies & architecture
-              </p>
-            </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Projects Manager</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Curate, showcase, and edit portfolio case studies & architecture
+            </p>
+          </div>
         </div>
 
         <Button
@@ -404,150 +404,244 @@ export default function AdminProjects() {
         </Button>
       </div>
 
-      {/* Category Filter Controls */}
-      <div className="flex items-center justify-between gap-3 bg-[#1b1b1b]/50 p-3 rounded-2xl border border-[#262626]">
-        {/* Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full pb-1 sm:pb-0 no-scrollbar">
-          {["All", "Full Stack", "Frontend", "Backend", "Mobile", "AI / ML"].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategoryFilter(cat)}
-              className={`text-[11px] font-semibold px-3 py-1.5 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
-                categoryFilter === cat
-                  ? "bg-green-500 text-slate-950 font-bold shadow-md shadow-green-500/20"
-                  : "bg-[#161616] text-gray-400 hover:text-white hover:bg-[#252525]"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+      {/* Filter & Search Bar - Modern Glassmorphism Design */}
+      <div className="bg-[#18181b]/80 backdrop-blur-xl border border-[#27272a] p-4 rounded-3xl space-y-3.5 shadow-xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-400/70" />
+            <Input
+              type="text"
+              placeholder="Search projects by title, tech stack tags, or description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2.5 bg-[#121214] border-[#27272a] focus:border-emerald-500/50 rounded-2xl text-xs text-white placeholder:text-zinc-500 w-full"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white bg-zinc-800 px-2 py-0.5 rounded-full"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Quick Stats Pill */}
+          <div className="flex items-center gap-2 text-xs text-zinc-400 bg-[#121214] px-3.5 py-2 rounded-2xl border border-[#27272a] shrink-0 self-start md:self-auto">
+            <Folder className="w-3.5 h-3.5 text-emerald-400" />
+            <span>
+              Showing <strong className="text-white">
+                {projects.filter((p) => {
+                  const matchesCat = categoryFilter === "All" || p.category === categoryFilter
+                  const q = searchQuery.toLowerCase().trim()
+                  const matchesQuery =
+                    !q ||
+                    p.title.toLowerCase().includes(q) ||
+                    p.description.toLowerCase().includes(q) ||
+                    p.tags?.some((t) => t.toLowerCase().includes(q))
+                  return matchesCat && matchesQuery
+                }).length}
+              </strong> of {projects.length} projects
+            </span>
+          </div>
+        </div>
+
+        {/* Category Filter Pills & Quick Badges */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {["All", "Full Stack", "Frontend", "Backend", "Mobile", "AI / ML"].map((cat) => {
+            const count = cat === "All"
+              ? projects.length
+              : projects.filter((p) => p.category === cat).length
+            return (
+              <button
+                key={cat}
+                onClick={() => setCategoryFilter(cat)}
+                className={`text-xs font-semibold px-4 py-2 rounded-xl whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${categoryFilter === cat
+                    ? "bg-gradient-to-r from-emerald-500 to-green-400 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                    : "bg-[#121214] text-zinc-400 hover:text-white hover:bg-[#202023] border border-[#27272a]"
+                  }`}
+              >
+                {cat}
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${categoryFilter === cat ? "bg-slate-950/30 text-slate-950" : "bg-zinc-800 text-zinc-400"
+                  }`}>
+                  {count}
+                </span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {projects
-          .filter((p) => categoryFilter === "All" || p.category === categoryFilter)
-          .map((p) => (
-          <div
-            key={p.id}
-            className="bg-[#1b1b1b] border border-[#262626] hover:border-green-500/40 rounded-3xl overflow-hidden space-y-3 flex flex-col justify-between shadow-xl hover:shadow-2xl hover:shadow-green-500/5 transition-all duration-300 group"
+      {projects.filter((p) => {
+        const matchesCat = categoryFilter === "All" || p.category === categoryFilter
+        const q = searchQuery.toLowerCase().trim()
+        const matchesQuery =
+          !q ||
+          p.title.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.tags?.some((t) => t.toLowerCase().includes(q))
+        return matchesCat && matchesQuery
+      }).length === 0 ? (
+        <div className="bg-[#18181b]/50 border border-dashed border-[#27272a] rounded-3xl p-12 text-center space-y-3">
+          <Layers className="w-10 h-10 text-emerald-500/40 mx-auto" />
+          <h3 className="text-base font-bold text-white">No projects found</h3>
+          <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+            No portfolio projects match your active search filter "{searchQuery}" in category "{categoryFilter}".
+          </p>
+          <Button
+            size="sm"
+            onClick={() => {
+              setSearchQuery("")
+              setCategoryFilter("All")
+            }}
+            className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-xs rounded-xl border border-emerald-500/30 mt-2"
           >
-            {/* Project Image Banner */}
-            <div className="relative h-48 bg-[#141414] overflow-hidden flex items-center justify-center border-b border-[#242424]">
-              {p.image ? (
-                <img
-                  src={p.image}
-                  alt={p.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-500">
-                  <ImageIcon className="w-9 h-9 opacity-30 text-green-500" />
-                  <span className="text-[11px] font-semibold">No Image Provided</span>
-                </div>
-              )}
+            Reset Filters
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {projects
+            .filter((p) => {
+              const matchesCat = categoryFilter === "All" || p.category === categoryFilter
+              const q = searchQuery.toLowerCase().trim()
+              const matchesQuery =
+                !q ||
+                p.title.toLowerCase().includes(q) ||
+                p.description.toLowerCase().includes(q) ||
+                p.tags?.some((t) => t.toLowerCase().includes(q))
+              return matchesCat && matchesQuery
+            })
+            .map((p) => (
+              <div
+                key={p.id}
+                className="bg-gradient-to-b from-[#1c1c21] to-[#141417] border border-[#27272a] rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl transition-all duration-300 group"
+              >
+                {/* Project Image Banner */}
+                <div className="relative h-52 bg-[#0d0d0f] overflow-hidden flex items-center justify-center border-b border-[#27272a]">
+                  {p.image ? (
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-zinc-500">
+                      <ImageIcon className="w-10 h-10 opacity-30 text-emerald-400" />
+                      <span className="text-[11px] font-semibold">No Image Provided</span>
+                    </div>
+                  )}
 
-              <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <span className="text-[10px] uppercase font-medium text-green-400 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-green-500/20 shadow-md">
-                  {p.category || "Project"}
-                </span>
-                {p.featured && (
-                  <span className="text-[10px] font-medium text-slate-950 bg-gradient-to-r from-green-400 to-emerald-400 px-3 py-0.5 rounded-full shadow-md flex items-center gap-1">
-                    <Star className="w-3 h-3 fill-slate-950 stroke-none" /> FEATURED
-                  </span>
-                )}
-              </div>
-            </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#141417] via-transparent to-transparent opacity-80" />
 
-            <div className="p-6 pt-2 space-y-4 flex-1 flex flex-col justify-between">
-              <div className="space-y-2.5">
-                <h3 className="font-bold text-lg text-white group-hover:text-green-400 transition-colors">{p.title}</h3>
-                <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                  {p.description}
-                </p>
-
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {p.tags?.map((t, idx) => (
-                    <span
-                      key={idx}
-                      className="text-[10px] bg-[#141414] text-gray-300 px-2.5 py-1 rounded-lg border border-[#262626]"
-                    >
-                      {t}
+                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+                    <span className="text-[10px] uppercase font-bold text-emerald-400 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-emerald-500/30 shadow-md">
+                      {p.category || "Project"}
                     </span>
-                  ))}
-                </div>
-
-                {/* Case Study Badges */}
-                {((p.features && p.features.length > 0) || p.results || p.architecture) && (
-                  <div className="pt-2 flex flex-wrap items-center gap-2 text-[10px]">
-                    {p.features && p.features.length > 0 && (
-                      <span className="bg-green-500/10 text-green-400 border border-green-500/20 font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
-                        ⚡ {Array.isArray(p.features) ? p.features.length : 1} Features List
-                      </span>
-                    )}
-                    {p.architecture && (
-                      <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 font-semibold px-2.5 py-1 rounded-lg">
-                        🏛️ Architecture Defined
-                      </span>
-                    )}
-                    {p.results && (
-                      <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold px-2.5 py-1 rounded-lg truncate max-w-[220px]">
-                        📈 {p.results}
+                    {p.featured && (
+                      <span className="text-[10px] font-extrabold text-slate-950 bg-gradient-to-r from-emerald-400 to-green-300 px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-slate-950 stroke-none" /> FEATURED
                       </span>
                     )}
                   </div>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between pt-4 border-t border-[#242424] mt-4">
-                <div className="flex items-center gap-2 text-gray-400">
-                  {p.github && (
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2.5 rounded-xl bg-[#141414] border border-[#282828] hover:text-white hover:bg-[#252525] hover:border-gray-600 transition-colors"
-                      title={`GitHub: ${p.github}`}
-                    >
-                      <Github className="w-4 h-4" />
-                    </a>
-                  )}
-                  {p.live && (
-                    <a
-                      href={p.live}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2.5 rounded-xl bg-[#141414] border border-[#282828] hover:text-white hover:bg-[#252525] hover:border-gray-600 transition-colors"
-                      title={`Live Demo: ${p.live}`}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  )}
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openEditProject(p)}
-                    className="bg-[#141414] border border-[#282828] hover:border-green-500/40 hover:bg-green-500/10 hover:text-green-400 text-gray-300 text-xs rounded-xl px-4 py-2 cursor-pointer font-semibold transition-all"
-                  >
-                    <Edit className="w-3.5 h-3.5 mr-1.5" /> Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => promptDeleteProject(p)}
-                    className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs rounded-xl px-3.5 py-2 cursor-pointer font-semibold transition-all"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
+                <div className="p-6 pt-3 space-y-4 flex-1 flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <h3 className="font-bold text-lg text-white group-hover:text-emerald-400 transition-colors flex items-center justify-between">
+                      <span>{p.title}</span>
+                    </h3>
+                    <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                      {p.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {p.tags?.map((t, idx) => (
+                        <span
+                          key={idx}
+                          className="text-[10px] font-medium bg-[#0f0f12] text-zinc-300 px-2.5 py-1 rounded-lg border border-[#27272a]"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Case Study Badges */}
+                    {((p.features && p.features.length > 0) || p.results || p.architecture) && (
+                      <div className="pt-2 flex flex-wrap items-center gap-2 text-[10px]">
+                        {p.features && p.features.length > 0 && (
+                          <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                            <Zap className="w-3 h-3 text-emerald-400" />
+                            {Array.isArray(p.features) ? p.features.length : 1} Features List
+                          </span>
+                        )}
+                        {p.architecture && (
+                          <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                            <Network className="w-3 h-3 text-purple-400" />
+                            Architecture Defined
+                          </span>
+                        )}
+                        {p.results && (
+                          <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 truncate max-w-[220px]">
+                            <TrendingUp className="w-3 h-3 text-blue-400 shrink-0" />
+                            <span className="truncate">{p.results}</span>
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-[#27272a] mt-4">
+                    <div className="flex items-center gap-2 text-zinc-400">
+                      {p.github && (
+                        <a
+                          href={p.github}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2.5 rounded-xl bg-[#0f0f12] border border-[#27272a] hover:text-white hover:bg-[#202023] hover:border-zinc-500 transition-colors"
+                          title={`GitHub: ${p.github}`}
+                        >
+                          <Github className="w-4 h-4" />
+                        </a>
+                      )}
+                      {p.live && (
+                        <a
+                          href={p.live}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2.5 rounded-xl bg-[#0f0f12] border border-[#27272a] hover:text-white hover:bg-[#202023] hover:border-zinc-500 transition-colors"
+                          title={`Live Demo: ${p.live}`}
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openEditProject(p)}
+                        className="bg-[#0f0f12] border border-[#27272a] hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400 text-zinc-300 text-xs rounded-xl px-4 py-2 cursor-pointer font-semibold transition-all"
+                      >
+                        <Edit className="w-3.5 h-3.5 mr-1.5" /> Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => promptDeleteProject(p)}
+                        className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs rounded-xl px-3.5 py-2 cursor-pointer font-semibold transition-all"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            ))}
+        </div>
+      )}
 
       {/* Shadcn UI Sheet Drawer for Adding / Editing Projects */}
       <Sheet open={showSheet} onOpenChange={setShowSheet}>
@@ -696,11 +790,10 @@ export default function AdminProjects() {
                           featured: !isEditingProject.featured,
                         })
                       }
-                      className={`w-full h-12 rounded-2xl px-4 flex items-center justify-between text-xs font-bold transition-all cursor-pointer ${
-                        isEditingProject.featured
+                      className={`w-full h-12 rounded-2xl px-4 flex items-center justify-between text-xs font-bold transition-all cursor-pointer ${isEditingProject.featured
                           ? "bg-green-500 text-slate-950 shadow-lg shadow-green-500/20"
                           : "bg-[#141414] text-gray-400 border border-[#2a2a2a]"
-                      }`}
+                        }`}
                     >
                       <span>{isEditingProject.featured ? "⭐ Featured Project" : "Standard Project"}</span>
                       <span className={`w-3 h-3 rounded-full ${isEditingProject.featured ? "bg-slate-950" : "bg-gray-600"}`} />
@@ -749,11 +842,10 @@ export default function AdminProjects() {
                                 })
                               }
                             }}
-                            className={`px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer ${
-                              isSelected
+                            className={`px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer ${isSelected
                                 ? "bg-green-500 text-slate-950"
                                 : "bg-[#141414] text-gray-400 hover:text-white border border-[#2a2a2a]"
-                            }`}
+                              }`}
                           >
                             {isSelected ? `✓ ${tech}` : `+ ${tech}`}
                           </button>
@@ -912,11 +1004,10 @@ export default function AdminProjects() {
                               onDragStart={(e) => handleFeatureDragStart(e, idx)}
                               onDragOver={(e) => handleFeatureDragOver(e, idx)}
                               onDragEnd={handleFeatureDragEnd}
-                              className={`flex items-center gap-2 bg-[#141414] border p-1.5 px-3 rounded-2xl transition-all select-none ${
-                                draggedFeatureIndex === idx
+                              className={`flex items-center gap-2 bg-[#141414] border p-1.5 px-3 rounded-2xl transition-all select-none ${draggedFeatureIndex === idx
                                   ? "border-green-500 bg-[#1e2a21] opacity-70 scale-[0.98] shadow-lg shadow-green-500/10"
                                   : "border-[#2a2a2a] hover:border-[#383838]"
-                              }`}
+                                }`}
                             >
                               {/* Drag Handle */}
                               <div
@@ -1010,8 +1101,8 @@ export default function AdminProjects() {
                             const challengesArr = Array.isArray(isEditingProject.challenges)
                               ? isEditingProject.challenges
                               : typeof isEditingProject.challenges === "string"
-                              ? isEditingProject.challenges.split("\n").filter(Boolean)
-                              : []
+                                ? isEditingProject.challenges.split("\n").filter(Boolean)
+                                : []
                             setBulkChallengesText(challengesArr.join("\n"))
                           }
                           setShowBulkChallenges(!showBulkChallenges)
@@ -1027,8 +1118,8 @@ export default function AdminProjects() {
                           const current = Array.isArray(isEditingProject.challenges)
                             ? isEditingProject.challenges
                             : typeof isEditingProject.challenges === "string"
-                            ? isEditingProject.challenges.split("\n").filter(Boolean)
-                            : []
+                              ? isEditingProject.challenges.split("\n").filter(Boolean)
+                              : []
                           setIsEditingProject({
                             ...isEditingProject,
                             challenges: [...current, ""],
@@ -1062,7 +1153,7 @@ export default function AdminProjects() {
                   ) : (
                     <div className="space-y-2">
                       {(!isEditingProject.challenges ||
-                      (Array.isArray(isEditingProject.challenges) && isEditingProject.challenges.length === 0)) ? (
+                        (Array.isArray(isEditingProject.challenges) && isEditingProject.challenges.length === 0)) ? (
                         <div className="text-xs text-gray-500 italic bg-[#141414] p-3 rounded-2xl text-center border border-[#2a2a2a]">
                           No challenges added yet. Click "+ Add Challenge" above.
                         </div>
@@ -1070,8 +1161,8 @@ export default function AdminProjects() {
                         (Array.isArray(isEditingProject.challenges)
                           ? isEditingProject.challenges
                           : typeof isEditingProject.challenges === "string"
-                          ? (isEditingProject.challenges as string).split("\n").filter(Boolean)
-                          : [""]
+                            ? (isEditingProject.challenges as string).split("\n").filter(Boolean)
+                            : [""]
                         ).map((challenge, idx, arr) => (
                           <div
                             key={idx}
@@ -1079,11 +1170,10 @@ export default function AdminProjects() {
                             onDragStart={(e) => handleChallengeDragStart(e, idx)}
                             onDragOver={(e) => handleChallengeDragOver(e, idx)}
                             onDragEnd={handleChallengeDragEnd}
-                            className={`flex items-center gap-2 bg-[#141414] border p-1.5 px-3 rounded-2xl transition-all select-none ${
-                              draggedChallengeIndex === idx
+                            className={`flex items-center gap-2 bg-[#141414] border p-1.5 px-3 rounded-2xl transition-all select-none ${draggedChallengeIndex === idx
                                 ? "border-amber-500 bg-[#262017] opacity-70 scale-[0.98] shadow-lg shadow-amber-500/10"
                                 : "border-[#2a2a2a] hover:border-[#383838]"
-                            }`}
+                              }`}
                           >
                             <div
                               className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-amber-400 shrink-0"
@@ -1174,8 +1264,8 @@ export default function AdminProjects() {
                             const solutionsArr = Array.isArray(isEditingProject.solutions)
                               ? isEditingProject.solutions
                               : typeof isEditingProject.solutions === "string"
-                              ? isEditingProject.solutions.split("\n").filter(Boolean)
-                              : []
+                                ? isEditingProject.solutions.split("\n").filter(Boolean)
+                                : []
                             setBulkSolutionsText(solutionsArr.join("\n"))
                           }
                           setShowBulkSolutions(!showBulkSolutions)
@@ -1191,8 +1281,8 @@ export default function AdminProjects() {
                           const current = Array.isArray(isEditingProject.solutions)
                             ? isEditingProject.solutions
                             : typeof isEditingProject.solutions === "string"
-                            ? isEditingProject.solutions.split("\n").filter(Boolean)
-                            : []
+                              ? isEditingProject.solutions.split("\n").filter(Boolean)
+                              : []
                           setIsEditingProject({
                             ...isEditingProject,
                             solutions: [...current, ""],
@@ -1226,7 +1316,7 @@ export default function AdminProjects() {
                   ) : (
                     <div className="space-y-2">
                       {(!isEditingProject.solutions ||
-                      (Array.isArray(isEditingProject.solutions) && isEditingProject.solutions.length === 0)) ? (
+                        (Array.isArray(isEditingProject.solutions) && isEditingProject.solutions.length === 0)) ? (
                         <div className="text-xs text-gray-500 italic bg-[#141414] p-3 rounded-2xl text-center border border-[#2a2a2a]">
                           No solutions added yet. Click "+ Add Solution" above.
                         </div>
@@ -1234,8 +1324,8 @@ export default function AdminProjects() {
                         (Array.isArray(isEditingProject.solutions)
                           ? isEditingProject.solutions
                           : typeof isEditingProject.solutions === "string"
-                          ? (isEditingProject.solutions as string).split("\n").filter(Boolean)
-                          : [""]
+                            ? (isEditingProject.solutions as string).split("\n").filter(Boolean)
+                            : [""]
                         ).map((solution, idx, arr) => (
                           <div
                             key={idx}
@@ -1243,11 +1333,10 @@ export default function AdminProjects() {
                             onDragStart={(e) => handleSolutionDragStart(e, idx)}
                             onDragOver={(e) => handleSolutionDragOver(e, idx)}
                             onDragEnd={handleSolutionDragEnd}
-                            className={`flex items-center gap-2 bg-[#141414] border p-1.5 px-3 rounded-2xl transition-all select-none ${
-                              draggedSolutionIndex === idx
+                            className={`flex items-center gap-2 bg-[#141414] border p-1.5 px-3 rounded-2xl transition-all select-none ${draggedSolutionIndex === idx
                                 ? "border-blue-500 bg-[#19232c] opacity-70 scale-[0.98] shadow-lg shadow-blue-500/10"
                                 : "border-[#2a2a2a] hover:border-[#383838]"
-                            }`}
+                              }`}
                           >
                             <div
                               className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-blue-400 shrink-0"
@@ -1388,7 +1477,7 @@ export default function AdminProjects() {
 
                         const archText = isEditingProject.architecture || ""
                         const lines = archText.split("\n").filter((l) => l.trim().length > 0)
-                        
+
                         // Map lines into categories
                         const catMap: { [key: string]: string[] } = {
                           "Frontend & UI": [],
