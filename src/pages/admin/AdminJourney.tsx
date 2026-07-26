@@ -75,7 +75,42 @@ export default function AdminJourney() {
 
   useEffect(() => {
     loadData()
+    const handleRefreshEvent = () => loadData()
+    window.addEventListener("admin-refresh", handleRefreshEvent)
+    return () => window.removeEventListener("admin-refresh", handleRefreshEvent)
   }, [])
+
+  const saveJourneyOrder = async (items: JourneyItem[]) => {
+    const updatedItems = items.map((item, idx) => ({
+      ...item,
+      display_order: idx + 1,
+      side: idx % 2 === 0 ? "right" : "left",
+    }))
+
+    setJourneyItems(updatedItems)
+
+    if (isSupabaseConfigured) {
+      try {
+        const updates = updatedItems
+          .filter((item) => item.id && !item.id.startsWith("demo"))
+          .map((item) =>
+            supabase
+              .from("journey_timeline")
+              .update({
+                display_order: item.display_order,
+                side: item.side,
+              })
+              .eq("id", item.id)
+          )
+        await Promise.all(updates)
+        toast.success("Timeline order and alternating sides updated in database!")
+        loadHeaderData()
+      } catch (err: any) {
+        console.error("Error updating journey order in database:", err)
+        toast.error("Failed to update timeline order in database")
+      }
+    }
+  }
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index)
@@ -93,16 +128,17 @@ export default function AdminJourney() {
     setJourneyItems(updated)
   }
 
-  const handleDragEnd = () => {
+  const handleDragEnd = async () => {
     setDraggedIndex(null)
+    await saveJourneyOrder(journeyItems)
   }
 
-  const moveMilestone = (fromIndex: number, toIndex: number) => {
+  const moveMilestone = async (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= journeyItems.length) return
     const updated = [...journeyItems]
     const [moved] = updated.splice(fromIndex, 1)
     updated.splice(toIndex, 0, moved)
-    setJourneyItems(updated)
+    await saveJourneyOrder(updated)
   }
 
   const handleSaveJourney = async (e: React.FormEvent) => {
@@ -123,10 +159,19 @@ export default function AdminJourney() {
           if (error) throw error
         } else {
           const { id, ...newItem } = isEditingJourney
-          const { data, error } = await supabase.from("journey_timeline").insert([newItem]).select().single()
+          const itemToInsert = {
+            ...newItem,
+            display_order: newItem.display_order || journeyItems.length + 1,
+          }
+          const { data, error } = await supabase
+            .from("journey_timeline")
+            .insert([itemToInsert])
+            .select()
+            .single()
           if (error) throw error
           if (data) {
             isEditingJourney.id = data.id
+            isEditingJourney.display_order = data.display_order
           }
         }
       }
