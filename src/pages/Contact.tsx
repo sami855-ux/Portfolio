@@ -112,59 +112,23 @@ export default function Contact() {
   return (
     <>
       <Header />
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-[#3a5a40]/20"
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-              scale: Math.random() * 0.5 + 0.5,
-              opacity: 0.3,
-            }}
-            animate={{
-              x: [null, Math.random() * window.innerWidth],
-              y: [null, Math.random() * window.innerHeight],
-              transition: {
-                duration: Math.random() * 20 + 20,
-                repeat: Infinity,
-                repeatType: "reverse",
-              },
-            }}
-            style={{
-              width: `${Math.random() * 200 + 100}px`,
-              height: `${Math.random() * 200 + 100}px`,
-            }}
-          />
-        ))}
-      </div>
-      <div className="min-h-screen py-12 px-4 mt-7 sm:px-6 lg:px-8 bg-[#1a1a1a]">
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-transparent">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto pt-16"
         >
-          <div className="text-center mb-12">
-            <motion.h1
-              className="text-2xl font-bold mb-4 bg-gradient-to-r from-green-500 to-blue-600 bg-clip-text text-transparent"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              {isSubmitted ? "Message Sent!" : "Get In Touch"}
-            </motion.h1>
-            <motion.p
-              className="text-muted-foreground max-w-2xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
+          {/* Plain Left-Aligned Header */}
+          <div className="mb-12 text-left">
+            <h1 className="text-3xl sm:text-4xl font-outfit font-extrabold text-white tracking-tight">
+              {isSubmitted ? "Message Sent!" : "Contact"}
+            </h1>
+            <p className="text-sm text-gray-400 mt-2 font-normal max-w-md">
               {isSubmitted
                 ? "Thank you for reaching out! I'll get back to you soon."
                 : "Have a project in mind or want to collaborate? Feel free to reach out!"}
-            </motion.p>
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -172,64 +136,64 @@ export default function Contact() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.2 }}
             >
               <Card className="h-full p-6 bg-[#1a1a1a] border-[#201f1f]">
-                <h2 className="text-2xl font-semibold mb-6 text-white">
+                <h2 className="text-xl font-outfit font-extrabold mb-6 text-white tracking-tight">
                   Contact Information
                 </h2>
 
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-full bg-primary/10 text-primary">
-                      <Mail className="w-5 h-5 text-[#4d4d4d]" />
+                    <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                      <Mail className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-white">Email</h3>
-                      <p className="text-white">samitale86@gmail.com</p>
+                      <h3 className="font-outfit font-bold text-sm text-white">Email</h3>
+                      <p className="text-xs text-gray-300 font-mono mt-0.5">samitale86@gmail.com</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-full bg-primary/10 text-primary">
-                      <Phone className="w-5 h-5 text-[#4d4d4d]" />
+                    <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                      <Phone className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-white">Phone</h3>
-                      <p className="text-white">+251 978 109 304</p>
+                      <h3 className="font-outfit font-bold text-sm text-white">Phone</h3>
+                      <p className="text-xs text-gray-300 font-mono mt-0.5">+251 978 109 304</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-full bg-primary/10 text-primary">
-                      <MapPin className="w-5 h-5 text-[#4d4d4d]" />
+                    <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                      <MapPin className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-white">Location</h3>
-                      <p className="text-white">Addis Ababa, Ethiopia</p>
+                      <h3 className="font-outfit font-bold text-sm text-white">Location</h3>
+                      <p className="text-xs text-gray-300 mt-0.5">Addis Ababa, Ethiopia</p>
                     </div>
                   </div>
                 </div>
 
                 <motion.div
-                  className="mt-8 pt-6 border-t border-[#201f1f] dark:border-gray-800"
+                  className="mt-8 pt-6 border-t border-white/10"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.8 }}
+                  transition={{ delay: 0.4 }}
                 >
-                  <h3 className="font-medium mb-4 text-slate-100">
+                  <h3 className="font-outfit font-bold text-xs uppercase tracking-wider mb-4 text-gray-400">
                     Connect with me
                   </h3>
-                  <div className="flex gap-4 flex-wrap">
+                  <div className="flex gap-2.5 flex-wrap">
                     {socialLinks.map((social, index) => (
                       <motion.a
                         key={social.name}
                         href={social.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-2 rounded-md bg-[#201f1f] text-slate-100 dark:bg-gray-800 transition-colors text-sm font-medium"
+                        className="px-3.5 py-1.5 rounded-full bg-[#1c1c24] hover:bg-[#282834] text-gray-300 hover:text-white border border-white/10 text-xs font-mono font-medium transition-all"
                         whileHover={{ y: -2 }}
-                        transition={{ delay: index * 0.1 }}
+                        transition={{ delay: index * 0.05 }}
                       >
                         {social.name}
                       </motion.a>
@@ -243,7 +207,7 @@ export default function Contact() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.2 }}
             >
               {isSubmitted ? (
                 <Card className="h-full p-6 bg-[#1a1a1a] border-[#201f1f] flex flex-col items-center justify-center">
@@ -253,20 +217,19 @@ export default function Contact() {
                     transition={{ duration: 0.5 }}
                     className="text-center"
                   >
-                    <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-500/20 mb-6">
-                      <CheckCircle className="h-10 w-10 text-green-500" />
+                    <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-emerald-500/20 border border-emerald-500/30 mb-6">
+                      <CheckCircle className="h-8 w-8 text-emerald-400" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">
+                    <h3 className="text-xl font-outfit font-extrabold text-white mb-2">
                       Message Sent Successfully!
                     </h3>
-                    <p className="text-muted-foreground mb-6">
-                      Thank you for contacting me. I'll get back to you as soon
-                      as possible.
+                    <p className="text-xs text-gray-300 mb-6">
+                      Thank you for contacting me. I'll get back to you as soon as possible.
                     </p>
                     <motion.div whileTap={{ scale: 0.98 }}>
                       <Button
                         onClick={() => setIsSubmitted(false)}
-                        className="bg-gradient-to-r from-green-500 to-blue-600"
+                        className="bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-600 hover:from-emerald-400 hover:to-blue-500 text-white font-outfit font-bold rounded-full px-6 py-2.5 text-xs shadow-md shadow-emerald-500/20 cursor-pointer"
                       >
                         Send another message
                       </Button>
@@ -275,20 +238,20 @@ export default function Contact() {
                 </Card>
               ) : (
                 <Card className="h-full p-6 bg-[#1a1a1a] border-[#201f1f]">
-                  <h2 className="text-2xl font-semibold mb-6 text-slate-100">
+                  <h2 className="text-xl font-outfit font-extrabold mb-6 text-white tracking-tight">
                     Send a Message
                   </h2>
 
                   <form className="space-y-4" onSubmit={sendEmail}>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <label
                         htmlFor="name"
-                        className="text-sm font-medium text-slate-100"
+                        className="text-xs font-mono font-medium text-gray-300"
                       >
                         Name
                       </label>
                       <Input
-                        className="text-slate-100 border-[#201f1f] hover:shadow-none"
+                        className="bg-[#1c1c24] text-white border-white/10 focus:border-emerald-500/50 rounded-xl text-xs h-10 placeholder:text-gray-500"
                         id="name"
                         name="name"
                         placeholder="Your name"
@@ -298,15 +261,15 @@ export default function Contact() {
                       />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <label
                         htmlFor="email"
-                        className="text-sm font-medium text-slate-100"
+                        className="text-xs font-mono font-medium text-gray-300"
                       >
                         Email
                       </label>
                       <Input
-                        className="text-slate-100 border-[#201f1f] hover:shadow-none"
+                        className="bg-[#1c1c24] text-white border-white/10 focus:border-emerald-500/50 rounded-xl text-xs h-10 placeholder:text-gray-500"
                         id="email"
                         name="email"
                         type="email"
@@ -317,15 +280,15 @@ export default function Contact() {
                       />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <label
                         htmlFor="subject"
-                        className="text-sm font-medium text-slate-100"
+                        className="text-xs font-mono font-medium text-gray-300"
                       >
                         Subject
                       </label>
                       <Input
-                        className="text-slate-100 border-[#201f1f] hover:shadow-none"
+                        className="bg-[#1c1c24] text-white border-white/10 focus:border-emerald-500/50 rounded-xl text-xs h-10 placeholder:text-gray-500"
                         id="subject"
                         name="subject"
                         placeholder="What's this about?"
@@ -335,10 +298,10 @@ export default function Contact() {
                       />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <label
                         htmlFor="message"
-                        className="text-sm font-medium text-slate-100"
+                        className="text-xs font-mono font-medium text-gray-300"
                       >
                         Message
                       </label>
@@ -346,8 +309,8 @@ export default function Contact() {
                         id="message"
                         name="message"
                         placeholder="Your message here..."
-                        rows={5}
-                        className="border-[#201f1f] text-slate-100"
+                        rows={4}
+                        className="bg-[#1c1c24] text-white border-white/10 focus:border-emerald-500/50 rounded-xl text-xs placeholder:text-gray-500"
                         value={formData.message}
                         onChange={handleChange}
                         required
@@ -357,12 +320,12 @@ export default function Contact() {
                     <motion.div whileTap={{ scale: 0.98 }} className="pt-2">
                       <Button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-green-500 to-blue-600 cursor-pointer"
+                        className="w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-600 hover:from-emerald-400 hover:to-blue-500 text-white font-outfit font-bold rounded-full py-5 text-xs shadow-lg shadow-emerald-500/20 cursor-pointer border border-white/10"
                         disabled={isLoading}
                       >
                         {isLoading ? (
                           <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
