@@ -17,7 +17,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip"
 import { useState, useEffect, useRef } from "react"
-import { getProjects, defaultProjects } from "@/lib/supabase"
+import { getProjects } from "@/lib/supabase"
 import type { Project } from "@/types/supabase"
 import { Link } from "react-router-dom"
 import taxImg from "../assets/ta.png"
@@ -26,6 +26,7 @@ import lmsImg from "../assets/lms.png"
 import negariImg from "../assets/negari.png"
 import HabeshaGoImg from "../assets/habeshaGo.png"
 import { useProjectsQuery } from "@/hooks/usePortfolioQueries"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const defaultImg =
   "https://placehold.co/600x400/0f172a/ffffff?text=Project+Preview"
@@ -119,7 +120,7 @@ export const Projects = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
-  const projectList = dbProjects && dbProjects.length > 0 ? dbProjects : defaultProjects
+  const projectList = dbProjects || []
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -169,111 +170,134 @@ export const Projects = () => {
           </div>
         )}
 
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "show" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
-          {projectList.map((project, index) => (
-            <motion.div key={index} variants={itemVariants}>
-              <Card className="h-full flex flex-col group overflow-hidden bg-[#252424] border-none pt-0">
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                    <p className="text-white ">{project.description}</p>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="h-80 w-full rounded-3xl bg-[#141416]/90 border border-white/5 p-0 flex flex-col justify-between overflow-hidden">
+                <Skeleton className="h-44 w-full rounded-none bg-white/10" />
+                <div className="space-y-2 p-5">
+                  <Skeleton className="h-5 w-3/4 bg-white/10" />
+                  <Skeleton className="h-3.5 w-full bg-white/10" />
+                  <Skeleton className="h-3.5 w-4/5 bg-white/10" />
+                </div>
+                <div className="flex gap-2 p-5 pt-0">
+                  <Skeleton className="h-7 w-20 rounded-xl bg-white/10" />
+                  <Skeleton className="h-7 w-20 rounded-xl bg-white/10" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            ref={ref}
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? "show" : "hidden"}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto"
+          >
+            {projectList.map((project, index) => (
+            <motion.div key={index} variants={itemVariants} className="w-full flex justify-center">
+              <div className="w-full h-full flex flex-col justify-between group rounded-3xl border border-white/10 bg-gradient-to-b from-[#18181c]/90 to-[#101014]/90 backdrop-blur-xl p-6 shadow-2xl transition-all duration-300 relative">
+                {/* Header Row: Title & Action Triggers */}
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-medium text-emerald-400/90 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                          {index % 2 === 0 ? "Featured" : "Project"}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-white tracking-tight leading-snug group-hover:text-emerald-400 transition-colors duration-300">
+                        {project.title}
+                      </h3>
+                    </div>
+
+                    {/* Action Triggers with Tooltips */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {project.github && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Link to={project.github} target="_blank">
+                                <span className="p-2 rounded-xl bg-[#22222a] hover:bg-[#2c2c36] text-gray-300 hover:text-white border border-white/10 shadow-sm transition-all duration-200 flex items-center justify-center cursor-pointer">
+                                  <Github className="h-4 w-4" />
+                                </span>
+                              </Link>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View Code on GitHub</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {project.live && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Link to={project.live} target="_blank">
+                                <span className="p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm transition-all duration-200 flex items-center justify-center cursor-pointer">
+                                  <ExternalLink className="h-4 w-4" />
+                                </span>
+                              </Link>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Live Demo</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Thumbnail Preview Window */}
+                  <div className="relative h-44 w-full overflow-hidden rounded-2xl bg-[#0a0a0c] border border-white/5 my-3">
+                    <img
+                      src={project.image || defaultImg}
+                      alt={project.title}
+                      className="w-full h-44 object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#101014]/80 via-transparent to-transparent pointer-events-none" />
+                  </div>
+
+                  {/* Description */}
+                  <p className="line-clamp-3 text-sm md:text-[15px] text-slate-300 leading-relaxed font-normal">
+                    {project.description}
+                  </p>
                 </div>
 
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between text-white">
-                    <h2 className="text-xl">{project.title}</h2>
-                  </CardTitle>
-                  <CardDescription className="line-clamp-2 text-white">
-                    {project.description}
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="flex-grow">
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag, i) => (
+                {/* Tech Stack Pills at Card Bottom */}
+                <div className="pt-4 border-t border-white/5 mt-4">
+                  <div className="flex flex-wrap gap-1.5">
+                    {(project.tags || []).map((tag, i) => (
                       <Badge
                         key={i}
                         variant="outline"
-                        className="px-3 py-1 text-xs font-medium rounded-full border border-[#1a1a1a] bg-transparent/50 text-slate-200 shadow-sm hover:shadow-md hover:bg-slate-700/50 transition-all duration-200"
+                        className="px-2.5 py-1 text-xs font-outfit font-semibold tracking-wide rounded-md border border-white/10 bg-white/5 text-gray-200 shadow-none"
                       >
                         {tag}
                       </Badge>
                     ))}
                   </div>
-                </CardContent>
-
-                <CardFooter className="justify-between">
-                  <div className="flex space-x-2">
-                    {project.github && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link to={project.github} target="_blank">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 hover:bg-[#1a1a1a] hover:text-white"
-                              >
-                                <Github className="h-4 w-4 text-white" />
-                              </Button>
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>View code in Github</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                    {project.live && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link to={project.live} target="_blank">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 hover:bg-[#1a1a1a] hover:text-white"
-                              >
-                                <ExternalLink className="h-4 w-4 text-white" />
-                              </Button>
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Live Demo</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {index % 2 === 0 ? "Featured" : "Personal"}
-                  </div>
-                </CardFooter>
-              </Card>
+                </div>
+              </div>
             </motion.div>
           ))}
         </motion.div>
+        )}
 
         <div className="mt-16 text-center">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-block"
+          >
             <Link to="/Projects">
               <Button
-                variant="outline"
-                className="px-8 py-6 text-black rounded-full"
+                variant="ghost"
+                className="px-8 py-6 rounded-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 hover:from-emerald-500/20 hover:via-teal-500/20 hover:to-blue-500/20 text-white border border-emerald-500/30 hover:border-emerald-400 font-outfit font-bold tracking-wide text-sm shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 transition-all duration-300 gap-2.5 cursor-pointer"
               >
-                View All My Projects
-                <ArrowUpRight className="ml-2 h-4 w-4" />
+                <span>View All My Projects</span>
+                <ArrowUpRight className="h-4 w-4 text-emerald-400" />
               </Button>
             </Link>
           </motion.div>
