@@ -1,11 +1,3 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ArrowUpRight, Github, ExternalLink } from "lucide-react"
@@ -16,111 +8,28 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip"
-import { useState, useEffect, useRef } from "react"
-import { getProjects } from "@/lib/supabase"
-import type { Project } from "@/types/supabase"
+import { useRef } from "react"
+import { defaultProjects } from "@/lib/supabase"
 import { Link } from "react-router-dom"
-import taxImg from "../assets/ta.png"
-import itImg from "../assets/it.png"
-import lmsImg from "../assets/lms.png"
-import negariImg from "../assets/negari.png"
-import HabeshaGoImg from "../assets/habeshaGo.png"
 import { useProjectsQuery } from "@/hooks/usePortfolioQueries"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export const defaultImg =
-  "https://placehold.co/600x400/0f172a/ffffff?text=Project+Preview"
-
-const projects = [
-  {
-    title: "Learning Management System",
-    description:
-      "Online learning platform with authentication, course management, quizzes, and progress tracking.",
-    tags: [
-      "React",
-      "Prisma",
-      "TypeScript",
-      "Tailwind",
-      "Redux",
-      "Socket.io",
-      "Shadcn",
-    ],
-    github: "https://github.com/sami855-ux/LMS-Template.git",
-    live: "http://lms-mini-app-ir5c-git-main-daniel-kumilachews-projects.vercel.app",
-    image: lmsImg,
-  },
-  {
-    title: "Tax Payment Web App",
-    description:
-      "Online tax payment system with authentication, tax filing, admin dashboard, and payment integration.",
-    tags: ["Next.js", "Node.js", "MongoDB", "Cloudinary", "Stripe"],
-    github: "https://github.com/sami855-ux/Tax-payment-Website.git",
-    live: "https://tax-payment-website.vercel.app/",
-    image: taxImg,
-  },
-  {
-    title: "Jobs Marketplace (Itgram)",
-    description:
-      "Social job platform inspired by LinkedIn and Instagram with posts, job listings, real-time interactions, and messaging.",
-    tags: ["React", "Node.js", "MongoDB", "Socket.io", "Express", "Tailwind"],
-    github: "https://github.com/sami855-ux/Itgram-social-network.git",
-    live: "https://itgram-social-network-w6pm.vercel.app/",
-    image: itImg,
-  },
-
-  {
-    title: "Negari - Community Issue Reporting System",
-    description:
-      "AI-powered community reporting platform for submitting, tracking, and prioritizing public issues with real-time updates and admin management.",
-    tags: ["Next.js", "Node.js", "MongoDB", "Socket.io", "AI", "Tailwind"],
-    github: "https://github.com/sami855-ux/Negari.git",
-    live: "https://negari-ten.vercel.app/",
-    image: negariImg,
-  },
-  {
-    title: "Project & Task Management System",
-    description:
-      "Collaborative task management platform with project tracking, task assignment, progress monitoring, and real-time updates.",
-    tags: [
-      "Next.js",
-      "Node.js",
-      "MongoDB",
-      "Socket.io",
-      "Redux",
-      "Tailwind",
-      "Leaflet",
-    ],
-    github: "https://github.com/sami855-ux/Project-and-Task-Manager.git",
-    live: "#",
-    image: defaultImg,
-  },
-  {
-    title: "HabeshaGo - Transport & Ticketing System",
-    description:
-      "Smart transport system with ticket booking, real-time vehicle tracking, and route management for public transportation.",
-    tags: [
-      "Next.js",
-      "React Native (Expo)",
-      "Node.js",
-      "PostgreSQL",
-      "Socket.io",
-      "Maps API",
-      "Tailwind",
-      "Socket.io",
-      "React query",
-    ],
-    github: "https://github.com/sami855-ux/HabeshaGo.git",
-    live: "https://habesha-go-v2.vercel.app/",
-    image: HabeshaGoImg,
-  },
-]
+  "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"
 
 export const Projects = () => {
   const { data: dbProjects, isLoading, isError, refetch } = useProjectsQuery()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
-  const projectList = dbProjects || []
+  const rawList = dbProjects && dbProjects.length > 0 ? dbProjects : defaultProjects
+  const projectList = [...rawList]
+    .sort((a, b) => {
+      const timeA = a.created_at ? new Date(a.created_at).getTime() : Number(a.id) || 0
+      const timeB = b.created_at ? new Date(b.created_at).getTime() : Number(b.id) || 0
+      return timeB - timeA
+    })
+    .slice(0, 6)
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -196,93 +105,95 @@ export const Projects = () => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto"
           >
             {projectList.map((project, index) => (
-            <motion.div key={index} variants={itemVariants} className="w-full flex justify-center">
-              <div className="w-full h-full flex flex-col justify-between group rounded-3xl border border-white/10 bg-gradient-to-b from-[#18181c]/90 to-[#101014]/90 backdrop-blur-xl p-6 shadow-2xl transition-all duration-300 relative">
-                {/* Header Row: Title & Action Triggers */}
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono font-medium text-emerald-400/90 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
-                          {index % 2 === 0 ? "Featured" : "Project"}
-                        </span>
+              <motion.div key={index} variants={itemVariants} className="w-full flex justify-center">
+                <div className="w-full h-full flex flex-col justify-between group rounded-2xl sm:rounded-3xl border-none bg-gradient-to-b from-[#18181c]/90 to-[#101014]/90 backdrop-blur-xl p-3.5 sm:p-4 shadow-2xl transition-all duration-300 relative">
+                  {/* Header Row: Title & Action Triggers */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono font-medium text-emerald-400/90 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                            {index % 2 === 0 ? "Featured" : "Project"}
+                          </span>
+                        </div>
+                        <h3 className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug group-hover:text-emerald-400 transition-colors duration-300">
+                          {project.title}
+                        </h3>
                       </div>
-                      <h3 className="text-lg font-bold text-white tracking-tight leading-snug group-hover:text-emerald-400 transition-colors duration-300">
-                        {project.title}
-                      </h3>
+
+                      {/* Action Triggers with Tooltips */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {project.github && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Link to={project.github} target="_blank">
+                                  <span className="p-1.5 rounded-xl bg-[#22222a] hover:bg-[#2c2c36] text-gray-300 hover:text-white border border-white/10 shadow-sm transition-all duration-200 flex items-center justify-center cursor-pointer">
+                                    <Github className="h-3.5 w-3.5" />
+                                  </span>
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>View Code on GitHub</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                        {project.live && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Link to={project.live} target="_blank">
+                                  <span className="p-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm transition-all duration-200 flex items-center justify-center cursor-pointer">
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                  </span>
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Live Demo</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Action Triggers with Tooltips */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {project.github && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Link to={project.github} target="_blank">
-                                <span className="p-2 rounded-xl bg-[#22222a] hover:bg-[#2c2c36] text-gray-300 hover:text-white border border-white/10 shadow-sm transition-all duration-200 flex items-center justify-center cursor-pointer">
-                                  <Github className="h-4 w-4" />
-                                </span>
-                              </Link>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>View Code on GitHub</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                      {project.live && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Link to={project.live} target="_blank">
-                                <span className="p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm transition-all duration-200 flex items-center justify-center cursor-pointer">
-                                  <ExternalLink className="h-4 w-4" />
-                                </span>
-                              </Link>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Live Demo</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
+                    {/* Thumbnail Preview Window */}
+                    <div className="relative h-40 w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#0a0a0c] border border-white/5 my-2">
+                      <img
+                        src={project.image || defaultImg}
+                        alt={project.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-40 object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#101014]/80 via-transparent to-transparent pointer-events-none" />
+                    </div>
+
+                    {/* Description */}
+                    <p className="line-clamp-3 text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                      {project.description}
+                    </p>
+                  </div>
+
+                  {/* Tech Stack Pills at Card Bottom */}
+                  <div className="pt-3 border-t border-white/5 mt-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      {(project.tags || []).map((tag, i) => (
+                        <Badge
+                          key={i}
+                          variant="outline"
+                          className="px-2.5 py-1 text-xs font-outfit font-semibold tracking-wide rounded-md border border-white/10 bg-white/5 text-gray-200 shadow-none"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
-
-                  {/* Thumbnail Preview Window */}
-                  <div className="relative h-44 w-full overflow-hidden rounded-2xl bg-[#0a0a0c] border border-white/5 my-3">
-                    <img
-                      src={project.image || defaultImg}
-                      alt={project.title}
-                      className="w-full h-44 object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#101014]/80 via-transparent to-transparent pointer-events-none" />
-                  </div>
-
-                  {/* Description */}
-                  <p className="line-clamp-3 text-sm md:text-[15px] text-slate-300 leading-relaxed font-normal">
-                    {project.description}
-                  </p>
                 </div>
-
-                {/* Tech Stack Pills at Card Bottom */}
-                <div className="pt-4 border-t border-white/5 mt-4">
-                  <div className="flex flex-wrap gap-1.5">
-                    {(project.tags || []).map((tag, i) => (
-                      <Badge
-                        key={i}
-                        variant="outline"
-                        className="px-2.5 py-1 text-xs font-outfit font-semibold tracking-wide rounded-md border border-white/10 bg-white/5 text-gray-200 shadow-none"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
         )}
 
         <div className="mt-16 text-center">

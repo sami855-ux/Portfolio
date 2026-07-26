@@ -34,59 +34,15 @@ const defaultSocialLinks: socialLinks[] = [
   { name: "Telegram", url: "https://t.me/Sami_hhtt", icon: "telegram" },
 ]
 
+import { defaultProfileSettings } from "@/lib/supabase"
+
 export default function Home() {
   const [isHovered, setIsHovered] = useState<boolean>(false)
-  const { data: profile, isLoading: isProfileLoading } = useProfileSettingsQuery()
-  const { data: dbContactLinks, isLoading: isLinksLoading } = useContactLinksQuery()
-  const { data: dbFloatingCards, isLoading: isCardsLoading } = useFloatingCardsQuery()
+  const { data: profileData } = useProfileSettingsQuery()
+  const { data: dbContactLinks } = useContactLinksQuery()
+  const { data: dbFloatingCards } = useFloatingCardsQuery()
 
-  if (isProfileLoading || isLinksLoading || isCardsLoading) {
-    return (
-      <div className="w-full min-h-[85vh] flex items-center justify-center flex-col relative overflow-hidden px-4 md:px-0 py-12 mb-12 md:mb-16">
-        <motion.div
-          className="absolute inset-0 -z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-green-500/20 blur-3xl"></div>
-          <div className="absolute bottom-1/3 right-1/4 w-40 h-40 rounded-full bg-blue-500/20 blur-3xl"></div>
-        </motion.div>
-
-        <div className="flex flex-col items-center justify-center text-center my-auto w-full max-w-xl px-4">
-          {/* Skeleton for Title "Hi, I'm ..." */}
-          <Skeleton className="h-12 md:h-14 w-72 md:w-96 rounded-xl mb-4 bg-white/10" />
-
-          {/* Skeleton for Subtitle */}
-          <Skeleton className="h-6 md:h-7 w-64 md:w-80 rounded-lg mb-4 bg-white/10" />
-
-          {/* Skeleton for Bio text */}
-          <Skeleton className="h-4 w-full max-w-md rounded-md mb-2 bg-white/10" />
-          <Skeleton className="h-4 w-3/4 max-w-md rounded-md mb-8 bg-white/10" />
-
-          {/* Skeleton for Profile Avatar */}
-          <div className="relative mb-8">
-            <Skeleton className="w-44 h-44 rounded-full bg-white/10 border-4 border-white/5" />
-          </div>
-
-          {/* Skeleton for Social Icons */}
-          <div className="flex gap-4 mt-4 mb-7">
-            <Skeleton className="w-10 h-10 rounded-full bg-white/10" />
-            <Skeleton className="w-10 h-10 rounded-full bg-white/10" />
-            <Skeleton className="w-10 h-10 rounded-full bg-white/10" />
-            <Skeleton className="w-10 h-10 rounded-full bg-white/10" />
-          </div>
-
-          {/* Skeleton for Action Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Skeleton className="w-36 h-11 rounded-full bg-white/10" />
-            <Skeleton className="w-36 h-11 rounded-full bg-white/10" />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
+  const profile = profileData || defaultProfileSettings
   const floatingCards = dbFloatingCards || []
 
   const socialLinks = dbContactLinks && dbContactLinks.length > 0
@@ -97,11 +53,11 @@ export default function Home() {
     }))
     : defaultSocialLinks
 
-  const fullName = profile?.full_name || ""
-  const titleText = profile?.hero_title || (profile as any)?.title || ""
-  const bioText = profile?.hero_description || (profile as any)?.bio || ""
-  const cvUrl = profile?.resume_url || (profile as any)?.cv_url || ""
-  const avatarUrl = profile?.avatar_url
+  const fullName = profile.full_name || "Samuel Tale"
+  const titleText = profile.hero_title || "Full Stack Web & Mobile Developer"
+  const bioText = profile.hero_description || "Turning ideas into sleek, fast, and responsive websites for web and mobile."
+  const cvUrl = profile.resume_url || "#"
+  const avatarUrl = profile.avatar_url
 
   // Parse name into first and last for styling
   const nameParts = fullName.split(" ")
@@ -184,6 +140,8 @@ export default function Home() {
               <img
                 src={avatarUrl}
                 alt={fullName}
+                loading="lazy"
+                decoding="async"
                 className="w-44 h-44 rounded-full object-cover border-4 border-green-500/30 shadow-2xl"
               />
             ) : (

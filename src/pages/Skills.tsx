@@ -33,6 +33,8 @@ import {
   SiApple,
   SiPython,
   SiFastapi,
+  SiGo,
+  SiNestjs
 } from "react-icons/si"
 import { getSkills } from "@/lib/supabase"
 import { useSkillsQuery } from "@/hooks/usePortfolioQueries"

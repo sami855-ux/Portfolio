@@ -395,3 +395,48 @@ export async function submitContactMessage(msg: {
     return { success: false, error: err.message || "Failed to send message" }
   }
 }
+
+export async function uploadToSupabaseStorage(
+  file: File,
+  bucketName: string = "portfolio-images",
+  pathPrefix: string = "uploads"
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: "Supabase client is not configured" }
+  }
+
+  try {
+    const fileExt = file.name.split(".").pop() || "png"
+    const fileName = `${pathPrefix}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: true,
+      })
+
+    if (uploadError) {
+      console.warn(`Upload to ${bucketName} failed, trying fallback 'images' bucket:`, uploadError)
+      const { error: fallbackError } = await supabase.storage
+        .from("images")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: true,
+        })
+
+      if (fallbackError) {
+        return { success: false, error: uploadError.message }
+      }
+
+      const { data: publicUrlData } = supabase.storage.from("images").getPublicUrl(fileName)
+      return { success: true, url: publicUrlData.publicUrl }
+    }
+
+    const { data: publicUrlData } = supabase.storage.from(bucketName).getPublicUrl(fileName)
+    return { success: true, url: publicUrlData.publicUrl }
+  } catch (err: any) {
+    console.error("Supabase Storage Upload Error:", err)
+    return { success: false, error: err.message || "Failed to upload file to storage bucket" }
+  }
+}

@@ -11,6 +11,7 @@ import {
   supabase,
   isSupabaseConfigured,
   getProjects,
+  uploadToSupabaseStorage,
 } from "@/lib/supabase"
 import type { Project } from "@/types/supabase"
 
@@ -61,6 +62,21 @@ export default function AdminProjects() {
 
   const [bulkSolutionsText, setBulkSolutionsText] = useState("")
   const [showBulkSolutions, setShowBulkSolutions] = useState(false)
+
+  const handleProjectImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !isEditingProject) return
+
+    const toastId = toast.loading("Uploading project image to Supabase Storage bucket...")
+    const res = await uploadToSupabaseStorage(file, "portfolio-images", "projects")
+
+    if (res.success && res.url) {
+      setIsEditingProject((prev) => (prev ? { ...prev, image: res.url } : null))
+      toast.success("Image uploaded to Supabase Storage bucket!", { id: toastId })
+    } else {
+      toast.error("Upload failed: " + (res.error || "Unknown error"), { id: toastId })
+    }
+  }
 
   // Delete Alert Dialog state
   const [deleteDialog, setDeleteDialog] = useState<{
@@ -803,6 +819,39 @@ export default function AdminProjects() {
                       <span className={`w-3 h-3 rounded-full ${isEditingProject.featured ? "bg-slate-950" : "bg-gray-600"}`} />
                     </button>
                   </div>
+                </div>
+
+                {/* Project Cover Image Upload (Supabase Storage) */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center justify-between">
+                    <span>Project Cover Image URL</span>
+                    <span className="text-[11px] text-green-400 font-semibold">Supabase Storage</span>
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      value={isEditingProject.image || ""}
+                      onChange={(e) =>
+                        setIsEditingProject({ ...isEditingProject, image: e.target.value })
+                      }
+                      placeholder="https://... or click Upload to select image"
+                      className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-2xl h-11 px-4 flex-1 font-mono"
+                    />
+                    <label className="bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30 px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shrink-0 shadow-sm">
+                      <Upload className="w-4 h-4 text-green-400" />
+                      <span>Upload to Bucket</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProjectImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  {isEditingProject.image && (
+                    <div className="mt-3 relative w-full h-36 rounded-2xl overflow-hidden border border-white/10 bg-[#101014]">
+                      <img src={isEditingProject.image} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Tech Stack Tags with Quick Select Chips */}

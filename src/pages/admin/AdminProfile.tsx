@@ -12,6 +12,7 @@ import {
   supabase,
   isSupabaseConfigured,
   defaultProfileSettings,
+  uploadToSupabaseStorage,
 } from "@/lib/supabase"
 import {
   useProfileSettingsQuery,
@@ -46,17 +47,27 @@ export default function AdminProfile() {
 
   const hasChanges = JSON.stringify(profile) !== JSON.stringify(initialProfile)
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      if (typeof reader.result === "string") {
-        setProfile((prev) => ({ ...prev, avatar_url: reader.result as string }))
-        triggerToast("Avatar loaded from device! Click Save Profile Settings to apply.")
+
+    const toastId = toast.loading("Uploading image to Supabase Storage bucket...")
+    const res = await uploadToSupabaseStorage(file, "portfolio-images", "avatars")
+
+    if (res.success && res.url) {
+      setProfile((prev) => ({ ...prev, avatar_url: res.url as string }))
+      toast.success("Image uploaded to Supabase Bucket! Click Save Settings to apply.", { id: toastId })
+    } else {
+      // Fallback local reader if storage bucket is not created yet
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          setProfile((prev) => ({ ...prev, avatar_url: reader.result as string }))
+          toast.info("Bucket notice: Saved locally. Click Save Settings to apply.", { id: toastId })
+        }
       }
+      reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleSaveProfile = async (e: React.FormEvent) => {
