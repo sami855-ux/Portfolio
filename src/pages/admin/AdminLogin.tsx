@@ -2,8 +2,10 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { FcGoogle } from "react-icons/fc"
+import { FaGithub } from "react-icons/fa"
 import { toast } from "sonner"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
+import { isAllowedAdminEmail } from "@/lib/adminAuth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -38,6 +40,15 @@ export default function AdminLogin() {
         return
       }
 
+      if (!isAllowedAdminEmail(email)) {
+        await supabase.auth.signOut()
+        const unauthMsg = "Access denied. Only authorized admin emails can access this dashboard."
+        setErrorMsg(unauthMsg)
+        toast.error(unauthMsg, { id: toastId })
+        setLoading(false)
+        return
+      }
+
       toast.success("Welcome back! Signing in...", { id: toastId })
       sessionStorage.setItem("admin_authenticated", "true")
       navigate("/admin")
@@ -65,6 +76,33 @@ export default function AdminLogin() {
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/admin`,
+      },
+    })
+
+    if (error) {
+      setErrorMsg(error.message)
+      toast.error(error.message, { id: toastId })
+      setLoading(false)
+    }
+  }
+
+  const handleGithubLogin = async () => {
+    setLoading(true)
+    setErrorMsg("")
+    setSuccessMsg("")
+    const toastId = toast.loading("Redirecting to GitHub auth...")
+
+    if (!isSupabaseConfigured) {
+      toast.success("Signed in to Admin Dashboard!", { id: toastId })
+      sessionStorage.setItem("admin_authenticated", "true")
+      navigate("/admin")
+      return
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
       options: {
         redirectTo: `${window.location.origin}/admin`,
       },
@@ -149,74 +187,32 @@ export default function AdminLogin() {
                 </div>
               )}
 
-              {/* Google Sign In */}
-              <button
-                type="button"
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                className="w-full bg-[#181818] hover:bg-[#1f1f1f] border-none text-white font-medium py-3 rounded-2xl flex items-center justify-center gap-3 transition-all mb-6 shadow-sm"
-              >
-                <FcGoogle className="w-5 h-5" />
-                <span>Sign in with Google</span>
-              </button>
+              {/* OAuth Sign-In Buttons */}
+              <div className="space-y-3 mb-4">
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  className="w-full bg-[#1c1c1f] hover:bg-[#25252a] border border-[#2d2d32] text-white font-medium py-3.5 rounded-2xl flex items-center justify-center gap-3 transition-all text-sm shadow-md cursor-pointer hover:scale-[1.01]"
+                >
+                  <FcGoogle className="w-5 h-5" />
+                  <span>Continue with Google</span>
+                </button>
 
-              <div className="relative flex items-center justify-center mb-6">
-                <div className="border-t border-[#2d2d2d] w-full" />
-                <span className="bg-[#252424] px-3 text-xs uppercase text-gray-500 font-semibold absolute">
-                  Or with email
-                </span>
+                <button
+                  type="button"
+                  onClick={handleGithubLogin}
+                  disabled={loading}
+                  className="w-full bg-[#1c1c1f] hover:bg-[#25252a] border border-[#2d2d32] text-white font-medium py-3.5 rounded-2xl flex items-center justify-center gap-3 transition-all text-sm shadow-md cursor-pointer hover:scale-[1.01]"
+                >
+                  <FaGithub className="w-5 h-5 text-white" />
+                  <span>Continue with GitHub</span>
+                </button>
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-5">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                    Email
-                  </label>
-                  <Input
-                    type="email"
-                    placeholder="admin@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="h-12 bg-[#181818] border-none text-white placeholder-gray-500 focus:ring-2 focus:ring-green-500 rounded-2xl px-4"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400">
-                      Password
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setErrorMsg("")
-                        setSuccessMsg("")
-                        setView("forgot_password")
-                      }}
-                      className="text-xs text-green-500 hover:underline font-medium"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="h-12 bg-[#181818] border-none text-white placeholder-gray-500 focus:ring-2 focus:ring-green-500 rounded-2xl px-4"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-12 bg-green-500 hover:bg-green-600 text-slate-950 font-bold rounded-2xl transition-all shadow-lg text-base mt-2"
-                >
-                  {loading ? "Signing in..." : "Sign In"}
-                </Button>
-              </form>
+              <p className="text-[11px] text-gray-500 text-center mt-6">
+                Restricted access. Only authorized admin emails are permitted.
+              </p>
             </motion.div>
           ) : (
             /* Forgot Password View */
