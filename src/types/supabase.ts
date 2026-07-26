@@ -6,6 +6,7 @@ export interface Project {
   github: string
   live: string
   image?: string
+  images?: string[]
   featured?: boolean
   category?: string
   features?: string[]
