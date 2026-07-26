@@ -2,96 +2,62 @@
 
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import { Handshake, Rocket, Sparkles } from "lucide-react"
+import { Handshake, Rocket, Code } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 export default function Collab() {
   const navigate = useNavigate()
   return (
-    <div className="h-screen bg-[#1a1a1a] text-white">
-      <div className="container mx-auto px-4 pt-24 flex flex-col items-center justify-center">
-        {/* Animated background elements */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          {[...Array(10)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-[#3a5a40]/20"
-              initial={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                scale: Math.random() * 0.5 + 0.5,
-                opacity: 0.3,
-              }}
-              animate={{
-                x: [null, Math.random() * window.innerWidth],
-                y: [null, Math.random() * window.innerHeight],
-                transition: {
-                  duration: Math.random() * 20 + 20,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                },
-              }}
-              style={{
-                width: `${Math.random() * 200 + 100}px`,
-                height: `${Math.random() * 200 + 100}px`,
-              }}
-            />
-          ))}
-        </div>
-
+    <section className="min-h-[75vh] w-full flex flex-col items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-transparent text-white">
+      <div className="container mx-auto flex flex-col items-center justify-center relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 text-center max-w-3xl"
+          className="text-center max-w-3xl space-y-6"
         >
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-[#0d3b66]/30 border border-[#3a86ff]/30 text-[#3a86ff]">
-            <Sparkles className="h-4 w-4" />
-            <span className="text-sm font-medium">Let's build together</span>
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#3a86ff] to-[#3a5a40]">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-emerald-400 to-blue-500 leading-tight">
             Want to collaborate?
           </h1>
 
-          <p className="text-xl text-gray-300 mb-10">
-            I'm always open to discussing new projects, creative ideas or
-            opportunities to be part of your vision. Let's create something
-            amazing together.
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-normal">
+            I'm always open to discussing new projects, creative ideas, or opportunities to build your vision. Let's create something extraordinary together.
           </p>
 
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              size="lg"
-              onClick={() => navigate("/contact")}
-              className="group relative overflow-hidden bg-gradient-to-r from-[#3a5a40] to-[#3a86ff] hover:from-[#3a86ff] hover:to-[#3a5a40] text-white rounded-full px-8 py-6 text-lg font-semibold shadow-lg"
+          <div className="pt-4">
+            <motion.div
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              className="inline-block"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                <Handshake className="h-5 w-5" />
-                Let's Collaborate
-              </span>
-              <span className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-all duration-300"></span>
-            </Button>
-          </motion.div>
+              <Button
+                size="lg"
+                onClick={() => navigate("/contact")}
+                className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-600 hover:from-emerald-400 hover:to-blue-500 text-white font-outfit font-bold rounded-full px-9 py-7 text-lg shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/35 transition-all duration-300 cursor-pointer overflow-hidden border border-white/10"
+              >
+                <Handshake className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+                <span>Let's Collaborate</span>
+              </Button>
+            </motion.div>
+          </div>
 
-          <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-400">
-            <div className="flex items-center gap-2">
-              <Rocket className="h-5 w-5 text-[#3a86ff]" />
-              <span>Innovative Projects</span>
+          <div className="pt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-mono text-gray-300">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 shadow-sm backdrop-blur-md">
+              <Code className="h-4 w-4 text-emerald-400" />
+              <span>Innovative Architecture</span>
             </div>
-            <div className="hidden sm:block h-5 w-px bg-gray-600"></div>
-            <div className="flex items-center gap-2">
-              <Rocket className="h-5 w-5 text-[#3a5a40]" />
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 shadow-sm backdrop-blur-md">
+              <Rocket className="h-4 w-4 text-cyan-400" />
               <span>Creative Solutions</span>
             </div>
-            <div className="hidden sm:block h-5 w-px bg-gray-600"></div>
-            <div className="flex items-center gap-2">
-              <Rocket className="h-5 w-5 text-[#3a86ff]" />
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 shadow-sm backdrop-blur-md">
+              <Handshake className="h-4 w-4 text-blue-400" />
               <span>Mutual Growth</span>
             </div>
           </div>
         </motion.div>
       </div>
-    </div>
+    </section>
   )
 }
