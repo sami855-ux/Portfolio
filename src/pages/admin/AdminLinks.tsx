@@ -64,14 +64,32 @@ const SOCIAL_PRESETS = [
   { name: "Portfolio", icon_name: "globe", icon: FaGlobe, color: "text-green-400" },
 ]
 
+const ICON_SUGGESTIONS = [
+  { name: "github", label: "GitHub Code Icon" },
+  { name: "linkedin", label: "LinkedIn Network Icon" },
+  { name: "twitter", label: "Twitter / X Bird Icon" },
+  { name: "telegram", label: "Telegram Message Icon" },
+  { name: "email", label: "Email Mail Envelope Icon" },
+  { name: "instagram", label: "Instagram Camera Icon" },
+  { name: "youtube", label: "YouTube Video Icon" },
+  { name: "discord", label: "Discord Chat Icon" },
+  { name: "globe", label: "Globe Website Icon" },
+  { name: "facebook", label: "Facebook Social Icon" },
+  { name: "whatsapp", label: "WhatsApp Chat Icon" },
+  { name: "medium", label: "Medium Blog Icon" },
+]
+
 export default function AdminLinks() {
   const context = useOutletContext<AdminContext>()
   const triggerToast = context?.triggerToast || (() => { })
   const loadHeaderData = context?.loadHeaderData || (() => { })
+  const [activeTab, setActiveTab] = useState<"links" | "floating">("links")
   const [loading, setLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [contactLinks, setContactLinks] = useState<ContactLink[]>([])
+  const [floatingCards, setFloatingCards] = useState<FloatingCard[]>([])
   const [isEditingLink, setIsEditingLink] = useState<ContactLink | null>(null)
+  const [isEditingFloating, setIsEditingFloating] = useState<FloatingCard | null>(null)
   const [showSheet, setShowSheet] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -82,6 +100,7 @@ export default function AdminLinks() {
     open: boolean
     id?: string
     name?: string
+    type?: "link" | "floating"
     isLoading: boolean
     isError: boolean
     errorMessage?: string
@@ -91,28 +110,39 @@ export default function AdminLinks() {
     setLoading(true)
     try {
       if (isSupabaseConfigured) {
-        const { data, error } = await supabase
+        const { data: linkData } = await supabase
           .from("contact_links")
           .select("*")
           .order("display_order", { ascending: true })
-        if (error) {
-          console.warn("Error fetching contact links:", error.message)
-          const fallback = await getContactLinks()
-          setContactLinks(fallback)
-        } else if (data && data.length > 0) {
-          setContactLinks(data as ContactLink[])
+        if (linkData && linkData.length > 0) {
+          setContactLinks(linkData as ContactLink[])
         } else {
           const fallback = await getContactLinks()
           setContactLinks(fallback)
         }
+
+        const { data: cardData } = await supabase
+          .from("floating_cards")
+          .select("*")
+          .order("display_order", { ascending: true })
+        if (cardData && cardData.length > 0) {
+          setFloatingCards(cardData as FloatingCard[])
+        } else {
+          const fallback = await getFloatingCards()
+          setFloatingCards(fallback)
+        }
       } else {
-        const fallback = await getContactLinks()
-        setContactLinks(fallback)
+        const fallbackLinks = await getContactLinks()
+        setContactLinks(fallbackLinks)
+        const fallbackCards = await getFloatingCards()
+        setFloatingCards(fallbackCards)
       }
     } catch (err) {
-      console.error("Error loading contact links:", err)
-      const fallback = await getContactLinks()
-      setContactLinks(fallback)
+      console.error("Error loading links & floating cards:", err)
+      const fallbackLinks = await getContactLinks()
+      setContactLinks(fallbackLinks)
+      const fallbackCards = await getFloatingCards()
+      setFloatingCards(fallbackCards)
     } finally {
       setLoading(false)
     }
@@ -299,105 +329,213 @@ export default function AdminLinks() {
             <Share2 className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Social & Contact Links</h2>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Social Channels & Floating Cards</h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              Configure profile channels, social links, email, and external portfolio handles
+              Manage social media links, email handles, and dynamic hero floating widgets
             </p>
           </div>
         </div>
 
-        <Button
-          onClick={() => {
-            setIsEditingLink({
-              name: "",
-              url: "",
-              icon_name: "github",
-              is_active: true,
-            })
-            setShowSheet(true)
-          }}
-          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] shrink-0"
-        >
-          <Plus className="w-4 h-4 stroke-[3]" /> Add Social Link
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Tab Selection Switcher */}
+          <div className="flex items-center bg-[#141414] p-1 rounded-2xl border border-[#2a2a2a]">
+            <button
+              onClick={() => setActiveTab("links")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === "links"
+                  ? "bg-green-500 text-slate-950 shadow-md"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Social Links ({contactLinks.length})
+            </button>
+            <button
+              onClick={() => setActiveTab("floating")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === "floating"
+                  ? "bg-green-500 text-slate-950 shadow-md"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Floating Cards ({floatingCards.length})
+            </button>
+          </div>
+
+          <Button
+            onClick={() => {
+              if (activeTab === "links") {
+                setIsEditingLink({
+                  name: "",
+                  url: "",
+                  icon_name: "github",
+                  is_active: true,
+                })
+              } else {
+                setIsEditingFloating({
+                  name: "",
+                  title: "",
+                  position: "top-1/2 left-1/2",
+                  is_active: true,
+                })
+              }
+              setShowSheet(true)
+            }}
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all shrink-0"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" /> Add {activeTab === "links" ? "Link" : "Floating Card"}
+          </Button>
+        </div>
       </div>
 
 
 
-      {/* Social Links Cards Grid */}
-      {contactLinks.length === 0 ? (
-        <div className="bg-[#181818] border border-[#262626] rounded-3xl p-10 text-center space-y-3">
-          <p className="text-sm text-gray-400">No social links added yet.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {contactLinks.map((l, idx) => (
-            <motion.div
-              key={l.id || idx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.03 }}
-              className="bg-[#1b1b1b] border border-[#262626] hover:border-green-500/40 p-5 rounded-3xl space-y-3 shadow-xl transition-all duration-300 group flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-2xl bg-[#141414] border border-[#282828] flex items-center justify-center shrink-0 group-hover:border-green-500/30 transition-colors">
-                    {renderSocialIcon(l.icon_name, l.name)}
-                  </div>
-
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-white text-sm truncate group-hover:text-green-400 transition-colors">
-                        {l.name}
-                      </h3>
-                      {l.is_active !== false ? (
-                        <span className="inline-flex items-center gap-1 text-[9px] font-normal text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full">
-                          <CheckCircle2 className="w-2.5 h-2.5" /> Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[9px] font-normal text-gray-400 bg-gray-500/10 border border-gray-500/20 px-2 py-0.5 rounded-full">
-                          <XCircle className="w-2.5 h-2.5" /> Hidden
-                        </span>
-                      )}
+      {/* Content View Depending on Active Tab */}
+      {activeTab === "links" ? (
+        contactLinks.length === 0 ? (
+          <div className="bg-[#181818] border border-[#262626] rounded-3xl p-10 text-center space-y-3">
+            <p className="text-sm text-gray-400">No social links added yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {contactLinks.map((l, idx) => (
+              <motion.div
+                key={l.id || idx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.03 }}
+                className="bg-[#1b1b1b] border border-[#262626] hover:border-green-500/40 p-5 rounded-3xl space-y-3 shadow-xl transition-all duration-300 group flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-2xl bg-[#141414] border border-[#282828] flex items-center justify-center shrink-0 group-hover:border-green-500/30 transition-colors">
+                      {renderSocialIcon(l.icon_name, l.name)}
                     </div>
-                    <a
-                      href={l.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs text-gray-400 hover:text-green-400 truncate max-w-[180px] block transition-colors flex items-center gap-1 mt-0.5"
+
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-white text-sm truncate group-hover:text-green-400 transition-colors">
+                          {l.name}
+                        </h3>
+                        {l.is_active !== false ? (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-normal text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full">
+                            <CheckCircle2 className="w-2.5 h-2.5" /> Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-normal text-gray-400 bg-gray-500/10 border border-gray-500/20 px-2 py-0.5 rounded-full">
+                            <XCircle className="w-2.5 h-2.5" /> Hidden
+                          </span>
+                        )}
+                      </div>
+                      <a
+                        href={l.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-gray-400 hover:text-green-400 truncate max-w-[180px] block transition-colors flex items-center gap-1 mt-0.5"
+                      >
+                        <span className="truncate">{l.url}</span>
+                        <ExternalLink className="w-3 h-3 shrink-0 opacity-60" />
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => {
+                        setIsEditingLink(l)
+                        setIsEditingFloating(null)
+                        setShowSheet(true)
+                      }}
+                      className="p-1.5 text-gray-400 hover:text-green-400 cursor-pointer transition-colors"
+                      title="Edit Link"
                     >
-                      <span className="truncate">{l.url}</span>
-                      <ExternalLink className="w-3 h-3 shrink-0 opacity-60" />
-                    </a>
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeleteDialog({
+                          open: true,
+                          id: l.id,
+                          name: l.name,
+                          type: "link",
+                          isLoading: false,
+                          isError: false,
+                        })
+                      }}
+                      className="p-1.5 text-red-400 hover:text-red-300 cursor-pointer transition-colors"
+                      title="Delete Link"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
+              </motion.div>
+            ))}
+          </div>
+        )
+      ) : (
+        /* Floating Cards Grid */
+        floatingCards.length === 0 ? (
+          <div className="bg-[#181818] border border-[#262626] rounded-3xl p-10 text-center space-y-3">
+            <p className="text-sm text-gray-400">No background floating cards configured yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {floatingCards.map((c, idx) => (
+              <motion.div
+                key={c.id || idx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.03 }}
+                className="bg-[#1b1b1b] border border-[#262626] hover:border-purple-500/40 p-5 rounded-3xl space-y-3 shadow-xl transition-all duration-300 group flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-white text-sm truncate group-hover:text-purple-400 transition-colors">
+                      {c.name}
+                    </h3>
+                    <p className="text-xs text-gray-400 truncate mt-0.5">{c.title}</p>
+                    <span className="text-[10px] font-mono text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full inline-block mt-2">
+                      Pos: {c.position || "Default"}
+                    </span>
+                  </div>
 
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    onClick={() => {
-                      setIsEditingLink(l)
-                      setShowSheet(true)
-                    }}
-                    className="p-1.5 text-gray-400 hover:text-green-400 cursor-pointer transition-colors"
-                    title="Edit Link"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => promptDeleteLink(l)}
-                    className="p-1.5 text-red-400 hover:text-red-300 cursor-pointer transition-colors"
-                    title="Delete Link"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => {
+                        setIsEditingFloating(c)
+                        setIsEditingLink(null)
+                        setShowSheet(true)
+                      }}
+                      className="p-1.5 text-gray-400 hover:text-purple-400 cursor-pointer transition-colors"
+                      title="Edit Floating Card"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeleteDialog({
+                          open: true,
+                          id: c.id,
+                          name: c.name,
+                          type: "floating",
+                          isLoading: false,
+                          isError: false,
+                        })
+                      }}
+                      className="p-1.5 text-red-400 hover:text-red-300 cursor-pointer transition-colors"
+                      title="Delete Floating Card"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )
       )}
 
-      {/* Social Link Edit / Create Shadcn Sheet Drawer */}
+      {/* Social Link or Floating Card Edit / Create Shadcn Sheet Drawer */}
       <Sheet open={showSheet} onOpenChange={setShowSheet}>
         {isEditingLink && (
           <SheetContent side="right" className="w-full sm:max-w-md bg-[#181818] p-6 sm:p-8 border-l border-[#282828] overflow-y-auto no-scrollbar">
@@ -461,6 +599,51 @@ export default function AdminLinks() {
                 />
               </div>
 
+              {/* Icon Identifier Key Input with Suggestions */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center justify-between">
+                  <span>Icon Identifier Key</span>
+                  <span className="text-[10px] text-green-400 font-mono">Real-time Suggestions</span>
+                </label>
+                <Input
+                  value={isEditingLink.icon_name || ""}
+                  onChange={(e) =>
+                    setIsEditingLink({ ...isEditingLink, icon_name: e.target.value })
+                  }
+                  placeholder="e.g. github, linkedin, twitter, telegram, email"
+                  required
+                  className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl h-11 px-3.5 font-mono"
+                />
+
+                {/* Auto Suggestions Chips */}
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  <span className="text-[10px] text-gray-500 font-semibold self-center mr-1">Suggestions:</span>
+                  {ICON_SUGGESTIONS.filter(
+                    (s) =>
+                      !isEditingLink.icon_name ||
+                      s.name.includes((isEditingLink.icon_name || "").toLowerCase())
+                  ).map((sugg) => (
+                    <button
+                      key={sugg.name}
+                      type="button"
+                      onClick={() =>
+                        setIsEditingLink({
+                          ...isEditingLink,
+                          icon_name: sugg.name,
+                        })
+                      }
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-lg border transition-all cursor-pointer ${
+                        isEditingLink.icon_name === sugg.name
+                          ? "bg-green-500/20 border-green-500 text-green-400 font-bold"
+                          : "bg-[#141414] border-[#2a2a2a] text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      + {sugg.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Target URL Input */}
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1.5">
@@ -520,6 +703,155 @@ export default function AdminLinks() {
             </form>
           </SheetContent>
         )}
+
+        {isEditingFloating && (
+          <SheetContent side="right" className="w-full sm:max-w-md bg-[#181818] p-6 sm:p-8 border-l border-[#282828] overflow-y-auto no-scrollbar">
+            <SheetHeader className="pb-4 border-b border-[#262626]">
+              <SheetTitle className="text-xl font-bold text-white flex items-center gap-2">
+                {isEditingFloating.id ? "Edit Floating Card" : "Add Floating Card"}
+              </SheetTitle>
+              <SheetDescription className="text-xs text-gray-400">
+                Configure background floating card title, subtitle, and screen position.
+              </SheetDescription>
+            </SheetHeader>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault()
+                if (!isEditingFloating.name || !isEditingFloating.title) {
+                  toast.error("Please fill in both title and subtitle.")
+                  return
+                }
+                setIsSaving(true)
+                const toastId = toast.loading("Saving floating card...")
+                try {
+                  if (isSupabaseConfigured) {
+                    const isUUID = isEditingFloating.id && isEditingFloating.id.length > 20 && isEditingFloating.id.includes("-")
+                    if (isUUID) {
+                      const { error } = await supabase
+                        .from("floating_cards")
+                        .update({
+                          name: isEditingFloating.name,
+                          title: isEditingFloating.title,
+                          position: isEditingFloating.position || "top-1/2 left-1/2",
+                          is_active: isEditingFloating.is_active ?? true,
+                        })
+                        .eq("id", isEditingFloating.id)
+                      if (error) throw error
+                    } else {
+                      const { id, ...cardData } = isEditingFloating
+                      const { data: inserted, error } = await supabase
+                        .from("floating_cards")
+                        .insert([{
+                          name: cardData.name,
+                          title: cardData.title,
+                          position: cardData.position || "top-1/2 left-1/2",
+                          is_active: cardData.is_active ?? true,
+                          display_order: floatingCards.length + 1,
+                        }])
+                        .select()
+                      if (error) throw error
+                      if (inserted && inserted[0]) {
+                        setFloatingCards((prev) => [...prev, inserted[0] as FloatingCard])
+                        setShowSheet(false)
+                        setIsEditingFloating(null)
+                        toast.success("Floating card created!", { id: toastId })
+                        return
+                      }
+                    }
+                  }
+
+                  if (isEditingFloating.id) {
+                    setFloatingCards((prev) =>
+                      prev.map((c) => (c.id === isEditingFloating.id ? isEditingFloating : c))
+                    )
+                  } else {
+                    const newCard = { ...isEditingFloating, id: Date.now().toString() }
+                    setFloatingCards((prev) => [...prev, newCard])
+                  }
+
+                  setShowSheet(false)
+                  setIsEditingFloating(null)
+                  toast.success("Floating card saved successfully!", { id: toastId })
+                } catch (err: any) {
+                  toast.error(err.message || "Failed to save card", { id: toastId })
+                } finally {
+                  setIsSaving(false)
+                }
+              }}
+              className="space-y-5 pt-6"
+            >
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Card Main Title / Highlight
+                </label>
+                <Input
+                  value={isEditingFloating.name}
+                  onChange={(e) =>
+                    setIsEditingFloating({ ...isEditingFloating, name: e.target.value })
+                  }
+                  placeholder="e.g. samitale86@gmail.com, Big Tech lover"
+                  required
+                  className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl h-11 px-3.5"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Card Subtitle / Role
+                </label>
+                <Input
+                  value={isEditingFloating.title}
+                  onChange={(e) =>
+                    setIsEditingFloating({ ...isEditingFloating, title: e.target.value })
+                  }
+                  placeholder="e.g. +251 978109304, Programmer"
+                  required
+                  className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl h-11 px-3.5"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                  Screen Tailwind Position Class
+                </label>
+                <Input
+                  value={isEditingFloating.position || ""}
+                  onChange={(e) =>
+                    setIsEditingFloating({ ...isEditingFloating, position: e.target.value })
+                  }
+                  placeholder="e.g. top-2/3 -right-5 or top-1/6 left-5"
+                  className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl h-11 px-3.5 font-mono"
+                />
+              </div>
+
+              <SheetFooter className="pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowSheet(false)}
+                  className="bg-[#252525] border-none hover:bg-[#303030] text-gray-300 text-xs font-bold rounded-xl h-11 px-4 cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSaving}
+                  className="bg-green-500 hover:bg-green-400 text-slate-950 font-bold text-xs rounded-xl h-11 px-6 border-none cursor-pointer shadow-lg shadow-green-500/20 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isSaving ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                      <span>Saving Card...</span>
+                    </>
+                  ) : (
+                    <span>Save Card</span>
+                  )}
+                </Button>
+              </SheetFooter>
+            </form>
+          </SheetContent>
+        )}
       </Sheet>
 
       {/* Delete Confirmation Alert Dialog */}
@@ -527,14 +859,41 @@ export default function AdminLinks() {
         open={deleteDialog.open}
         onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open }))}
         variant="danger"
-        title="Delete Social Link?"
-        description={`Are you sure you want to delete "${deleteDialog.name || "this link"}"? This action cannot be undone.`}
-        confirmText="Delete Link"
+        title={`Delete ${deleteDialog.type === "floating" ? "Floating Card" : "Social Link"}?`}
+        description={`Are you sure you want to delete "${deleteDialog.name || "this item"}"? This action cannot be undone.`}
+        confirmText="Delete Item"
         cancelText="Cancel"
-        onConfirm={confirmDeleteLink}
+        onConfirm={async () => {
+          if (!deleteDialog.id) return
+          setDeleteDialog((prev) => ({ ...prev, isLoading: true, isError: false }))
+          const toastId = toast.loading("Deleting item...")
+          try {
+            if (isSupabaseConfigured && !deleteDialog.id.startsWith("demo")) {
+              const table = deleteDialog.type === "floating" ? "floating_cards" : "contact_links"
+              const { error } = await supabase.from(table).delete().eq("id", deleteDialog.id)
+              if (error) throw error
+            }
+            if (deleteDialog.type === "floating") {
+              setFloatingCards((prev) => prev.filter((c) => c.id !== deleteDialog.id))
+            } else {
+              setContactLinks((prev) => prev.filter((l) => l.id !== deleteDialog.id))
+            }
+            toast.success("Item deleted successfully.", { id: toastId })
+            loadHeaderData()
+            setDeleteDialog({ open: false, isLoading: false, isError: false })
+          } catch (err: any) {
+            toast.error(err.message || "Failed to delete item.", { id: toastId })
+            setDeleteDialog((prev) => ({
+              ...prev,
+              isLoading: false,
+              isError: true,
+              errorMessage: err.message || "Failed to delete item. Please try again.",
+            }))
+          }
+        }}
         onCancel={() => setDeleteDialog((prev) => ({ ...prev, open: false }))}
         isLoading={deleteDialog.isLoading}
-        loadingText="Deleting social link..."
+        loadingText="Deleting..."
         isError={deleteDialog.isError}
         errorTitle="Deletion Failed"
         errorMessage={deleteDialog.errorMessage}
