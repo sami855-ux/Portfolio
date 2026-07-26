@@ -1,8 +1,6 @@
-import { motion } from "framer-motion"
-import { ExternalLink, Github, Cpu } from "lucide-react"
-import type { Project } from "@/types/ui"
+import { motion, AnimatePresence } from "framer-motion"
+import { ExternalLink, Github, Maximize2, X, ChevronLeft, ChevronRight, Layers } from "lucide-react"
 import Header from "@/components/Header"
-import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
 import { Footer } from "./Footer"
 import { LazyLoadImage } from "react-lazy-load-image-component"
@@ -14,256 +12,68 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip"
 
-// Import your images
-import taxImg from "../assets/ta.png"
-import ecommerceImg from "../assets/ecommerce.png"
-import emailImg from "../assets/email.png"
-import tourImg from "../assets/tour.png"
-import todoImg from "../assets/todo.png"
-import lmsImg from "../assets/lms.png"
-import realImg from "../assets/real.png"
-import negariImg from "../assets/negari.png"
-import { defaultImg } from "./Projects"
-
-const projects: Project[] = [
-  // 🔥 CORE PROJECTS (Top Priority)
-  {
-    id: 1,
-    title: "Learning Management System",
-    description:
-      "A full-featured LMS platform for managing online courses, quizzes, certifications, and student progress.",
-    technologies: ["React", "Node.js", "MongoDB", "Redux Toolkit"],
-    features: [
-      "Course creation and enrollment",
-      "Interactive quizzes and assessments",
-      "Progress tracking and certification",
-      "Admin dashboard for managing users and content",
-    ],
-    challenges:
-      "Ensuring real-time progress tracking and scalability for large numbers of users",
-    solutions:
-      "Used Redux Toolkit for efficient state management and optimized backend queries with MongoDB indexing",
-    results:
-      "Improved course completion rate by 42% and reduced admin overhead by automating content management",
-    githubUrl: "#",
-    liveUrl: "#",
-    imageUrl: lmsImg,
-  },
-  {
-    id: 2,
-    title: "Negari - Community Issue Reporting",
-    description:
-      "AI-powered platform for citizens to report issues, track resolutions, and communicate with authorities.",
-    technologies: [
-      "React Native",
-      "Next.js",
-      "Node.js",
-      "Express",
-      "MongoDB",
-      "Socket.io",
-    ],
-    features: [
-      "Region-based report assignment",
-      "Priority-based routing",
-      "Real-time notifications and messaging",
-      "Interactive issue map",
-      "Admin dashboard",
-    ],
-    challenges:
-      "Handling real-time updates and intelligent prioritization at scale",
-    solutions:
-      "Used Socket.io for real-time communication and integrated AI-based filtering and prioritization",
-    results: "Reduced response time by 35% and improved citizen engagement",
-    githubUrl: "https://github.com/sami855-ux/Negari.git",
-    liveUrl: "https://negari-ten.vercel.app/",
-    imageUrl: negariImg,
-  },
-  {
-    id: 4,
-    title: "Project & Task Management System",
-    description:
-      "Collaborative task management platform with real-time updates, task assignment, and progress tracking.",
-    technologies: [
-      "React",
-      "Node.js",
-      "MongoDB",
-      "Socket.io",
-      "Redux",
-      "Tailwind",
-    ],
-    features: [
-      "Project creation and team collaboration",
-      "Task assignment and tracking",
-      "Real-time updates",
-      "Dashboard analytics",
-    ],
-    challenges: "Managing real-time collaboration across multiple users",
-    solutions: "Implemented Socket.io with efficient state synchronization",
-    results: "Improved team productivity and task tracking efficiency",
-    githubUrl: "#",
-    liveUrl: "#",
-    imageUrl: defaultImg,
-  },
-  {
-    id: 3,
-    title: "HabeshaGo - Transport & Ticketing System",
-    description:
-      "Smart transport platform with ticket booking, real-time tracking, and route management.",
-    technologies: ["Next.js", "Node.js", "MongoDB", "Socket.io", "Maps API"],
-    features: [
-      "Online ticket booking",
-      "Real-time vehicle tracking",
-      "Route management",
-      "Admin dashboard",
-    ],
-    challenges: "Handling live GPS tracking and scalability",
-    solutions: "Used WebSockets and optimized backend for real-time data flow",
-    results: "Enhanced transport efficiency and user convenience",
-    githubUrl: "#",
-    liveUrl: "#",
-    imageUrl: defaultImg,
-  },
-
-  // ⚡ OTHER PROJECTS
-  {
-    id: 5,
-    title: "Tax Payment Web App",
-    description:
-      "Secure platform for managing tax filings, payments, and compliance.",
-    technologies: ["React", "Node.js", "MongoDB", "Framer Motion"],
-    features: [
-      "Tax dashboard",
-      "Official approval system",
-      "Dynamic tax rules",
-      "Notifications",
-    ],
-    challenges: "Handling complex tax logic with a simple UI",
-    solutions: "Built a flexible rule engine and guided UI flows",
-    results: "Increased on-time payments by 55%",
-    githubUrl: "https://github.com/sami855-ux/Tax-payment-Website.git",
-    liveUrl: "#",
-    imageUrl: taxImg,
-  },
-  {
-    id: 6,
-    title: "E-Commerce Platform",
-    description:
-      "Online store with payment processing and inventory management.",
-    technologies: ["React", "Node.js", "MongoDB", "Stripe"],
-    features: [
-      "Product catalog",
-      "Authentication",
-      "Cart system",
-      "Admin dashboard",
-    ],
-    challenges: "Handling real-time inventory updates",
-    solutions: "Used caching and WebSockets",
-    results: "Improved conversion rate by 25%",
-    githubUrl: "https://github.com/sami855-ux/E-commerce-Website.git",
-    liveUrl: "#",
-    imageUrl: ecommerceImg,
-  },
-  {
-    id: 7,
-    title: "Real Time Chat App",
-    description:
-      "Real-time messaging app with typing indicators and online status.",
-    technologies: ["React", "Node.js", "MongoDB", "Socket.io"],
-    features: [
-      "Instant messaging",
-      "Typing indicators",
-      "Online presence",
-      "Chat history",
-    ],
-    challenges: "Scaling real-time communication",
-    solutions: "Used Socket.io rooms and Redis",
-    results: "Handled 10k+ concurrent users",
-    githubUrl: "https://github.com/yourusername/realtime-chat-app",
-    liveUrl: "#",
-    imageUrl: realImg,
-  },
-  {
-    id: 8,
-    title: "Tour Mobile App",
-    description:
-      "Mobile app for booking and managing tours with real-time tracking.",
-    technologies: ["Java", "Firebase", "Google Maps API"],
-    features: ["Tour booking", "User authentication", "Admin dashboard"],
-    challenges: "Efficient location tracking",
-    solutions: "Optimized GPS usage",
-    results: "Improved engagement by 45%",
-    githubUrl: "https://github.com/sami855-ux/Tour-Mobile-App-Main.git",
-    liveUrl: "#",
-    imageUrl: tourImg,
-  },
-  {
-    id: 9,
-    title: "Email Spam Detector",
-    description:
-      "Machine learning system for classifying emails as spam or legitimate.",
-    technologies: ["React", "Node.js", "TensorFlow.js"],
-    features: ["Spam detection", "Dashboard", "User feedback loop"],
-    challenges: "Achieving high accuracy",
-    solutions: "Used ML model with feedback retraining",
-    results: "96% accuracy",
-    githubUrl: "https://github.com/sami855-ux/Email-spam-classfication.git",
-    liveUrl: "#",
-    imageUrl: emailImg,
-  },
-  {
-    id: 10,
-    title: "Animated To-Do Website",
-    description:
-      "Task manager with smooth animations and drag-and-drop features.",
-    technologies: ["React", "Framer Motion", "Tailwind"],
-    features: ["Task CRUD", "Drag & drop", "Dark mode"],
-    challenges: "Smooth animations",
-    solutions: "Optimized Framer Motion usage",
-    results: "Increased engagement",
-    githubUrl: "https://github.com/sami855-ux/animated-todo-app.git",
-    liveUrl: "#",
-    imageUrl: todoImg,
-  },
-  {
-    id: 11,
-    title: "Shopping Website Landing Page",
-    description: "Modern animated landing page for an e-commerce platform.",
-    technologies: ["React", "Tailwind", "Framer Motion"],
-    features: ["Hero section", "Product highlights", "Responsive design"],
-    challenges: "Balancing animation and performance",
-    solutions: "Optimized assets and lazy loading",
-    results: "Increased engagement by 48%",
-    githubUrl: "https://github.com/sami855-ux/Shopping-cart-website.git",
-    liveUrl: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1607083200843-eac15f4b7de0?auto=format&fit=crop&w=1350&q=80",
-  },
-]
-
-import { getProjects } from "@/lib/supabase"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useProjectsQuery } from "@/hooks/usePortfolioQueries"
+import { defaultImg, parseProjectImages } from "./Projects"
 
 export function MainProjects() {
   const [loaded, setLoaded] = useState(false)
-  const { data: dbProjects, isLoading: isQueryLoading, isError, refetch } = useProjectsQuery()
+  const { data: dbProjects, isLoading, isError, refetch } = useProjectsQuery()
+  const [cardActiveImage, setCardActiveImage] = useState<Record<string | number, number>>({})
+  const [selectedImage, setSelectedImage] = useState<{
+    images: string[]
+    activeIdx: number
+    title: string
+    github?: string
+    live?: string
+  } | null>(null)
 
-  // Use dynamic database projects if available, otherwise fall back to curated static list
-  const projectList = dbProjects && dbProjects.length > 0
-    ? dbProjects.map((p, idx) => ({
-        id: p.id || idx + 100,
-        title: p.title,
-        description: p.description,
-        technologies: p.tags || [],
-        features: Array.isArray(p.features) && p.features.length > 0 ? p.features : ["Full Stack Architecture", "Interactive UI"],
-        challenges: Array.isArray(p.challenges) ? p.challenges.join(". ") : p.challenges || "Optimizing data sync and UI responsiveness",
-        solutions: Array.isArray(p.solutions) ? p.solutions.join(". ") : p.solutions || "Implemented caching and modular architecture",
-        results: p.results || "Enhanced performance and user engagement",
-        githubUrl: p.github || "#",
-        liveUrl: p.live || "#",
-        imageUrl: p.image || defaultImg,
-        architecture: p.architecture || "",
-      }))
-    : projects
+  // Keyboard navigation for image slider
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedImage) return
+      if (e.key === "ArrowLeft") {
+        setSelectedImage((prev) =>
+          prev
+            ? {
+                ...prev,
+                activeIdx: (prev.activeIdx - 1 + prev.images.length) % prev.images.length,
+              }
+            : null
+        )
+      } else if (e.key === "ArrowRight") {
+        setSelectedImage((prev) =>
+          prev ? { ...prev, activeIdx: (prev.activeIdx + 1) % prev.images.length } : null
+        )
+      } else if (e.key === "Escape") {
+        setSelectedImage(null)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [selectedImage])
+
+  // Use dynamic database projects only (no fallback data)
+  const rawProjects = dbProjects || []
+  const projectList = rawProjects.map((p, idx) => {
+    const allImages = parseProjectImages(p as any)
+    
+    return {
+      id: p.id || idx + 100,
+      title: p.title,
+      description: p.description,
+      technologies: p.tags || [],
+      features: Array.isArray(p.features) && p.features.length > 0 ? p.features : ["Full Stack Architecture", "Interactive UI"],
+      challenges: Array.isArray(p.challenges) ? p.challenges.join(". ") : p.challenges || "Optimizing data sync and UI responsiveness",
+      solutions: Array.isArray(p.solutions) ? p.solutions.join(". ") : p.solutions || "Implemented caching and modular architecture",
+      results: p.results || "Enhanced performance and user engagement",
+      githubUrl: p.github || "",
+      liveUrl: p.live || "",
+      imageUrl: allImages[0],
+      images: allImages,
+      architecture: p.architecture || "",
+    }
+  })
 
   useEffect(() => {
     window.scrollTo({
@@ -371,13 +181,33 @@ export function MainProjects() {
             </motion.div>
           )}
 
-          <motion.div
-            className="space-y-24"
-            variants={container}
-            initial="hidden"
-            animate={loaded ? "show" : "hidden"}
-          >
-            {projectList.map((project, index) => (
+          {isLoading ? (
+            <div className="space-y-16">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                  <div className={`${i % 2 === 0 ? "lg:order-1" : "lg:order-2"}`}>
+                    <Skeleton className="h-[380px] w-full rounded-3xl bg-white/10" />
+                  </div>
+                  <div className={`${i % 2 === 0 ? "lg:order-2" : "lg:order-1"} space-y-4`}>
+                    <Skeleton className="h-8 w-2/3 bg-white/10 rounded-xl" />
+                    <Skeleton className="h-4 w-full bg-white/10 rounded-lg" />
+                    <Skeleton className="h-4 w-4/5 bg-white/10 rounded-lg" />
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                      <Skeleton className="h-20 w-full rounded-2xl bg-white/10" />
+                      <Skeleton className="h-20 w-full rounded-2xl bg-white/10" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              className="space-y-24"
+              variants={container}
+              initial="hidden"
+              animate={loaded ? "show" : "hidden"}
+            >
+              {projectList.map((project, index) => (
               <motion.section
                 key={project.id}
                 variants={item}
@@ -386,36 +216,86 @@ export function MainProjects() {
                 <div
                   className={`${index % 2 === 0 ? "lg:order-1" : "lg:order-2"}`}
                 >
-                  <motion.div
-                    className="relative h-[420px] overflow-hidden rounded-3xl group shadow-2xl border border-white/10 bg-[#121214]"
-                    variants={imageVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                    whileHover="hover"
-                  >
-                    <LazyLoadImage
-                      src={project.imageUrl}
-                      alt={project.title}
-                      effect="blur"
-                      className="w-full h-full object-cover"
-                      wrapperClassName="w-full h-full"
-                      placeholderSrc={project.imageUrl}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-white space-y-1"
-                      >
-                        <h3 className="text-xl font-bold">{project.title}</h3>
-                        <p className="text-xs text-gray-300 font-mono">
-                          {project.technologies.join(" • ")}
-                        </p>
-                      </motion.div>
-                    </div>
-                  </motion.div>
+                  {(() => {
+                    const currentActiveIdx = cardActiveImage[project.id] || 0
+                    const activePhoto = project.images[currentActiveIdx] || project.imageUrl
+
+                    return (
+                      <div>
+                        {/* Main Featured Showcase Window (Click to open full slider modal) */}
+                        <motion.div
+                          onClick={() =>
+                            setSelectedImage({
+                              images: project.images,
+                              activeIdx: currentActiveIdx,
+                              title: project.title,
+                              github:
+                                project.githubUrl && project.githubUrl.trim() !== "" && project.githubUrl.trim() !== "#"
+                                  ? project.githubUrl
+                                  : undefined,
+                              live:
+                                project.liveUrl && project.liveUrl.trim() !== "" && project.liveUrl.trim() !== "#"
+                                  ? project.liveUrl
+                                  : undefined,
+                            })
+                          }
+                          className="relative h-[400px] sm:h-[420px] overflow-hidden rounded-3xl group/img shadow-2xl border border-white/10 bg-[#121214] cursor-pointer"
+                          variants={imageVariants}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+                          whileHover="hover"
+                        >
+                          <img
+                            src={activePhoto}
+                            alt={project.title}
+                            className="w-full h-full object-cover transition-all duration-500"
+                          />
+
+                          {/* Multi Image Indicator Badge */}
+                          {project.images.length > 1 && (
+                            <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white font-mono text-xs font-bold flex items-center gap-1.5 z-10 shadow-lg">
+                              <Layers className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>{currentActiveIdx + 1} / {project.images.length} photos</span>
+                            </div>
+                          )}
+
+                          {/* Hover Overlay with Zoom Icon */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-6">
+                            <span className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white font-outfit text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-md transform translate-y-2 group-hover/img:translate-y-0 transition-transform duration-300">
+                              <Maximize2 className="w-4 h-4 text-emerald-400" /> Open Full Slider
+                            </span>
+                          </div>
+                        </motion.div>
+
+                        {/* Inline Gallery Thumbnails Selector Strip */}
+                        {project.images.length > 1 && (
+                          <div className="flex items-center gap-2.5 mt-3 overflow-x-auto pb-1">
+                            {project.images.map((thumbUrl, imgIdx) => {
+                              const isSelected = currentActiveIdx === imgIdx
+                              return (
+                                <button
+                                  key={imgIdx}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setCardActiveImage((prev) => ({ ...prev, [project.id]: imgIdx }))
+                                  }}
+                                  className={`relative h-16 w-24 rounded-2xl overflow-hidden border shrink-0 transition-all cursor-pointer ${
+                                    isSelected
+                                      ? "border-emerald-400 ring-2 ring-emerald-500/40 scale-105 shadow-md shadow-emerald-500/10 opacity-100"
+                                      : "border-white/10 opacity-60 hover:opacity-100"
+                                  }`}
+                                >
+                                  <img src={thumbUrl} alt={`Thumbnail ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
 
                 <div
@@ -448,8 +328,8 @@ export function MainProjects() {
                       {(Array.isArray(project.features)
                         ? project.features
                         : typeof project.features === "string"
-                        ? (project.features as string).split("\n").filter((f) => f.trim().length > 0)
-                        : []
+                          ? (project.features as string).split("\n").filter((f) => f.trim().length > 0)
+                          : []
                       ).map((feature, idx) => (
                         <motion.li
                           key={idx}
@@ -469,8 +349,8 @@ export function MainProjects() {
                         {Array.isArray(project.challenges)
                           ? project.challenges.join(". ")
                           : typeof project.challenges === "object" && project.challenges !== null
-                          ? JSON.stringify(project.challenges)
-                          : project.challenges || "N/A"}
+                            ? JSON.stringify(project.challenges)
+                            : project.challenges || "N/A"}
                       </p>
                     </div>
                     <div className="bg-[#18181c]/60 p-4 rounded-2xl border border-white/5 space-y-1">
@@ -479,65 +359,227 @@ export function MainProjects() {
                         {Array.isArray(project.solutions)
                           ? project.solutions.join(". ")
                           : typeof project.solutions === "object" && project.solutions !== null
-                          ? JSON.stringify(project.solutions)
-                          : project.solutions || "N/A"}
+                            ? JSON.stringify(project.solutions)
+                            : project.solutions || "N/A"}
                       </p>
                     </div>
                   </div>
 
-                  {/* Buttons Row (Icon Only with Tooltips) */}
+                  {/* Action Buttons Row (Only render if valid URL exists and not empty/#) */}
                   <div className="pt-4 flex items-center gap-2.5">
-                    {project.githubUrl && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <motion.a
-                              href={project.githubUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2.5 rounded-full bg-[#1c1c24] hover:bg-[#282834] text-gray-200 hover:text-white border border-white/10 shadow-md transition-all cursor-pointer flex items-center justify-center"
-                              whileHover={{ y: -2 }}
-                              whileTap={{ scale: 0.95 }}
-                            >
-                              <Github size={18} />
-                            </motion.a>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>View Source Code</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
+                    {project.githubUrl &&
+                      project.githubUrl.trim() !== "" &&
+                      project.githubUrl.trim() !== "#" && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <motion.a
+                                href={project.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2.5 rounded-full bg-[#1c1c24] hover:bg-[#282834] text-gray-200 hover:text-white border border-white/10 shadow-md transition-all cursor-pointer flex items-center justify-center"
+                                whileHover={{ y: -2 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                <Github size={18} />
+                              </motion.a>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>View Source Code</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
 
-                    {project.liveUrl && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <motion.a
-                              href={project.liveUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-md shadow-emerald-500/10 transition-all cursor-pointer flex items-center justify-center"
-                              whileHover={{ y: -2 }}
-                              whileTap={{ scale: 0.95 }}
-                            >
-                              <ExternalLink size={18} />
-                            </motion.a>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Live Demo</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
+                    {project.liveUrl &&
+                      project.liveUrl.trim() !== "" &&
+                      project.liveUrl.trim() !== "#" && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <motion.a
+                                href={project.liveUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-md shadow-emerald-500/10 transition-all cursor-pointer flex items-center justify-center"
+                                whileHover={{ y: -2 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                <ExternalLink size={18} />
+                              </motion.a>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Live Demo</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                   </div>
                 </div>
               </motion.section>
             ))}
           </motion.div>
+        )}
         </motion.div>
       </div>
+      {/* Footer */}
       <Footer />
+
+      {/* Modern Multi-Image Lightbox Slider Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-5xl w-full bg-[#121216]/95 border border-white/10 rounded-3xl p-4 sm:p-6 shadow-2xl overflow-hidden flex flex-col gap-3"
+            >
+              {/* Header Bar */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <h3 className="text-base sm:text-lg font-outfit font-extrabold text-white tracking-tight">
+                    {selectedImage.title}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-400 font-mono bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
+                    {selectedImage.activeIdx + 1} / {selectedImage.images.length}
+                  </span>
+                  <button
+                    onClick={() => setSelectedImage(null)}
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Main Image Slider View */}
+              <div className="relative w-full h-[55vh] sm:h-[65vh] rounded-2xl overflow-hidden bg-black/70 border border-white/5 flex items-center justify-center group/slider">
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={selectedImage.activeIdx}
+                    src={selectedImage.images[selectedImage.activeIdx] || defaultImg}
+                    alt={`${selectedImage.title} slide ${selectedImage.activeIdx + 1}`}
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -30 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="w-full h-full object-contain rounded-2xl select-none"
+                  />
+                </AnimatePresence>
+
+                {/* Left & Right Slider Controls */}
+                {selectedImage.images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelectedImage((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                activeIdx:
+                                  (prev.activeIdx - 1 + prev.images.length) % prev.images.length,
+                              }
+                            : null
+                        )
+                      }
+                      className="absolute left-3 p-3 rounded-full bg-black/60 hover:bg-emerald-500 hover:text-slate-950 text-white border border-white/20 backdrop-blur-md transition-all shadow-2xl cursor-pointer"
+                      title="Previous Slide (Left Arrow)"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelectedImage((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                activeIdx: (prev.activeIdx + 1) % prev.images.length,
+                              }
+                            : null
+                        )
+                      }
+                      className="absolute right-3 p-3 rounded-full bg-black/60 hover:bg-emerald-500 hover:text-slate-950 text-white border border-white/20 backdrop-blur-md transition-all shadow-2xl cursor-pointer"
+                      title="Next Slide (Right Arrow)"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Thumbnail Slider Bar */}
+              {selectedImage.images.length > 1 && (
+                <div className="flex items-center gap-2 overflow-x-auto py-1">
+                  {selectedImage.images.map((thumbUrl, idx) => {
+                    const isActive = selectedImage.activeIdx === idx
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() =>
+                          setSelectedImage((prev) => (prev ? { ...prev, activeIdx: idx } : null))
+                        }
+                        className={`relative w-16 h-12 rounded-xl overflow-hidden border shrink-0 transition-all cursor-pointer ${
+                          isActive
+                            ? "border-emerald-400 ring-2 ring-emerald-500/40 scale-105 opacity-100"
+                            : "border-white/10 opacity-50 hover:opacity-100"
+                        }`}
+                      >
+                        <img src={thumbUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* Footer Actions */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-xs text-gray-400 font-mono">
+                  Use Left/Right arrow keys to slide images
+                </span>
+                <div className="flex items-center gap-2">
+                  {selectedImage.github && (
+                    <a
+                      href={selectedImage.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-4 py-2 rounded-full bg-[#202028] hover:bg-[#2a2a34] text-white border border-white/10 text-xs font-outfit font-semibold flex items-center gap-2 transition-all"
+                    >
+                      <Github className="w-3.5 h-3.5" /> View Code
+                    </a>
+                  )}
+                  {selectedImage.live && (
+                    <a
+                      href={selectedImage.live}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-outfit font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-emerald-500/20"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
+
+export default MainProjects
