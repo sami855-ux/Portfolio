@@ -115,10 +115,11 @@ export default function AdminProjects() {
 
   // Challenges Move & Drag Handlers
   const moveChallenge = (fromIndex: number, toIndex: number) => {
-    const current = Array.isArray(isEditingProject?.challenges)
-      ? isEditingProject!.challenges
-      : typeof isEditingProject?.challenges === "string"
-        ? isEditingProject!.challenges.split("\n").filter(Boolean)
+    const rawVal = isEditingProject?.challenges as any
+    const current = Array.isArray(rawVal)
+      ? rawVal
+      : typeof rawVal === "string"
+        ? (rawVal as string).split("\n").filter(Boolean)
         : []
     if (toIndex < 0 || toIndex >= current.length) return
     const updated = [...current]
@@ -135,10 +136,11 @@ export default function AdminProjects() {
   const handleChallengeDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault()
     if (draggedChallengeIndex === null || draggedChallengeIndex === index) return
-    const current = Array.isArray(isEditingProject?.challenges)
-      ? isEditingProject!.challenges
-      : typeof isEditingProject?.challenges === "string"
-        ? isEditingProject!.challenges.split("\n").filter(Boolean)
+    const rawVal = isEditingProject?.challenges as any
+    const current = Array.isArray(rawVal)
+      ? rawVal
+      : typeof rawVal === "string"
+        ? (rawVal as string).split("\n").filter(Boolean)
         : []
     const updated = [...current]
     const [draggedItem] = updated.splice(draggedChallengeIndex, 1)
@@ -153,10 +155,11 @@ export default function AdminProjects() {
 
   // Solutions Move & Drag Handlers
   const moveSolution = (fromIndex: number, toIndex: number) => {
-    const current = Array.isArray(isEditingProject?.solutions)
-      ? isEditingProject!.solutions
-      : typeof isEditingProject?.solutions === "string"
-        ? isEditingProject!.solutions.split("\n").filter(Boolean)
+    const rawVal = isEditingProject?.solutions as any
+    const current = Array.isArray(rawVal)
+      ? rawVal
+      : typeof rawVal === "string"
+        ? (rawVal as string).split("\n").filter(Boolean)
         : []
     if (toIndex < 0 || toIndex >= current.length) return
     const updated = [...current]
@@ -173,10 +176,11 @@ export default function AdminProjects() {
   const handleSolutionDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault()
     if (draggedSolutionIndex === null || draggedSolutionIndex === index) return
-    const current = Array.isArray(isEditingProject?.solutions)
-      ? isEditingProject!.solutions
-      : typeof isEditingProject?.solutions === "string"
-        ? isEditingProject!.solutions.split("\n").filter(Boolean)
+    const rawVal = isEditingProject?.solutions as any
+    const current = Array.isArray(rawVal)
+      ? rawVal
+      : typeof rawVal === "string"
+        ? (rawVal as string).split("\n").filter(Boolean)
         : []
     const updated = [...current]
     const [draggedItem] = updated.splice(draggedSolutionIndex, 1)
@@ -1098,10 +1102,11 @@ export default function AdminProjects() {
                               challenges: parsed.length > 0 ? parsed : [""],
                             })
                           } else {
-                            const challengesArr = Array.isArray(isEditingProject.challenges)
-                              ? isEditingProject.challenges
-                              : typeof isEditingProject.challenges === "string"
-                                ? isEditingProject.challenges.split("\n").filter(Boolean)
+                            const rawChallenges = isEditingProject.challenges as any
+                            const challengesArr = Array.isArray(rawChallenges)
+                              ? rawChallenges
+                              : typeof rawChallenges === "string"
+                                ? rawChallenges.split("\n").filter(Boolean)
                                 : []
                             setBulkChallengesText(challengesArr.join("\n"))
                           }
@@ -1115,10 +1120,11 @@ export default function AdminProjects() {
                         type="button"
                         size="sm"
                         onClick={() => {
-                          const current = Array.isArray(isEditingProject.challenges)
-                            ? isEditingProject.challenges
-                            : typeof isEditingProject.challenges === "string"
-                              ? isEditingProject.challenges.split("\n").filter(Boolean)
+                          const rawChallenges = isEditingProject.challenges as any
+                          const current = Array.isArray(rawChallenges)
+                            ? rawChallenges
+                            : typeof rawChallenges === "string"
+                              ? rawChallenges.split("\n").filter(Boolean)
                               : []
                           setIsEditingProject({
                             ...isEditingProject,
@@ -1261,10 +1267,11 @@ export default function AdminProjects() {
                               solutions: parsed.length > 0 ? parsed : [""],
                             })
                           } else {
-                            const solutionsArr = Array.isArray(isEditingProject.solutions)
-                              ? isEditingProject.solutions
-                              : typeof isEditingProject.solutions === "string"
-                                ? isEditingProject.solutions.split("\n").filter(Boolean)
+                            const rawSolutions = isEditingProject.solutions as any
+                            const solutionsArr = Array.isArray(rawSolutions)
+                              ? rawSolutions
+                              : typeof rawSolutions === "string"
+                                ? rawSolutions.split("\n").filter(Boolean)
                                 : []
                             setBulkSolutionsText(solutionsArr.join("\n"))
                           }
@@ -1278,10 +1285,11 @@ export default function AdminProjects() {
                         type="button"
                         size="sm"
                         onClick={() => {
-                          const current = Array.isArray(isEditingProject.solutions)
-                            ? isEditingProject.solutions
-                            : typeof isEditingProject.solutions === "string"
-                              ? isEditingProject.solutions.split("\n").filter(Boolean)
+                          const rawSolutions = isEditingProject.solutions as any
+                          const current = Array.isArray(rawSolutions)
+                            ? rawSolutions
+                            : typeof rawSolutions === "string"
+                              ? rawSolutions.split("\n").filter(Boolean)
                               : []
                           setIsEditingProject({
                             ...isEditingProject,

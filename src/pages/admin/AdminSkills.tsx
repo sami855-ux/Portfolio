@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useOutletContext } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Plus, Edit, Trash2, Code2, Wrench, Database as DbIcon, Smartphone, Cpu, Filter, Search, Terminal, Layers } from "lucide-react"
+import { Plus, Edit, Trash2, Code2, Wrench, Database as DbIcon, Smartphone, Cpu, Filter, Terminal, Layers } from "lucide-react"
 
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -25,7 +25,6 @@ import {
 import {
   supabase,
   isSupabaseConfigured,
-  getSkills,
 } from "@/lib/supabase"
 import type { Skill } from "@/types/supabase"
 
@@ -42,10 +41,9 @@ const SKILL_CATEGORIES = ["Frontend", "Backend", "Database", "Mobile", "Tools"] 
 
 export default function AdminSkills() {
   const context = useOutletContext<AdminContext>()
-  const triggerToast = context?.triggerToast || (() => { })
   const loadHeaderData = context?.loadHeaderData || (() => { })
   const queryClient = useQueryClient()
-  const { data: dbSkills, isLoading: isQueryLoading } = useSkillsQuery()
+  const { data: dbSkills } = useSkillsQuery()
 
   const [loading, setLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -53,7 +51,6 @@ export default function AdminSkills() {
   const [isEditingSkill, setIsEditingSkill] = useState<Skill | null>(null)
   const [showSheet, setShowSheet] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
-  const [searchQuery, setSearchQuery] = useState("")
 
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean
@@ -238,10 +235,7 @@ export default function AdminSkills() {
     return selectedCategory === "All" || s.category === selectedCategory
   })
 
-  // Quick stats
-  const frontendCount = skills.filter((s) => s.category === "Frontend").length
-  const backendCount = skills.filter((s) => s.category === "Backend").length
-  const databaseCount = skills.filter((s) => s.category === "Database").length
+
 
   if (loading) {
     return (
