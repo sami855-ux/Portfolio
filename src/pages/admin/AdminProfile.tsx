@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useOutletContext } from "react-router-dom"
 import { motion } from "framer-motion"
-import { UserCheck, Upload } from "lucide-react"
+import { UserCheck, Upload, FileText, ExternalLink } from "lucide-react"
 
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -191,6 +191,72 @@ export default function AdminProfile() {
                     Remove Avatar
                   </Button>
                 )}
+              </div>
+            </div>
+
+            {/* CV / Resume File Upload Card */}
+            <div className="bg-[#202020] border-none p-6 rounded-3xl space-y-4 text-center flex flex-col items-center">
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider w-full text-left">
+                Curriculum Vitae (CV / Resume)
+              </label>
+
+              <div className="w-full bg-[#181818] border border-[#2a2a2a] p-4 rounded-2xl space-y-3">
+                {profile.resume_url ? (
+                  <div className="flex items-center justify-between bg-[#141414] p-3 rounded-xl border border-[#2a2a2a]">
+                    <div className="flex items-center gap-2 overflow-hidden text-left">
+                      <FileText className="w-5 h-5 text-green-400 shrink-0" />
+                      <div className="truncate">
+                        <p className="text-xs font-bold text-white truncate">CV Document</p>
+                        <p className="text-[10px] text-gray-400 font-mono truncate">{profile.resume_url}</p>
+                      </div>
+                    </div>
+                    <a
+                      href={profile.resume_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-1.5 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-lg shrink-0 transition-colors"
+                      title="Preview CV Document"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-500 py-2 font-medium">No CV file linked yet</div>
+                )}
+
+                <input
+                  type="file"
+                  id="cv-file-input"
+                  accept=".pdf,.doc,.docx"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    const reader = new FileReader()
+                    reader.onloadend = () => {
+                      if (typeof reader.result === "string") {
+                        setProfile((prev) => ({ ...prev, resume_url: reader.result as string }))
+                        triggerToast("CV document loaded from device! Click Save Profile Settings to apply.")
+                      }
+                    }
+                    reader.readAsDataURL(file)
+                  }}
+                />
+
+                <Button
+                  type="button"
+                  onClick={() => document.getElementById("cv-file-input")?.click()}
+                  className="w-full bg-[#262626] hover:bg-[#323232] text-gray-200 font-bold text-xs rounded-2xl h-10 border border-[#333] flex items-center justify-center gap-2 cursor-pointer transition-all"
+                >
+                  <Upload className="w-4 h-4 text-green-400" /> Upload CV (PDF/DOC)
+                </Button>
+
+                <Input
+                  placeholder="Or paste direct Google Drive / PDF URL..."
+                  value={profile.resume_url || ""}
+                  onChange={(e) => setProfile({ ...profile, resume_url: e.target.value })}
+                  className="h-10 bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl px-3 font-mono"
+                />
               </div>
             </div>
           </div>
