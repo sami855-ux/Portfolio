@@ -63,18 +63,66 @@ export default function AdminProjects() {
   const [bulkSolutionsText, setBulkSolutionsText] = useState("")
   const [showBulkSolutions, setShowBulkSolutions] = useState(false)
 
-  const handleProjectImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file || !isEditingProject) return
+  const handleMultiImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0 || !isEditingProject) return
 
-    const toastId = toast.loading("Uploading project image to Supabase Storage bucket...")
-    const res = await uploadToSupabaseStorage(file, "portfolio-images", "projects")
+    const toastId = toast.loading(`Uploading ${files.length} image(s)...`)
 
-    if (res.success && res.url) {
-      setIsEditingProject((prev) => (prev ? { ...prev, image: res.url } : null))
-      toast.success("Image uploaded to Supabase Storage bucket!", { id: toastId })
-    } else {
-      toast.error("Upload failed: " + (res.error || "Unknown error"), { id: toastId })
+    try {
+      const uploadPromises = files.map((file) =>
+        uploadToSupabaseStorage(file, "portfolio-images", "projects")
+      )
+      const results = await Promise.all(uploadPromises)
+      const newUrls = results
+        .filter((res) => res.success && res.url)
+        .map((res) => res.url as string)
+
+      if (newUrls.length > 0) {
+        setIsEditingProject((prev) => {
+          if (!prev) return null
+          const existingImages = prev.images || (prev.image ? [prev.image] : [])
+          const combinedImages = [...existingImages, ...newUrls]
+          return {
+            ...prev,
+            image: prev.image || combinedImages[0],
+            images: combinedImages,
+          }
+        })
+        toast.success(`Uploaded ${newUrls.length} image(s) to Supabase Storage!`, { id: toastId })
+      } else {
+        const firstError = results.find((r) => !r.success)?.error || "Storage bucket not configured"
+        console.warn("Supabase Storage upload failed, reading files locally:", firstError)
+
+        // Local DataURL fallback
+        const readLocalPromises = files.map(
+          (file) =>
+            new Promise<string>((resolve) => {
+              const reader = new FileReader()
+              reader.onloadend = () => resolve(reader.result as string)
+              reader.readAsDataURL(file)
+            })
+        )
+        const localUrls = await Promise.all(readLocalPromises)
+
+        setIsEditingProject((prev) => {
+          if (!prev) return null
+          const existingImages = prev.images || (prev.image ? [prev.image] : [])
+          const combinedImages = [...existingImages, ...localUrls]
+          return {
+            ...prev,
+            image: prev.image || combinedImages[0],
+            images: combinedImages,
+          }
+        })
+
+        toast.info(
+          `Notice: Attached ${localUrls.length} image(s). Note: ${firstError}. Please create a public bucket named 'portfolio-images' in Supabase Dashboard -> Storage.`,
+          { id: toastId, duration: 7000 }
+        )
+      }
+    } catch (err: any) {
+      toast.error("Upload error: " + (err.message || "Unknown error"), { id: toastId })
     }
   }
 
@@ -224,8 +272,26 @@ export default function AdminProjects() {
       const rawChallenges = parseToArray(project.challenges)
       const rawSolutions = parseToArray(project.solutions)
 
+      let rawImages: string[] = []
+      if (Array.isArray(project.images) && project.images.length > 0) {
+        rawImages = project.images.filter(Boolean)
+      } else if (typeof project.images === "string" && (project.images as string).trim().length > 0) {
+        try {
+          const parsed = JSON.parse(project.images as string)
+          if (Array.isArray(parsed)) rawImages = parsed.filter(Boolean)
+          else rawImages = (project.images as string).split(",").map((s) => s.trim()).filter(Boolean)
+        } catch {
+          rawImages = (project.images as string).split(",").map((s) => s.trim()).filter(Boolean)
+        }
+      }
+      if (project.image && !rawImages.includes(project.image)) {
+        rawImages.unshift(project.image)
+      }
+
       setIsEditingProject({
         ...project,
+        image: project.image || rawImages[0] || "",
+        images: rawImages,
         features: rawFeatures.length > 0 ? rawFeatures : [""],
         challenges: rawChallenges.length > 0 ? rawChallenges : [""],
         solutions: rawSolutions.length > 0 ? rawSolutions : [""],
@@ -242,6 +308,7 @@ export default function AdminProjects() {
         github: "",
         live: "",
         image: "",
+        images: [],
         category: "Full Stack",
         featured: true,
         features: [""],
@@ -305,8 +372,14 @@ export default function AdminProjects() {
         .map((s) => (typeof s === "string" ? s.trim() : s))
         .filter(Boolean)
 
+      const rawImages = isEditingProject.images || (isEditingProject.image ? [isEditingProject.image] : [])
+      const cleanImages = rawImages.map((img) => (typeof img === "string" ? img.trim() : img)).filter(Boolean)
+      const primaryCover = isEditingProject.image || cleanImages[0] || ""
+
       const updatedProject: Project = {
         ...isEditingProject,
+        image: primaryCover,
+        images: cleanImages,
         features: cleanFeatures,
         challenges: cleanChallenges,
         solutions: cleanSolutions,
@@ -315,12 +388,30 @@ export default function AdminProjects() {
       if (isSupabaseConfigured) {
         if (updatedProject.id && !updatedProject.id.startsWith("demo")) {
           const { error } = await supabase.from("projects").update(updatedProject).eq("id", updatedProject.id)
-          if (error) throw new Error(error.message)
+          if (error) {
+            if (error.message.includes("images") || error.message.includes("schema cache")) {
+              console.warn("Supabase schema cache notice: 'images' column missing, retrying payload without images:", error.message)
+              const { images, ...payloadWithoutImages } = updatedProject
+              const { error: retryErr } = await supabase.from("projects").update(payloadWithoutImages).eq("id", updatedProject.id)
+              if (retryErr) throw new Error(retryErr.message)
+            } else {
+              throw new Error(error.message)
+            }
+          }
         } else {
           const { id, ...newProj } = updatedProject
           const { data, error } = await supabase.from("projects").insert([newProj]).select().single()
-          if (error) throw new Error(error.message)
-          if (data) {
+          if (error) {
+            if (error.message.includes("images") || error.message.includes("schema cache")) {
+              console.warn("Supabase schema cache notice: 'images' column missing, retrying payload without images:", error.message)
+              const { images, ...payloadWithoutImages } = newProj
+              const { data: retryData, error: retryErr } = await supabase.from("projects").insert([payloadWithoutImages]).select().single()
+              if (retryErr) throw new Error(retryErr.message)
+              if (retryData) updatedProject.id = retryData.id
+            } else {
+              throw new Error(error.message)
+            }
+          } else if (data) {
             updatedProject.id = data.id
           }
         }
@@ -821,35 +912,113 @@ export default function AdminProjects() {
                   </div>
                 </div>
 
-                {/* Project Cover Image Upload (Supabase Storage) */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center justify-between">
-                    <span>Project Cover Image URL</span>
+                {/* Project Cover & Multi-Image Gallery Upload (Supabase Storage) */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-semibold text-gray-300">
+                      Project Images Gallery (Multiple Images Support)
+                    </label>
                     <span className="text-[11px] text-green-400 font-semibold">Supabase Storage</span>
-                  </label>
+                  </div>
+
                   <div className="flex items-center gap-3">
                     <Input
                       value={isEditingProject.image || ""}
                       onChange={(e) =>
-                        setIsEditingProject({ ...isEditingProject, image: e.target.value })
+                        setIsEditingProject({
+                          ...isEditingProject,
+                          image: e.target.value,
+                          images: isEditingProject.images?.length
+                            ? [e.target.value, ...isEditingProject.images.slice(1)]
+                            : [e.target.value],
+                        })
                       }
-                      placeholder="https://... or click Upload to select image"
+                      placeholder="Primary Cover Image URL..."
                       className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-2xl h-11 px-4 flex-1 font-mono"
                     />
                     <label className="bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30 px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shrink-0 shadow-sm">
                       <Upload className="w-4 h-4 text-green-400" />
-                      <span>Upload to Bucket</span>
+                      <span>Upload Images</span>
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={handleProjectImageUpload}
+                        multiple
+                        onChange={handleMultiImageUpload}
                         className="hidden"
                       />
                     </label>
                   </div>
-                  {isEditingProject.image && (
-                    <div className="mt-3 relative w-full h-36 rounded-2xl overflow-hidden border border-white/10 bg-[#101014]">
-                      <img src={isEditingProject.image} alt="Preview" className="w-full h-full object-cover" />
+
+                  {/* Multi Image Thumbnails Grid */}
+                  {((isEditingProject.images && isEditingProject.images.length > 0) || isEditingProject.image) && (
+                    <div className="pt-2">
+                      <p className="text-[11px] text-gray-400 mb-2 font-medium">
+                        Uploaded Gallery ({ (isEditingProject.images || (isEditingProject.image ? [isEditingProject.image] : [])).length } images):
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {(isEditingProject.images && isEditingProject.images.length > 0
+                          ? isEditingProject.images
+                          : isEditingProject.image
+                          ? [isEditingProject.image]
+                          : []
+                        ).map((imgUrl, imgIdx) => {
+                          const isCover = isEditingProject.image === imgUrl || imgIdx === 0
+                          return (
+                            <div
+                              key={imgIdx}
+                              className={`relative group h-28 rounded-2xl overflow-hidden border ${
+                                isCover ? "border-green-500 ring-2 ring-green-500/20" : "border-white/10"
+                              } bg-[#101014]`}
+                            >
+                              <img src={imgUrl} alt={`Gallery ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                              
+                              {/* Hover Action Overlay */}
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
+                                <button
+                                  type="button"
+                                  title="Set as Primary Cover"
+                                  onClick={() => {
+                                    const allImgs = isEditingProject.images || [imgUrl]
+                                    const reordered = [imgUrl, ...allImgs.filter((u) => u !== imgUrl)]
+                                    setIsEditingProject({
+                                      ...isEditingProject,
+                                      image: imgUrl,
+                                      images: reordered,
+                                    })
+                                    toast.success("Set as primary cover image!")
+                                  }}
+                                  className="p-1.5 rounded-lg bg-green-500 text-slate-950 hover:bg-green-400 cursor-pointer shadow-md"
+                                >
+                                  <Star className="w-3.5 h-3.5 fill-slate-950" />
+                                </button>
+                                <button
+                                  type="button"
+                                  title="Remove Image"
+                                  onClick={() => {
+                                    const currentImgs = isEditingProject.images || (isEditingProject.image ? [isEditingProject.image] : [])
+                                    const updatedImgs = currentImgs.filter((_, i) => i !== imgIdx)
+                                    setIsEditingProject({
+                                      ...isEditingProject,
+                                      image: updatedImgs[0] || "",
+                                      images: updatedImgs,
+                                    })
+                                    toast.success("Image removed from gallery")
+                                  }}
+                                  className="p-1.5 rounded-lg bg-red-500/80 hover:bg-red-500 text-white cursor-pointer shadow-md"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              {isCover && (
+                                <span className="absolute top-1.5 left-1.5 bg-green-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shadow-sm">
+                                  COVER
+                                </span>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>
