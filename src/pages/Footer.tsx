@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 
 import { useProfileSettingsQuery } from "@/hooks/usePortfolioQueries"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function Footer() {
-  const { data: profile } = useProfileSettingsQuery()
-  const email = profile?.contact_email || "samitale86@gmail.com"
-  const fullName = profile?.full_name || "Samuel Tale"
+  const { data: profile, isLoading } = useProfileSettingsQuery()
+  const email = profile?.email || (profile as any)?.contact_email || ""
+  const fullName = profile?.full_name || ""
 
   return (
     <footer className="mt-16 border-t border-[#262626] dark:border-gray-800 py-8">
@@ -68,17 +69,28 @@ export function Footer() {
         </div>
 
         {/* Email and Copyright */}
-        <div className="text-center mb-4">
-          <a
-            href={`mailto:${email}`}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-green-400"
-          >
-            <Mail className="w-4 h-4" />
-            {email}
-          </a>
-          <p className="mt-2 text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {fullName}. All rights reserved.
-          </p>
+        <div className="text-center mb-4 flex flex-col items-center justify-center min-h-[48px]">
+          {isLoading ? (
+            <div className="flex flex-col items-center gap-2">
+              <Skeleton className="h-4 w-48 bg-white/10" />
+              <Skeleton className="h-3 w-36 bg-white/10" />
+            </div>
+          ) : (
+            <>
+              {email && (
+                <a
+                  href={`mailto:${email}`}
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-green-400"
+                >
+                  <Mail className="w-4 h-4" />
+                  {email}
+                </a>
+              )}
+              <p className="mt-2 text-xs text-muted-foreground">
+                © {new Date().getFullYear()} {fullName}. All rights reserved.
+              </p>
+            </>
+          )}
         </div>
 
         {/* Cute Message */}
