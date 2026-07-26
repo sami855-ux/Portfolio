@@ -118,6 +118,24 @@ export default function AdminLayout() {
     }
   }
 
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    const toastId = toast.loading("Refreshing dashboard data...")
+    try {
+      await loadHeaderData()
+      // Dispatch admin-refresh event for any active sub-view to reload data
+      window.dispatchEvent(new Event("admin-refresh"))
+      toast.success("Dashboard data refreshed!", { id: toastId })
+    } catch (err) {
+      console.error("Refresh error:", err)
+      toast.error("Failed to refresh dashboard data", { id: toastId })
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600)
+    }
+  }
+
   const navItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard, path: "/admin" },
     { id: "profile", label: "Profile", icon: UserCheck, path: "/admin/profile" },
@@ -205,7 +223,7 @@ export default function AdminLayout() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="space-y-1">
+          <nav className="space-y-1.5">
             {navItems.map((tab) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -215,20 +233,20 @@ export default function AdminLayout() {
                   onClick={() => navigate(tab.path)}
                   title={isCollapsed ? tab.label : undefined}
                   className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
-                    } py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${isActive
-                      ? "bg-[#252424] text-white shadow-sm"
-                      : "text-gray-400 hover:text-white hover:bg-[#202020]"
+                    } py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border bg-transparent ${isActive
+                      ? "text-emerald-400 font-extrabold border-transparent"
+                      : "text-gray-400 hover:text-white border-transparent"
                     }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-green-500" : "text-gray-400"}`} />
+                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-emerald-400" : "text-gray-400"}`} />
                     {!isCollapsed && <span>{tab.label}</span>}
                   </div>
                   {!isCollapsed && tab.count !== undefined && tab.count > 0 && (
                     <span
                       className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${tab.hasBadge
-                          ? "bg-green-500 text-slate-950 animate-bounce"
-                          : "bg-[#2d2d2d] text-gray-300"
+                          ? "bg-emerald-400 text-slate-950 animate-bounce"
+                          : "bg-white/10 text-gray-300"
                         }`}
                     >
                       {tab.count}
@@ -280,10 +298,11 @@ export default function AdminLayout() {
             <Button
               variant="outline"
               size="sm"
-              onClick={loadHeaderData}
-              className="bg-[#202020] border-none hover:bg-[#2a2a2a] text-gray-300 rounded-xl flex items-center gap-1.5 text-xs h-9 cursor-pointer"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="bg-[#202020] border-none hover:bg-[#2a2a2a] text-gray-300 rounded-xl flex items-center gap-1.5 text-xs h-9 cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw className="w-3.5 h-3.5" /> Refresh
+              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-emerald-400" : ""}`} /> Refresh
             </Button>
 
             {/* Profile Avatar Pill */}
