@@ -2,9 +2,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ExternalLink, Github, Maximize2, X, ChevronLeft, ChevronRight, Layers } from "lucide-react"
 import Header from "@/components/Header"
 import { useEffect, useState } from "react"
-import { Footer } from "./Footer"
-import { LazyLoadImage } from "react-lazy-load-image-component"
-import "react-lazy-load-image-component/src/effects/blur.css"
+import { Footer } from "@/components/Footer"
 import {
   Tooltip,
   TooltipContent,

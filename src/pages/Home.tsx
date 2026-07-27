@@ -12,13 +12,14 @@ import {
 import ProfileImage from "@/components/ProfileImage"
 import { Button } from "@/components/ui/button"
 import { SiTelegram, SiYoutube, SiDiscord, SiWhatsapp, SiMedium, SiGmail } from "react-icons/si"
-import type { socialLinks } from "@/types/ui"
+import type { SocialLink } from "@/types/ui"
 import { Link } from "react-router-dom"
 
 import { useProfileSettingsQuery, useContactLinksQuery, useFloatingCardsQuery } from "@/hooks/usePortfolioQueries"
 import { Skeleton } from "@/components/ui/skeleton"
+import { defaultProfileSettings } from "@/lib/supabase"
 
-const defaultSocialLinks: socialLinks[] = [
+const defaultSocialLinks: SocialLink[] = [
   { name: "GitHub", url: "https://github.com/sami855-ux", icon: "github" },
   {
     name: "LinkedIn",
@@ -33,8 +34,6 @@ const defaultSocialLinks: socialLinks[] = [
   { name: "Facebook", url: "#", icon: "facebook" },
   { name: "Telegram", url: "https://t.me/Sami_hhtt", icon: "telegram" },
 ]
-
-import { defaultProfileSettings } from "@/lib/supabase"
 
 export default function Home() {
   const [isHovered, setIsHovered] = useState<boolean>(false)

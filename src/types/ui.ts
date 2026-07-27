@@ -1,12 +1,16 @@
-export interface socialLinks {
+import type React from "react"
+
+export interface SocialLink {
   name: string
   url: string
   icon: string
 }
-export interface navItems {
+
+export interface NavItem {
   name: string
   id: string
 }
+
 export interface TimelineItem {
   id: number
   title: string

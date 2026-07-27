@@ -10,6 +10,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip"
 import { defaultProjects } from "@/lib/supabase"
+import type { Project } from "@/types/supabase"
 import { Link } from "react-router-dom"
 import { useProjectsQuery } from "@/hooks/usePortfolioQueries"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -313,7 +314,7 @@ export const Projects = () => {
             whileTap={{ scale: 0.97 }}
             className="inline-block"
           >
-            <Link to="/Projects">
+            <Link to="/projects">
               <Button
                 variant="ghost"
                 className="px-8 py-6 rounded-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 hover:from-emerald-500/20 hover:via-teal-500/20 hover:to-blue-500/20 text-white border border-emerald-500/30 hover:border-emerald-400 font-outfit font-bold tracking-wide text-sm shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 transition-all duration-300 gap-2.5 cursor-pointer"

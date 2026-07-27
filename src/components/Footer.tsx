@@ -1,8 +1,6 @@
 import { Github, Linkedin, Mail, Heart, ExternalLink } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
-
 import { useProfileSettingsQuery } from "@/hooks/usePortfolioQueries"
 import { Skeleton } from "@/components/ui/skeleton"
 

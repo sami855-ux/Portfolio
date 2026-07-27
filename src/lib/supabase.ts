@@ -6,6 +6,7 @@ import type {
   ContactLink,
   Message,
   ProfileSettings,
+  FloatingCard,
 } from "@/types/supabase"
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://ghraybxwhooroumzgslx.supabase.co"
