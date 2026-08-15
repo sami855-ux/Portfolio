@@ -84,13 +84,15 @@ export const defaultSkills: Skill[] = [
   { id: "6", name: "Tailwind CSS", category: "Frontend", icon_name: "SiTailwindcss", color: "text-[#38BDF8]" },
   { id: "7", name: "Node.js", category: "Backend", icon_name: "SiNodedotjs", color: "text-[#339933]" },
   { id: "8", name: "Express.js", category: "Backend", icon_name: "SiExpress", color: "text-white" },
-  { id: "9", name: "Laravel", category: "Backend", icon_name: "SiLaravel", color: "text-[#FF2D20]" },
-  { id: "10", name: "MongoDB", category: "Database", icon_name: "SiMongodb", color: "text-[#47A248]" },
-  { id: "11", name: "PostgreSQL", category: "Database", icon_name: "SiPostgresql", color: "text-[#4169E1]" },
-  { id: "12", name: "Supabase", category: "Database", icon_name: "SiSupabase", color: "text-[#3ECF8E]" },
-  { id: "13", name: "React Native (Expo)", category: "Mobile", icon_name: "SiExpo", color: "text-white" },
-  { id: "14", name: "Git & GitHub", category: "Tools", icon_name: "SiGit", color: "text-[#F05032]" },
-  { id: "15", name: "Docker", category: "Tools", icon_name: "SiDocker", color: "text-[#2496ED]" },
+  { id: "9", name: "Golang", category: "Backend", icon_name: "SiGo", color: "text-[#00ADD8]" },
+  { id: "10", name: "NestJS", category: "Backend", icon_name: "SiNestjs", color: "text-[#E0234E]" },
+  { id: "11", name: "Laravel", category: "Backend", icon_name: "SiLaravel", color: "text-[#FF2D20]" },
+  { id: "12", name: "MongoDB", category: "Database", icon_name: "SiMongodb", color: "text-[#47A248]" },
+  { id: "13", name: "PostgreSQL", category: "Database", icon_name: "SiPostgresql", color: "text-[#4169E1]" },
+  { id: "14", name: "Supabase", category: "Database", icon_name: "SiSupabase", color: "text-[#3ECF8E]" },
+  { id: "15", name: "React Native (Expo)", category: "Mobile", icon_name: "SiExpo", color: "text-white" },
+  { id: "16", name: "Git & GitHub", category: "Tools", icon_name: "SiGit", color: "text-[#F05032]" },
+  { id: "17", name: "Docker", category: "Tools", icon_name: "SiDocker", color: "text-[#2496ED]" },
 ]
 
 export const defaultJourney: JourneyItem[] = [

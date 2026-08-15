@@ -65,7 +65,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="w-full min-h-[100vh] flex items-center justify-center flex-col relative overflow-hidden px-4 md:px-0 py-0 mt-12">
+      <div className="w-full min-h-screen flex items-center justify-center flex-col relative overflow-hidden px-4 md:px-6 pt-28 pb-16">
         <motion.div
           className="absolute inset-0 -z-10"
           initial={{ opacity: 0 }}
@@ -77,33 +77,28 @@ export default function Home() {
         </motion.div>
 
         <motion.div
-          initial={{ y: -50, opacity: 0 }}
+          initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center justify-center text-center my-auto max-w-3xl mx-auto"
         >
           {/* Profile image with playful interaction */}
 
-          <h2 className="font-bold text-4xl md:text-6xl text-white mb-2 relative mt-7 md:mt-0">
-            Hi, I'm {firstName}{" "}
+          <h2 className="font-bold text-4xl md:text-6xl text-white mb-2 relative flex items-center justify-center flex-wrap gap-2">
+            <span>Hi, I'm {firstName}</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-600">
               {lastName}
             </span>
             <motion.span
-              className="absolute md:inline-block hidden -top-7 -right-4 text-4xl"
-              animate={{
-                scale: [1, 1.2, 1],
-                rotate: [-10, 10, -5, 0],
-                y: [0, -8, 0],
-              }}
+              className="inline-block ml-1 text-3xl md:text-5xl select-none origin-[70%_70%]"
+              animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
               transition={{
-                duration: 2.5,
+                duration: 2.2,
                 repeat: Infinity,
-                repeatType: "mirror",
+                repeatDelay: 1,
                 ease: "easeInOut",
               }}
               style={{
-                transformOrigin: "70% 70%",
                 textShadow: "0 2px 10px rgba(74, 222, 128, 0.3)",
               }}
             >
@@ -121,7 +116,7 @@ export default function Home() {
           </motion.p>
 
           <motion.p
-            className="text-center text-base text-gray-400 max-w-xl mx-auto leading-relaxed mb-8"
+            className="text-center text-base text-gray-400 max-w-xl mx-auto leading-relaxed mb-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -129,42 +124,42 @@ export default function Home() {
             {bioText}
           </motion.p>
 
-          <motion.div
-            className="relative mb-8"
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-            whileHover={{ scale: 1.05 }}
-          >
+          {/* Profile Avatar / Image */}
+          <div className="relative mb-6 flex items-center justify-center">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
                 alt={fullName}
                 loading="lazy"
                 decoding="async"
-                className="w-44 h-44 rounded-full object-cover border-4 border-green-500/30 shadow-2xl"
+                className="w-44 h-44 rounded-full object-cover border-4 border-emerald-500/30 shadow-2xl"
               />
             ) : (
               <ProfileImage />
             )}
-            {/* Animated ring */}
-            <motion.div
-              className="absolute inset-0 rounded-full border-4 border-transparent"
-              animate={{
-                borderColor: isHovered
-                  ? ["#ec4899", "#8b5cf6", "#ec4899"]
-                  : "transparent",
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            />
+          </div>
+
+          {/* Single Clean See My CV Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mb-6"
+          >
+            <a
+              href={cvUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider text-slate-950 bg-gradient-to-r from-green-400 to-emerald-500 hover:opacity-90 transition-all cursor-pointer shadow-lg shadow-green-500/20 hover:scale-[1.02]"
+            >
+              <FileText className="w-4 h-4 text-slate-950" />
+              <span>See My CV</span>
+            </a>
           </motion.div>
 
-          {/* Social links with animations */}
+          {/* Social links */}
           <motion.div
-            className="flex gap-4 mt-4"
+            className="flex gap-4 mt-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
@@ -243,37 +238,6 @@ export default function Home() {
                 </span>
               </motion.a>
             ))}
-          </motion.div>
-
-          <motion.div
-            className="flex flex-wrap items-center justify-center gap-4 mt-7"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, staggerChildren: 0.1 }}
-          >
-            {/* Minimalist See My CV Button */}
-            <div>
-              <a
-                href={cvUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider text-slate-950 bg-gradient-to-r from-green-400 to-blue-500 hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                <FileText className="w-3.5 h-3.5 text-slate-950" />
-                <span>See My CV</span>
-              </a>
-            </div>
-
-            {/* Minimalist Contact Me Button */}
-            <div>
-              <Link
-                to="/contact"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider text-white border border-white/20 hover:border-white/40 transition-colors cursor-pointer"
-              >
-                <Send className="w-3.5 h-3.5 text-green-400" />
-                <span>Contact Me</span>
-              </Link>
-            </div>
           </motion.div>
         </motion.div>
       </div>

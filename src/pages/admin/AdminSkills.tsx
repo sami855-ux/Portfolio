@@ -30,6 +30,7 @@ import type { Skill } from "@/types/supabase"
 
 import { useQueryClient } from "@tanstack/react-query"
 import { useSkillsQuery, QUERY_KEYS } from "@/hooks/usePortfolioQueries"
+import { renderSkillIcon, detectIconName, SKILL_ICON_SUGGESTIONS } from "@/lib/skillIcons"
 
 interface AdminContext {
   triggerToast: (msg: string) => void
@@ -79,29 +80,38 @@ export default function AdminSkills() {
     const isNew = !isEditingSkill.id || !(isEditingSkill.id.length > 20 && isEditingSkill.id.includes("-"))
     const toastId = toast.loading(isNew ? "Creating new skill..." : "Saving skill updates...")
 
+    const targetIconName = (isEditingSkill.icon_name && isEditingSkill.icon_name !== "SiReact" && isEditingSkill.icon_name !== "SiCode")
+      ? isEditingSkill.icon_name
+      : detectIconName(isEditingSkill.name)
+
+    const skillToSave = {
+      ...isEditingSkill,
+      icon_name: targetIconName
+    }
+
     try {
       if (isSupabaseConfigured) {
-        const isUUID = isEditingSkill.id && isEditingSkill.id.length > 20 && isEditingSkill.id.includes("-")
+        const isUUID = skillToSave.id && skillToSave.id.length > 20 && skillToSave.id.includes("-")
         if (isUUID) {
           const { error: updateErr } = await supabase
             .from("skills")
             .update({
-              name: isEditingSkill.name,
-              category: isEditingSkill.category,
-              icon_name: isEditingSkill.icon_name || "SiReact",
-              proficiency: isEditingSkill.proficiency || 90,
+              name: skillToSave.name,
+              category: skillToSave.category,
+              icon_name: targetIconName,
+              proficiency: skillToSave.proficiency || 90,
             })
-            .eq("id", isEditingSkill.id)
+            .eq("id", skillToSave.id)
 
           if (updateErr) throw new Error(updateErr.message)
         } else {
-          const { id, ...newSkillData } = isEditingSkill
+          const { id, ...newSkillData } = skillToSave
           const { data: inserted, error: insertErr } = await supabase
             .from("skills")
             .insert([{
               name: newSkillData.name,
               category: newSkillData.category,
-              icon_name: newSkillData.icon_name || "SiReact",
+              icon_name: targetIconName,
               proficiency: newSkillData.proficiency || 90,
               display_order: skills.length + 1,
             }])
@@ -122,12 +132,12 @@ export default function AdminSkills() {
       }
 
       // Update state locally
-      if (isEditingSkill.id) {
+      if (skillToSave.id) {
         setSkills((prev) =>
-          prev.map((s) => (s.id === isEditingSkill.id ? isEditingSkill : s))
+          prev.map((s) => (s.id === skillToSave.id ? skillToSave : s))
         )
       } else {
-        const newSkill = { ...isEditingSkill, id: Date.now().toString() }
+        const newSkill = { ...skillToSave, id: Date.now().toString() }
         setSkills((prev) => [...prev, newSkill])
       }
 
@@ -268,7 +278,7 @@ export default function AdminSkills() {
 
         <Button
           onClick={() => {
-            setIsEditingSkill({ name: "", category: "Frontend", icon_name: "SiReact" })
+            setIsEditingSkill({ name: "", category: "Backend", icon_name: "" })
             setShowSheet(true)
           }}
           className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] shrink-0"
@@ -309,7 +319,6 @@ export default function AdminSkills() {
             type="button"
             onClick={() => {
               setSelectedCategory("All")
-              setSearchQuery("")
             }}
             className="bg-[#242424] hover:bg-[#303030] text-xs text-white rounded-xl h-8 px-3"
           >
@@ -327,7 +336,7 @@ export default function AdminSkills() {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#141414] border border-[#262626] flex items-center justify-center shrink-0">
-                  {getCategoryIcon(s.category)}
+                  {renderSkillIcon(s.icon_name, s.name, 22)}
                 </div>
                 <div className="space-y-0.5">
                   <div className="font-bold text-white text-sm group-hover:text-green-400 transition-colors">
@@ -388,11 +397,17 @@ export default function AdminSkills() {
                 </label>
                 <Input
                   value={isEditingSkill.name}
-                  onChange={(e) =>
-                    setIsEditingSkill({ ...isEditingSkill, name: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const newName = e.target.value
+                    const autoDetected = detectIconName(newName)
+                    setIsEditingSkill({
+                      ...isEditingSkill,
+                      name: newName,
+                      icon_name: autoDetected !== "SiCode" ? autoDetected : (isEditingSkill.icon_name || autoDetected),
+                    })
+                  }}
                   required
-                  placeholder="e.g. React.js, PostgreSQL, Docker"
+                  placeholder="e.g. Golang, NestJS, React.js, Docker"
                   className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl h-11 px-3.5"
                 />
               </div>
@@ -422,17 +437,69 @@ export default function AdminSkills() {
                 </Select>
               </div>
 
-              {/* Icon Identifier */}
+              {/* Live Icon Preview & Selection */}
+              <div className="bg-[#141414] p-3.5 rounded-2xl border border-[#262626] space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#333] flex items-center justify-center shrink-0">
+                    {renderSkillIcon(isEditingSkill.icon_name, isEditingSkill.name, 28)}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-white flex items-center gap-2">
+                      <span>Active Icon Preview</span>
+                      <span className="text-[10px] bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full font-mono">
+                        {isEditingSkill.icon_name || detectIconName(isEditingSkill.name)}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      Auto-detected from skill name or selected below
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quick Preset Icon Chips */}
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-400 mb-1.5">
+                    Quick Icon Presets
+                  </label>
+                  <div className="grid grid-cols-3 gap-1.5 max-h-36 overflow-y-auto pr-1 no-scrollbar">
+                    {SKILL_ICON_SUGGESTIONS.map((preset) => {
+                      const isSelected = isEditingSkill.icon_name === preset.icon_name
+                      return (
+                        <button
+                          key={preset.icon_name}
+                          type="button"
+                          onClick={() =>
+                            setIsEditingSkill({
+                              ...isEditingSkill,
+                              icon_name: preset.icon_name,
+                            })
+                          }
+                          className={`flex items-center gap-1.5 p-2 rounded-xl border text-[10px] transition-all cursor-pointer ${
+                            isSelected
+                              ? "bg-green-500/20 border-green-500 text-green-400 font-bold"
+                              : "bg-[#181818] border-[#282828] text-gray-400 hover:text-white hover:border-[#383838]"
+                          }`}
+                        >
+                          {renderSkillIcon(preset.icon_name, preset.label, 14)}
+                          <span className="truncate">{preset.label}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Icon Identifier Input */}
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                  SimpleIcons Icon Identifier
+                  SimpleIcons Identifier Key
                 </label>
                 <Input
                   value={isEditingSkill.icon_name || ""}
                   onChange={(e) =>
                     setIsEditingSkill({ ...isEditingSkill, icon_name: e.target.value })
                   }
-                  placeholder="e.g. SiReact / SiTypescript / SiNodedotjs"
+                  placeholder="e.g. SiGo, SiNestjs, SiReact, SiPython"
                   className="bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl h-11 px-3.5 font-mono"
                 />
                 <p className="text-[10px] text-gray-500 mt-1">Refers to standard SimpleIcons icon identifier.</p>

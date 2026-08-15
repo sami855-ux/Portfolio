@@ -14,6 +14,7 @@ import AdminLayout from "./components/admin/AdminLayout.tsx"
 import AdminOverview from "./pages/admin/AdminOverview.tsx"
 import AdminProfile from "./pages/admin/AdminProfile.tsx"
 import AdminProjects from "./pages/admin/AdminProjects.tsx"
+import AdminProjectForm from "./pages/admin/AdminProjectForm.tsx"
 import AdminSkills from "./pages/admin/AdminSkills.tsx"
 import AdminJourney from "./pages/admin/AdminJourney.tsx"
 import AdminLinks from "./pages/admin/AdminLinks.tsx"
@@ -52,6 +53,8 @@ const router = createBrowserRouter([
           { index: true, element: <AdminOverview /> },
           { path: "profile", element: <AdminProfile /> },
           { path: "projects", element: <AdminProjects /> },
+          { path: "projects/new", element: <AdminProjectForm /> },
+          { path: "projects/edit/:id", element: <AdminProjectForm /> },
           { path: "skills", element: <AdminSkills /> },
           { path: "journey", element: <AdminJourney /> },
           { path: "links", element: <AdminLinks /> },

@@ -1,89 +1,14 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
-import {
-  SiReact,
-  SiNextdotjs,
-  SiTailwindcss,
-  SiTypescript,
-  SiNodedotjs,
-  SiExpress,
-  SiMongodb,
-  SiPostgresql,
-  SiGit,
-  SiFigma,
-  SiPrisma,
-  SiRedux,
-  SiDocker,
-  SiGithub,
-  SiVite,
-  SiFramer,
-  SiFirebase,
-  SiJavascript,
-  SiVuedotjs,
-  SiLaravel,
-  SiReactquery,
-  SiSupabase,
-  SiShadcnui,
-  SiSocketdotio,
-  SiCloudinary,
-  SiStripe,
-  SiZod,
-  SiExpo,
-  SiAndroid,
-  SiApple,
-  SiPython,
-  SiFastapi,
-  SiGo,
-  SiNestjs
-} from "react-icons/si"
-import { getSkills } from "@/lib/supabase"
+import { renderSkillIcon } from "@/lib/skillIcons"
 import { useSkillsQuery } from "@/hooks/usePortfolioQueries"
 import { Skeleton } from "@/components/ui/skeleton"
-import type { Skill } from "@/types/supabase"
 
 export default function Skills() {
   const [activeCategory, setActiveCategory] = useState("All")
-  const { data: dbSkills, isLoading, isError, refetch } = useSkillsQuery()
+  const { data: dbSkills, isLoading } = useSkillsQuery()
 
   const skills = dbSkills || []
-
-  const renderIcon = (name: string) => {
-    const iconMap: Record<string, React.ReactNode> = {
-      SiReact: <SiReact size={42} className="text-[#61DAFB]" />,
-      SiNextdotjs: <SiNextdotjs size={42} className="text-white" />,
-      SiVuedotjs: <SiVuedotjs size={42} className="text-[#42B883]" />,
-      SiTypescript: <SiTypescript size={42} className="text-[#3178C6]" />,
-      SiJavascript: <SiJavascript size={42} className="text-[#F7DF1E]" />,
-      SiTailwindcss: <SiTailwindcss size={42} className="text-[#38BDF8]" />,
-      SiRedux: <SiRedux size={42} className="text-[#764ABC]" />,
-      SiReactquery: <SiReactquery size={42} className="text-[#FF4154]" />,
-      SiShadcnui: <SiShadcnui size={42} className="text-white" />,
-      SiFramer: <SiFramer size={42} className="text-white" />,
-      SiVite: <SiVite size={42} className="text-[#646CFF]" />,
-      SiExpo: <SiExpo size={42} className="text-white" />,
-      SiAndroid: <SiAndroid size={42} className="text-[#3DDC84]" />,
-      SiApple: <SiApple size={42} className="text-white" />,
-      SiNodedotjs: <SiNodedotjs size={42} className="text-[#339933]" />,
-      SiExpress: <SiExpress size={42} className="text-white" />,
-      SiLaravel: <SiLaravel size={42} className="text-[#FF2D20]" />,
-      SiSocketdotio: <SiSocketdotio size={42} className="text-white" />,
-      SiZod: <SiZod size={42} className="text-[#3E67B1]" />,
-      SiPython: <SiPython size={42} className="text-[#3776AB]" />,
-      SiFastapi: <SiFastapi size={42} className="text-[#009688]" />,
-      SiMongodb: <SiMongodb size={42} className="text-[#47A248]" />,
-      SiPostgresql: <SiPostgresql size={42} className="text-[#4169E1]" />,
-      SiPrisma: <SiPrisma size={42} className="text-[#0C344B]" />,
-      SiSupabase: <SiSupabase size={42} className="text-[#3ECF8E]" />,
-      SiFirebase: <SiFirebase size={42} className="text-[#FFCA28]" />,
-      SiCloudinary: <SiCloudinary size={42} className="text-[#3448C5]" />,
-      SiDocker: <SiDocker size={42} className="text-[#2496ED]" />,
-      SiGit: <SiGit size={42} className="text-[#F05032]" />,
-      SiGithub: <SiGithub size={42} className="text-white" />,
-      SiFigma: <SiFigma size={42} className="text-[#F24E1E]" />,
-      SiStripe: <SiStripe size={42} className="text-[#635BFF]" />,
-    }
-    return iconMap[name] || <SiReact size={42} className="text-green-400" />
-  }
 
   const filteredSkills = skills.filter(
     (s) => activeCategory === "All" || s.category === activeCategory
@@ -136,7 +61,7 @@ export default function Skills() {
               className="flex flex-col items-center justify-center p-1.5 rounded-xl transition-all duration-300 hover:-translate-y-0.5 group"
             >
               <div className="flex items-center justify-center transition-transform group-hover:scale-105">
-                {renderIcon(skill.icon_name)}
+                {renderSkillIcon(skill.icon_name, skill.name, 42)}
               </div>
               <p className="mt-1 text-[11px] font-bold text-gray-300 group-hover:text-green-400 transition-colors text-center truncate w-full">
                 {skill.name}
