@@ -224,7 +224,7 @@ export const Projects = () => {
                       </div>
                     </div>
 
-                    {/* Thumbnail Preview Window (Click to open full slider modal) */}
+                    {/* Thumbnail Preview Window (Click to open full cinema slider modal) */}
                     {(() => {
                       const allImgs = parseProjectImages(project)
                       const activePhotoIdx = activeCardPhotos[index] || 0
@@ -247,20 +247,26 @@ export const Projects = () => {
                                   : undefined,
                             })
                           }}
-                          className="relative h-40 w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#0a0a0c] border border-white/5 my-2 group/img cursor-pointer"
+                          className="relative h-44 w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#0a0a0e] border border-white/10 my-2 group/img cursor-pointer shadow-lg"
                         >
-                          <img
-                            src={activePhoto}
-                            alt={project.title}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-40 object-cover transition-transform duration-700 ease-out group-hover/img:scale-105"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#101014]/80 via-transparent to-transparent opacity-80 group-hover/img:opacity-40 transition-opacity duration-300 pointer-events-none" />
+                          <AnimatePresence mode="wait">
+                            <motion.img
+                              key={activePhotoIdx}
+                              src={activePhoto}
+                              alt={project.title}
+                              initial={{ opacity: 0.8 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.3 }}
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-44 object-cover transition-transform duration-700 ease-out group-hover/img:scale-105"
+                            />
+                          </AnimatePresence>
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0e] via-transparent to-black/20 opacity-80 group-hover/img:opacity-30 transition-opacity duration-300 pointer-events-none" />
 
                           {/* Multi-image Count Indicator Pill */}
                           {allImgs.length > 1 && (
-                            <div className="absolute top-2.5 right-2.5 px-2 py-1 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-white font-mono text-[10px] font-bold flex items-center gap-1 z-10 shadow-lg">
+                            <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-[#12121a]/80 backdrop-blur-md border border-white/15 text-white font-mono text-[10px] font-bold flex items-center gap-1.5 z-10 shadow-xl">
                               <Layers className="w-3 h-3 text-emerald-400" />
                               <span>{activePhotoIdx + 1} / {allImgs.length}</span>
                             </div>
@@ -268,7 +274,7 @@ export const Projects = () => {
 
                           {/* Dots Switcher for Multi-Image Projects */}
                           {allImgs.length > 1 && (
-                            <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-center gap-1.5 z-10">
+                            <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5 z-10">
                               {allImgs.map((_, dotIdx) => (
                                 <button
                                   key={dotIdx}
@@ -277,19 +283,54 @@ export const Projects = () => {
                                     e.stopPropagation()
                                     setActiveCardPhotos((prev) => ({ ...prev, [index]: dotIdx }))
                                   }}
-                                  className={`h-1.5 rounded-full transition-all cursor-pointer ${activePhotoIdx === dotIdx
-                                      ? "w-5 bg-emerald-400 shadow-md shadow-emerald-500/50"
-                                      : "w-1.5 bg-white/40 hover:bg-white/80"
-                                    }`}
+                                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                                    activePhotoIdx === dotIdx
+                                      ? "w-6 bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]"
+                                      : "w-1.5 bg-white/40 hover:bg-white/90"
+                                  }`}
                                 />
                               ))}
                             </div>
                           )}
 
+                          {/* Left & Right Minimalist Cyclic Arrows on Card Hover */}
+                          {allImgs.length > 1 && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveCardPhotos((prev) => ({
+                                    ...prev,
+                                    [index]: (activePhotoIdx - 1 + allImgs.length) % allImgs.length,
+                                  }))
+                                }}
+                                className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/60 hover:bg-black/90 text-white opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 z-20 cursor-pointer"
+                                title="Previous photo"
+                              >
+                                <ChevronLeft className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveCardPhotos((prev) => ({
+                                    ...prev,
+                                    [index]: (activePhotoIdx + 1) % allImgs.length,
+                                  }))
+                                }}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/60 hover:bg-black/90 text-white opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 z-20 cursor-pointer"
+                                title="Next photo"
+                              >
+                                <ChevronRight className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
+
                           {/* Hover Overlay with Zoom Icon */}
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all duration-300 bg-black/40 backdrop-blur-[2px]">
-                            <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white font-outfit text-xs font-semibold flex items-center gap-1.5 shadow-xl transform translate-y-2 group-hover/img:translate-y-0 transition-transform duration-300">
-                              <Maximize2 className="w-3.5 h-3.5 text-emerald-400" /> Open Slider
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all duration-300 bg-black/40 backdrop-blur-[1px]">
+                            <span className="px-3.5 py-1.5 rounded-full bg-black/60 border border-white/20 text-white font-outfit text-xs font-medium flex items-center gap-1.5 shadow-lg transform translate-y-1 group-hover/img:translate-y-0 transition-transform duration-300">
+                              <Maximize2 className="w-3.5 h-3.5 text-emerald-400" /> Expand
                             </span>
                           </div>
                         </div>

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Send } from "lucide-react"
 
 const Header = () => {
   const [scrolled, setScrolled] = useState<boolean>(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,21 +18,44 @@ const Header = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
+    { name: "Services", path: "/#services", isAnchor: true },
     { name: "Projects", path: "/projects" },
     { name: "Contact", path: "/contact" },
   ]
 
+  const handleNavClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
+    if (item.isAnchor) {
+      e.preventDefault()
+      if (location.pathname === "/") {
+        const el = document.getElementById("services")
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" })
+        }
+      } else {
+        navigate("/")
+        setTimeout(() => {
+          const el = document.getElementById("services")
+          if (el) el.scrollIntoView({ behavior: "smooth" })
+        }, 300)
+      }
+    }
+  }
+
   return (
-    <header className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+    <header
+      className={`fixed left-0 right-0 z-50 flex justify-center px-4 pointer-events-none transition-all duration-500 ${
+        scrolled ? "top-6 sm:top-8" : "top-4"
+      }`}
+    >
       <div
-        className={`pointer-events-auto w-full max-w-4xl rounded-full px-5 py-2.5 flex items-center justify-between transition-all duration-500 ${scrolled
-          ? "bg-white/[0.08] backdrop-blur-2xl border border-transparent"
-          : "bg-white/[0.05] backdrop-blur-2xl border border-transparent"
-          }`}
+        className={`pointer-events-auto w-full max-w-4xl rounded-full px-5 py-2.5 flex items-center justify-between transition-all duration-500 ${
+          scrolled
+            ? "bg-white/[0.08] backdrop-blur-2xl border border-transparent shadow-xl"
+            : "bg-white/[0.05] backdrop-blur-2xl border border-transparent"
+        }`}
       >
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-
           <span className="font-outfit font-bold text-sm sm:text-base tracking-tight text-white group-hover:text-emerald-400 transition-colors duration-300">
             Sami <span className="text-emerald-400">T.</span>
           </span>
@@ -48,6 +72,7 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.path}
+                onClick={(e) => handleNavClick(e, item)}
                 className="relative px-3.5 py-1.5 rounded-full text-xs font-outfit font-semibold tracking-wide transition-all duration-300"
               >
                 {isActive && (

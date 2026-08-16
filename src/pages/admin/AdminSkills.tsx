@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useOutletContext } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Plus, Edit, Trash2, Code2, Wrench, Database as DbIcon, Smartphone, Cpu, Filter, Terminal, Layers } from "lucide-react"
+import { Plus, Edit, Trash2, Code2, Wrench, Database as DbIcon, Smartphone, Cpu, Filter, Terminal, Layers, Sparkles } from "lucide-react"
 
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -25,6 +25,7 @@ import {
 import {
   supabase,
   isSupabaseConfigured,
+  defaultSkills,
 } from "@/lib/supabase"
 import type { Skill } from "@/types/supabase"
 
@@ -154,6 +155,34 @@ export default function AdminSkills() {
     }
   }
 
+  const handleSeedDefaultSkills = async () => {
+    const toastId = toast.loading("Seeding default Technical Stack data...")
+    try {
+      if (isSupabaseConfigured) {
+        const payload = defaultSkills.map((s, idx) => ({
+          name: s.name,
+          category: s.category,
+          icon_name: s.icon_name || detectIconName(s.name),
+          proficiency: s.proficiency || 90,
+          display_order: idx + 1,
+        }))
+
+        const { error } = await supabase.from("skills").insert(payload)
+        if (error) {
+          console.warn("Supabase insert error during seed:", error)
+        }
+      }
+
+      setSkills(defaultSkills)
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.skills })
+      toast.success(`Successfully seeded ${defaultSkills.length} Technical Stack skills!`, { id: toastId })
+      loadHeaderData()
+    } catch (err: any) {
+      console.error("Seed skills error:", err)
+      toast.error("Failed to seed skills: " + (err?.message || "Unknown error"), { id: toastId })
+    }
+  }
+
   const promptDeleteSkill = (skill: Skill) => {
     setDeleteDialog({
       open: true,
@@ -276,15 +305,25 @@ export default function AdminSkills() {
           </div>
         </div>
 
-        <Button
-          onClick={() => {
-            setIsEditingSkill({ name: "", category: "Backend", icon_name: "" })
-            setShowSheet(true)
-          }}
-          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] shrink-0"
-        >
-          <Plus className="w-4 h-4 stroke-[3]" /> Add Skill
-        </Button>
+        <div className="flex items-center gap-2.5 shrink-0">
+          <Button
+            type="button"
+            onClick={handleSeedDefaultSkills}
+            className="bg-white/5 hover:bg-white/10 text-emerald-400 border border-emerald-500/30 font-semibold px-4 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer transition-all hover:scale-[1.02]"
+            title="Seed full technical stack dataset"
+          >
+            <Sparkles className="w-4 h-4 text-emerald-400" /> Seed Default Stack
+          </Button>
+          <Button
+            onClick={() => {
+              setIsEditingSkill({ name: "", category: "Backend", icon_name: "" })
+              setShowSheet(true)
+            }}
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" /> Add Skill
+          </Button>
+        </div>
       </div>
 
 

@@ -221,7 +221,7 @@ export function MainProjects() {
 
                     return (
                       <div>
-                        {/* Main Featured Showcase Window (Click to open full slider modal) */}
+                        {/* Main Featured Showcase Window (Click to open full cinema slider modal) */}
                         <motion.div
                           onClick={() =>
                             setSelectedImage({
@@ -238,38 +238,79 @@ export function MainProjects() {
                                   : undefined,
                             })
                           }
-                          className="relative h-[400px] sm:h-[420px] overflow-hidden rounded-3xl group/img shadow-2xl border border-white/10 bg-[#121214] cursor-pointer"
+                          className="relative h-[400px] sm:h-[420px] overflow-hidden rounded-3xl group/img shadow-2xl border border-white/10 bg-[#0c0c12] cursor-pointer"
                           variants={imageVariants}
                           initial="hidden"
                           whileInView="visible"
                           viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                           whileHover="hover"
                         >
-                          <img
-                            src={activePhoto}
-                            alt={project.title}
-                            className="w-full h-full object-cover transition-all duration-500"
-                          />
+                          <AnimatePresence mode="wait">
+                            <motion.img
+                              key={currentActiveIdx}
+                              src={activePhoto}
+                              alt={project.title}
+                              initial={{ opacity: 0.7 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.3 }}
+                              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/img:scale-105"
+                            />
+                          </AnimatePresence>
 
                           {/* Multi Image Indicator Badge */}
                           {project.images.length > 1 && (
-                            <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white font-mono text-xs font-bold flex items-center gap-1.5 z-10 shadow-lg">
+                            <div className="absolute top-4 right-4 px-3.5 py-1.5 rounded-full bg-[#12121a]/80 backdrop-blur-md border border-white/15 text-white font-mono text-xs font-bold flex items-center gap-1.5 z-10 shadow-xl">
                               <Layers className="w-3.5 h-3.5 text-emerald-400" />
                               <span>{currentActiveIdx + 1} / {project.images.length} photos</span>
                             </div>
                           )}
 
+                          {/* Left & Right Minimalist Cyclic Arrows on Showcase Hover */}
+                          {project.images.length > 1 && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setCardActiveImage((prev) => ({
+                                    ...prev,
+                                    [project.id]:
+                                      (currentActiveIdx - 1 + project.images.length) % project.images.length,
+                                  }))
+                                }}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 z-20 cursor-pointer"
+                                title="Previous photo"
+                              >
+                                <ChevronLeft className="w-5 h-5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setCardActiveImage((prev) => ({
+                                    ...prev,
+                                    [project.id]: (currentActiveIdx + 1) % project.images.length,
+                                  }))
+                                }}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 z-20 cursor-pointer"
+                                title="Next photo"
+                              >
+                                <ChevronRight className="w-5 h-5" />
+                              </button>
+                            </>
+                          )}
+
                           {/* Hover Overlay with Zoom Icon */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-6">
-                            <span className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white font-outfit text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-md transform translate-y-2 group-hover/img:translate-y-0 transition-transform duration-300">
-                              <Maximize2 className="w-4 h-4 text-emerald-400" /> Open Full Slider
+                          <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-6">
+                            <span className="px-4 py-2 rounded-full bg-black/60 border border-white/20 text-white font-outfit text-xs font-medium flex items-center gap-1.5 shadow-lg transform translate-y-1 group-hover/img:translate-y-0 transition-transform duration-300">
+                              <Maximize2 className="w-4 h-4 text-emerald-400" /> Expand Lightbox
                             </span>
                           </div>
                         </motion.div>
 
                         {/* Inline Gallery Thumbnails Selector Strip */}
                         {project.images.length > 1 && (
-                          <div className="flex items-center gap-2.5 mt-3 overflow-x-auto pb-1">
+                          <div className="flex items-center gap-2.5 mt-3 overflow-x-auto pb-1 scrollbar-none">
                             {project.images.map((thumbUrl, imgIdx) => {
                               const isSelected = currentActiveIdx === imgIdx
                               return (
@@ -280,10 +321,10 @@ export function MainProjects() {
                                     e.stopPropagation()
                                     setCardActiveImage((prev) => ({ ...prev, [project.id]: imgIdx }))
                                   }}
-                                  className={`relative h-16 w-24 rounded-2xl overflow-hidden border shrink-0 transition-all cursor-pointer ${
+                                  className={`relative h-16 w-24 rounded-2xl overflow-hidden border shrink-0 transition-all duration-300 cursor-pointer ${
                                     isSelected
-                                      ? "border-emerald-400 ring-2 ring-emerald-500/40 scale-105 shadow-md shadow-emerald-500/10 opacity-100"
-                                      : "border-white/10 opacity-60 hover:opacity-100"
+                                      ? "border-emerald-400 ring-2 ring-emerald-400/50 scale-105 shadow-[0_0_15px_rgba(52,211,153,0.3)] opacity-100"
+                                      : "border-white/10 opacity-50 hover:opacity-100 hover:border-white/30"
                                   }`}
                                 >
                                   <img src={thumbUrl} alt={`Thumbnail ${imgIdx + 1}`} className="w-full h-full object-cover" />

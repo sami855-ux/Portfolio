@@ -76,23 +76,47 @@ export const defaultProjects: Project[] = [
 ]
 
 export const defaultSkills: Skill[] = [
-  { id: "1", name: "React", category: "Frontend", icon_name: "SiReact", color: "text-[#61DAFB]" },
-  { id: "2", name: "Next.js", category: "Frontend", icon_name: "SiNextdotjs", color: "text-white" },
-  { id: "3", name: "Vue.js", category: "Frontend", icon_name: "SiVuedotjs", color: "text-[#42B883]" },
-  { id: "4", name: "TypeScript", category: "Frontend", icon_name: "SiTypescript", color: "text-[#3178C6]" },
-  { id: "5", name: "JavaScript", category: "Frontend", icon_name: "SiJavascript", color: "text-[#F7DF1E]" },
-  { id: "6", name: "Tailwind CSS", category: "Frontend", icon_name: "SiTailwindcss", color: "text-[#38BDF8]" },
-  { id: "7", name: "Node.js", category: "Backend", icon_name: "SiNodedotjs", color: "text-[#339933]" },
-  { id: "8", name: "Express.js", category: "Backend", icon_name: "SiExpress", color: "text-white" },
-  { id: "9", name: "Golang", category: "Backend", icon_name: "SiGo", color: "text-[#00ADD8]" },
-  { id: "10", name: "NestJS", category: "Backend", icon_name: "SiNestjs", color: "text-[#E0234E]" },
-  { id: "11", name: "Laravel", category: "Backend", icon_name: "SiLaravel", color: "text-[#FF2D20]" },
-  { id: "12", name: "MongoDB", category: "Database", icon_name: "SiMongodb", color: "text-[#47A248]" },
-  { id: "13", name: "PostgreSQL", category: "Database", icon_name: "SiPostgresql", color: "text-[#4169E1]" },
-  { id: "14", name: "Supabase", category: "Database", icon_name: "SiSupabase", color: "text-[#3ECF8E]" },
-  { id: "15", name: "React Native (Expo)", category: "Mobile", icon_name: "SiExpo", color: "text-white" },
-  { id: "16", name: "Git & GitHub", category: "Tools", icon_name: "SiGit", color: "text-[#F05032]" },
-  { id: "17", name: "Docker", category: "Tools", icon_name: "SiDocker", color: "text-[#2496ED]" },
+  // Frontend
+  { id: "1", name: "React", category: "Frontend", icon_name: "SiReact", color: "text-[#61DAFB]", proficiency: 95, display_order: 1 },
+  { id: "2", name: "Next.js", category: "Frontend", icon_name: "SiNextdotjs", color: "text-white", proficiency: 92, display_order: 2 },
+  { id: "3", name: "TypeScript", category: "Frontend", icon_name: "SiTypescript", color: "text-[#3178C6]", proficiency: 90, display_order: 3 },
+  { id: "4", name: "JavaScript", category: "Frontend", icon_name: "SiJavascript", color: "text-[#F7DF1E]", proficiency: 95, display_order: 4 },
+  { id: "5", name: "Tailwind CSS", category: "Frontend", icon_name: "SiTailwindcss", color: "text-[#38BDF8]", proficiency: 95, display_order: 5 },
+  { id: "6", name: "Vue.js", category: "Frontend", icon_name: "SiVuedotjs", color: "text-[#42B883]", proficiency: 85, display_order: 6 },
+  { id: "7", name: "Redux", category: "Frontend", icon_name: "SiRedux", color: "text-[#764ABC]", proficiency: 88, display_order: 7 },
+  { id: "8", name: "Vite", category: "Frontend", icon_name: "SiVite", color: "text-[#646CFF]", proficiency: 90, display_order: 8 },
+  { id: "9", name: "HTML5", category: "Frontend", icon_name: "SiHtml5", color: "text-[#E34F26]", proficiency: 98, display_order: 9 },
+  { id: "10", name: "CSS3", category: "Frontend", icon_name: "SiCss3", color: "text-[#1572B6]", proficiency: 95, display_order: 10 },
+
+  // Backend
+  { id: "11", name: "Node.js", category: "Backend", icon_name: "SiNodedotjs", color: "text-[#339933]", proficiency: 92, display_order: 11 },
+  { id: "12", name: "Express.js", category: "Backend", icon_name: "SiExpress", color: "text-white", proficiency: 92, display_order: 12 },
+  { id: "13", name: "Golang", category: "Backend", icon_name: "SiGo", color: "text-[#00ADD8]", proficiency: 82, display_order: 13 },
+  { id: "14", name: "NestJS", category: "Backend", icon_name: "SiNestjs", color: "text-[#E0234E]", proficiency: 85, display_order: 14 },
+  { id: "15", name: "Laravel", category: "Backend", icon_name: "SiLaravel", color: "text-[#FF2D20]", proficiency: 84, display_order: 15 },
+  { id: "16", name: "Python", category: "Backend", icon_name: "SiPython", color: "text-[#3776AB]", proficiency: 85, display_order: 16 },
+  { id: "17", name: "FastAPI", category: "Backend", icon_name: "SiFastapi", color: "text-[#009688]", proficiency: 80, display_order: 17 },
+  { id: "18", name: "GraphQL", category: "Backend", icon_name: "SiGraphql", color: "text-[#E10098]", proficiency: 82, display_order: 18 },
+
+  // Database
+  { id: "19", name: "PostgreSQL", category: "Database", icon_name: "SiPostgresql", color: "text-[#4169E1]", proficiency: 90, display_order: 19 },
+  { id: "20", name: "MongoDB", category: "Database", icon_name: "SiMongodb", color: "text-[#47A248]", proficiency: 92, display_order: 20 },
+  { id: "21", name: "Supabase", category: "Database", icon_name: "SiSupabase", color: "text-[#3ECF8E]", proficiency: 90, display_order: 21 },
+  { id: "22", name: "Firebase", category: "Database", icon_name: "SiFirebase", color: "text-[#FFCA28]", proficiency: 85, display_order: 22 },
+  { id: "23", name: "Redis", category: "Database", icon_name: "SiRedis", color: "text-[#DC382D]", proficiency: 80, display_order: 23 },
+  { id: "24", name: "Prisma", category: "Database", icon_name: "SiPrisma", color: "text-[#2D3748]", proficiency: 88, display_order: 24 },
+
+  // Mobile
+  { id: "25", name: "React Native (Expo)", category: "Mobile", icon_name: "SiExpo", color: "text-white", proficiency: 90, display_order: 25 },
+  { id: "26", name: "Flutter", category: "Mobile", icon_name: "SiFlutter", color: "text-[#02569B]", proficiency: 78, display_order: 26 },
+  { id: "27", name: "Android", category: "Mobile", icon_name: "SiAndroid", color: "text-[#3DDC84]", proficiency: 80, display_order: 27 },
+
+  // Tools & DevOps
+  { id: "28", name: "Git & GitHub", category: "Tools", icon_name: "SiGit", color: "text-[#F05032]", proficiency: 95, display_order: 28 },
+  { id: "29", name: "Docker", category: "Tools", icon_name: "SiDocker", color: "text-[#2496ED]", proficiency: 85, display_order: 29 },
+  { id: "30", name: "Linux", category: "Tools", icon_name: "SiLinux", color: "text-[#FCC624]", proficiency: 88, display_order: 30 },
+  { id: "31", name: "Figma", category: "Tools", icon_name: "SiFigma", color: "text-[#F24E1E]", proficiency: 85, display_order: 31 },
+  { id: "32", name: "AWS", category: "Tools", icon_name: "SiAmazonwebservices", color: "text-[#FF9900]", proficiency: 75, display_order: 32 },
 ]
 
 export const defaultJourney: JourneyItem[] = [
