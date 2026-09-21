@@ -64,7 +64,7 @@ export default function AdminLogin() {
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Password</label>
-            <Input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={8} className="h-12 bg-[#181818] border-none text-white rounded-2xl px-4" />
+            <Input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={6} className="h-12 bg-[#181818] border-none text-white rounded-2xl px-4" />
           </div>
           <Button type="submit" disabled={loading} className="w-full h-12 bg-green-500 hover:bg-green-600 text-slate-950 font-bold rounded-2xl">
             {loading ? "Signing in..." : "Sign In"}

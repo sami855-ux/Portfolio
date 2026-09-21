@@ -27,7 +27,7 @@ async function request<T>(path: string, init: RequestInit = {}, authenticated = 
   return payload?.data as T
 }
 
-class ResourceQuery<T = unknown> implements PromiseLike<ApiResult<T>> {
+class ResourceQuery<T = any> implements PromiseLike<ApiResult<T>> {
   private readonly resource: string
   private action: "select" | "insert" | "update" | "delete" = "select"
   private body: unknown
@@ -36,15 +36,15 @@ class ResourceQuery<T = unknown> implements PromiseLike<ApiResult<T>> {
   private wantsCount = false
 
   constructor(resource: string) { this.resource = resource }
-  select(_columns = "*", options?: { count?: string }) { this.wantsCount = options?.count === "exact"; return this }
-  insert(body: unknown) { this.action = "insert"; this.body = body; return this }
-  update(body: unknown) { this.action = "update"; this.body = body; return this }
-  delete() { this.action = "delete"; return this }
-  eq(field: string, value: unknown) { this.filter = { field, value }; return this }
-  order(_field: string, _options?: { ascending?: boolean }) { return this }
-  limit(_value: number) { return this }
-  single() { this.wantsSingle = true; return this }
-  maybeSingle() { this.wantsSingle = true; return this }
+  select(_columns = "*", options?: { count?: string }): this { this.wantsCount = options?.count === "exact"; return this }
+  insert(body: unknown): this { this.action = "insert"; this.body = body; return this }
+  update(body: unknown): this { this.action = "update"; this.body = body; return this }
+  delete(): this { this.action = "delete"; return this }
+  eq(field: string, value: unknown): this { this.filter = { field, value }; return this }
+  order(_field: string, _options?: { ascending?: boolean }): this { return this }
+  limit(_value: number): this { return this }
+  single(): this { this.wantsSingle = true; return this }
+  maybeSingle(): this { this.wantsSingle = true; return this }
 
   async execute(): Promise<ApiResult<T>> {
     try {
@@ -87,7 +87,7 @@ function authHeaders(): Record<string, string> {
 }
 
 export const apiClient = {
-  from: (resource: string) => new ResourceQuery(resource),
+  from: <T = any>(resource: string) => new ResourceQuery<T>(resource),
   auth: {
     async signInWithPassword(credentials: { email: string; password: string }) {
       try {
@@ -432,11 +432,11 @@ export async function updateProfileSettings(
         return { success: true, data: { ...profile, ...payload, id: existing.id } as ProfileSettings }
       }
 
-      const updatedData = data || ({ ...profile, ...payload, id: existing.id } as ProfileSettings)
+      const updatedData = (data || { ...profile, ...payload, id: existing.id }) as ProfileSettings
       return { success: true, data: updatedData }
     } else {
       const { data, error } = await apiClient
-        .from("profile_settings")
+        .from<ProfileSettings>("profile_settings")
         .insert([payload])
         .select()
         .limit(1)
@@ -451,7 +451,7 @@ export async function updateProfileSettings(
         return { success: true, data: { ...profile, ...payload } as ProfileSettings }
       }
 
-      const insertedData = data || ({ ...profile, ...payload } as ProfileSettings)
+      const insertedData = (data || { ...profile, ...payload }) as ProfileSettings
       return { success: true, data: insertedData }
     }
   } catch (err: unknown) {

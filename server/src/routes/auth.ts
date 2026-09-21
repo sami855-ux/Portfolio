@@ -17,7 +17,7 @@ import {
 } from "../services/oauth.js"
 
 export const authRouter = Router()
-const loginSchema = z.object({ email: z.string().email(), password: z.string().min(8).max(200) })
+const loginSchema = z.object({ email: z.string().email(), password: z.string().min(6).max(200) })
 const providerSchema = z.enum(["google", "github"])
 const oauthCookieOptions = {
   httpOnly: true,
