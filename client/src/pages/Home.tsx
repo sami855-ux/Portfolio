@@ -9,14 +9,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import ProfileImage from "@/components/ProfileImage"
-import { Button } from "@/components/ui/button"
 import { SiTelegram, SiYoutube, SiDiscord, SiWhatsapp, SiMedium, SiGmail } from "react-icons/si"
 import type { SocialLink } from "@/types/ui"
-import { Link } from "react-router-dom"
 
 import { useProfileSettingsQuery, useContactLinksQuery, useFloatingCardsQuery } from "@/hooks/usePortfolioQueries"
-import { Skeleton } from "@/components/ui/skeleton"
 import { defaultProfileSettings } from "@/lib/api"
 
 const defaultSocialLinks: SocialLink[] = [
@@ -124,20 +120,20 @@ export default function Home() {
             {bioText}
           </motion.p>
 
-          {/* Profile Avatar / Image */}
-          <div className="relative mb-6 flex items-center justify-center">
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={fullName}
-                loading="lazy"
-                decoding="async"
-                className="w-44 h-44 rounded-full object-cover border-4 border-emerald-500/30 shadow-2xl"
-              />
-            ) : (
-              <ProfileImage />
-            )}
-          </div>
+          {/* Profile Avatar / Image (No fallback placeholder, enhanced size) */}
+          {avatarUrl ? (
+            <div className="relative mb-6 flex items-center justify-center group">
+              <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-full p-1  ">
+                <img
+                  src={avatarUrl}
+                  alt={fullName}
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </div>
+            </div>
+          ) : null}
 
           {/* Single Clean See My CV Button */}
           <motion.div
