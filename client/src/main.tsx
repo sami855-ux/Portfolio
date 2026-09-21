@@ -19,6 +19,7 @@ import AdminSkills from "./pages/admin/AdminSkills.tsx"
 import AdminJourney from "./pages/admin/AdminJourney.tsx"
 import AdminLinks from "./pages/admin/AdminLinks.tsx"
 import AdminMessages from "./pages/admin/AdminMessages.tsx"
+import AdminServices from "./pages/admin/AdminServices.tsx"
 
 import { Toaster } from "@/components/ui/sonner"
 import { QueryClientProvider } from "@tanstack/react-query"
@@ -57,6 +58,7 @@ const router = createBrowserRouter([
           { path: "projects/edit/:id", element: <AdminProjectForm /> },
           { path: "skills", element: <AdminSkills /> },
           { path: "journey", element: <AdminJourney /> },
+          { path: "services", element: <AdminServices /> },
           { path: "links", element: <AdminLinks /> },
           { path: "messages", element: <AdminMessages /> },
         ],
