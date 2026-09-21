@@ -471,33 +471,33 @@ export default function AdminProjectForm() {
       className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-10 pb-20"
     >
       {/* Single Sticky Action Top Header */}
-      <div className="sticky top-20 z-40 bg-[#121215]/95 backdrop-blur-xl border border-zinc-800/80 px-6 py-4 rounded-2xl flex items-center justify-between shadow-2xl">
-        <div className="flex items-center gap-4">
+      <div className="sticky top-16 sm:top-20 z-40 bg-[#121215]/95 backdrop-blur-xl border border-zinc-800/80 px-4 sm:px-6 py-3.5 sm:py-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xl">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button
             type="button"
             onClick={() => navigate("/admin/projects")}
-            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer shrink-0"
             title="Back to Projects"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">
               {isEditing ? "Edit Project" : "New Project"}
             </h1>
-            <p className="text-[11px] text-zinc-400">
+            <p className="text-[11px] text-zinc-400 truncate">
               {isEditing ? "Update project details and gallery" : "Create a new portfolio showcase"}
             </p>
           </div>
         </div>
 
         {/* ONLY ONE SET OF ACTION BUTTONS */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
           <Button
             type="button"
             variant="outline"
             onClick={() => navigate("/admin/projects")}
-            className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-300 text-xs font-semibold rounded-xl h-9 px-4 cursor-pointer"
+            className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-300 text-xs font-semibold rounded-xl h-9 px-4 cursor-pointer flex-1 sm:flex-initial justify-center"
           >
             Cancel
           </Button>
@@ -505,7 +505,7 @@ export default function AdminProjectForm() {
             type="button"
             onClick={handleSubmit}
             disabled={isSaving}
-            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl h-9 px-5 cursor-pointer shadow-lg shadow-emerald-500/20 disabled:opacity-50 flex items-center gap-2 transition-all hover:scale-[1.02]"
+            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl h-9 px-5 cursor-pointer shadow-lg shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] flex-1 sm:flex-initial"
           >
             {isSaving ? (
               <>
