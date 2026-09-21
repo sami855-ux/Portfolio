@@ -12,6 +12,7 @@ type Resource = keyof typeof schemas
 const delegates: Record<Resource, keyof PrismaClient> = {
   projects: "project", skills: "skill", journey_timeline: "journeyItem", contact_links: "contactLink",
   floating_cards: "floatingCard", messages: "message", profile_settings: "profileSettings",
+  services: "service",
 }
 const resourceNames = new Set(Object.keys(delegates))
 

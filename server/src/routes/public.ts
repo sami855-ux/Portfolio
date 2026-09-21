@@ -17,6 +17,7 @@ publicRouter.get("/journey", async (_, res) => res.json({ data: keysToSnake(awai
 publicRouter.get("/contact-links", async (_, res) => res.json({ data: keysToSnake(await db.contactLink.findMany({ where: { isActive: true }, orderBy: { displayOrder: "asc" } })) }))
 publicRouter.get("/floating-cards", async (_, res) => res.json({ data: keysToSnake(await db.floatingCard.findMany({ where: { isActive: true }, orderBy: { displayOrder: "asc" } })) }))
 publicRouter.get("/profile", async (_, res) => res.json({ data: keysToSnake(await db.profileSettings.findFirst({ orderBy: { createdAt: "asc" } })) }))
+publicRouter.get("/services", async (_, res) => res.json({ data: keysToSnake(await db.service.findMany({ where: { isActive: true }, orderBy: { displayOrder: "asc" } })) }))
 
 const contactLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 5, standardHeaders: "draft-8", legacyHeaders: false })
 publicRouter.post("/messages", contactLimiter, async (req, res) => {

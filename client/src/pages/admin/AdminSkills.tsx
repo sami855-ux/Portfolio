@@ -299,18 +299,18 @@ export default function AdminSkills() {
             <Layers className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Technical Stack & Skills</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Technical Stack & Skills</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               Configure tech stack items, database categories, and icons
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0 w-full sm:w-auto">
           <Button
             type="button"
             onClick={handleSeedDefaultSkills}
-            className="bg-white/5 hover:bg-white/10 text-emerald-400 border border-emerald-500/30 font-semibold px-4 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer transition-all hover:scale-[1.02]"
+            className="bg-white/5 hover:bg-white/10 text-emerald-400 border border-emerald-500/30 font-semibold px-4 py-2.5 rounded-2xl flex items-center justify-center gap-2 text-xs cursor-pointer transition-all hover:scale-[1.02] flex-1 sm:flex-initial"
             title="Seed full technical stack dataset"
           >
             <Sparkles className="w-4 h-4 text-emerald-400" /> Seed Default Stack
@@ -320,7 +320,7 @@ export default function AdminSkills() {
               setIsEditingSkill({ name: "", category: "Backend", icon_name: "" })
               setShowSheet(true)
             }}
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center justify-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] flex-1 sm:flex-initial"
           >
             <Plus className="w-4 h-4 stroke-[3]" /> Add Skill
           </Button>

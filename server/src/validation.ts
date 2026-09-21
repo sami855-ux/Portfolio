@@ -37,6 +37,15 @@ export const schemas = {
     avatar_url: z.string().trim().max(1000).optional(), resume_url: z.string().trim().max(1000).optional(),
     email: z.string().email().max(320), phone: z.string().trim().max(50).optional(), location: z.string().trim().max(200).optional(),
   }),
+  services: z.object({
+    title: z.string().trim().min(1).max(160),
+    description: z.string().trim().min(1).max(5000),
+    icon_name: z.string().trim().max(100).optional(),
+    stack: z.string().trim().max(500).optional(),
+    contact_url: z.string().trim().max(1000).optional(),
+    display_order: z.number().int().min(0).optional(),
+    is_active: z.boolean().optional(),
+  }),
 } as const
 
 export const contactMessageSchema = z.object({

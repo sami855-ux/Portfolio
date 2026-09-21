@@ -25,6 +25,26 @@ export default async function globalSetup() {
     user: "postgres",
     password: "postgres",
   })
+
+  // Wait until PostgreSQL port is accepting connections
+  const net = await import("node:net")
+  const startWait = Date.now()
+  while (Date.now() - startWait < 10000) {
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const socket = net.createConnection({ host: "127.0.0.1", port: dbPort }, () => {
+          socket.end()
+          resolve()
+        })
+        socket.on("error", reject)
+      })
+      break
+    } catch {
+      await new Promise((r) => setTimeout(r, 250))
+    }
+  }
+  await new Promise((r) => setTimeout(r, 600))
+
   console.log(`[GlobalSetup] PostgreSQL started. Applying Prisma migrations...`)
 
   const serverDir = path.resolve(__dirname, "../..")

@@ -84,6 +84,18 @@ export interface FloatingCard {
   created_at?: string
 }
 
+export interface Service {
+  id?: string
+  title: string
+  description: string
+  icon_name?: string
+  stack?: string
+  contact_url?: string
+  display_order?: number
+  is_active?: boolean
+  created_at?: string
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -116,6 +128,11 @@ export interface Database {
         Row: ProfileSettings
         Insert: Omit<ProfileSettings, 'id' | 'created_at'> & { id?: string; created_at?: string }
         Update: Partial<ProfileSettings>
+      }
+      services: {
+        Row: Service
+        Insert: Omit<Service, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<Service>
       }
     }
   }

@@ -68,6 +68,14 @@ app.use((error: any, req: express.Request, res: express.Response, _next: express
     return res.status(413).json({ error: { message: "Image must be 8 MB or smaller" } })
   }
 
+  if (error?.code === "LIMIT_FILE_COUNT") {
+    return res.status(400).json({ error: { message: "Too many files uploaded in a single request (maximum 20 files)" } })
+  }
+
+  if (error?.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({ error: { message: "Unexpected file field encountered in upload request" } })
+  }
+
   const status = typeof error?.status === "number" ? error.status : 500
   const message = config.NODE_ENV === "production"
     ? "Unexpected server error"

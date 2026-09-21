@@ -16,7 +16,7 @@ describe("Full CRUD Integration Tests (Real PostgreSQL Instance)", () => {
   describe("Projects Resource", () => {
     let createdId = ""
 
-    it("creates a new project via Admin API", async () => {
+    it("creates a new project via Admin API with multiple images", async () => {
       const res = await request(app)
         .post("/api/admin/projects")
         .set("Authorization", `Bearer ${token}`)
@@ -27,6 +27,12 @@ describe("Full CRUD Integration Tests (Real PostgreSQL Instance)", () => {
           tags: ["React", "TypeScript", "PostgreSQL", "TailwindCSS"],
           github: "https://github.com/test/negari",
           live: "https://negari.example.com",
+          image: "https://res.cloudinary.com/demo/image/upload/cover.png",
+          images: [
+            "https://res.cloudinary.com/demo/image/upload/cover.png",
+            "https://res.cloudinary.com/demo/image/upload/screen1.png",
+            "https://res.cloudinary.com/demo/image/upload/screen2.png",
+          ],
           featured: true,
           architecture: "Microservices architecture on Node.js",
           challenges: ["Low-latency streaming", "High concurrency"],
@@ -38,10 +44,16 @@ describe("Full CRUD Integration Tests (Real PostgreSQL Instance)", () => {
       const item = Array.isArray(res.body.data) ? res.body.data[0] : res.body.data
       expect(item.id).toBeDefined()
       expect(item.title).toBe("Negari AI Assistant")
+      expect(item.image).toBe("https://res.cloudinary.com/demo/image/upload/cover.png")
+      expect(item.images).toEqual([
+        "https://res.cloudinary.com/demo/image/upload/cover.png",
+        "https://res.cloudinary.com/demo/image/upload/screen1.png",
+        "https://res.cloudinary.com/demo/image/upload/screen2.png",
+      ])
       createdId = item.id
     })
 
-    it("retrieves the project via Public API", async () => {
+    it("retrieves the project via Public API including multiple images array", async () => {
       const res = await request(app).get("/api/public/projects")
       expect(res.status).toBe(200)
       expect(res.body.data).toBeInstanceOf(Array)
@@ -49,17 +61,34 @@ describe("Full CRUD Integration Tests (Real PostgreSQL Instance)", () => {
       expect(found).toBeDefined()
       expect(found.title).toBe("Negari AI Assistant")
       expect(found.featured).toBe(true)
+      expect(found.image).toBe("https://res.cloudinary.com/demo/image/upload/cover.png")
+      expect(found.images).toEqual([
+        "https://res.cloudinary.com/demo/image/upload/cover.png",
+        "https://res.cloudinary.com/demo/image/upload/screen1.png",
+        "https://res.cloudinary.com/demo/image/upload/screen2.png",
+      ])
     })
 
-    it("updates the project via Admin API", async () => {
+    it("updates the project via Admin API including gallery images", async () => {
+      const updatedImages = [
+        "https://res.cloudinary.com/demo/image/upload/cover.png",
+        "https://res.cloudinary.com/demo/image/upload/screen1.png",
+        "https://res.cloudinary.com/demo/image/upload/screen2.png",
+        "https://res.cloudinary.com/demo/image/upload/screen3.png",
+      ]
       const res = await request(app)
         .patch(`/api/admin/projects/${createdId}`)
         .set("Authorization", `Bearer ${token}`)
-        .send({ title: "Negari AI Platform 2.0", featured: false })
+        .send({
+          title: "Negari AI Platform 2.0",
+          featured: false,
+          images: updatedImages,
+        })
 
       expect(res.status).toBe(200)
       expect(res.body.data.title).toBe("Negari AI Platform 2.0")
       expect(res.body.data.featured).toBe(false)
+      expect(res.body.data.images).toEqual(updatedImages)
     })
 
     it("deletes the project via Admin API", async () => {
@@ -261,6 +290,58 @@ describe("Full CRUD Integration Tests (Real PostgreSQL Instance)", () => {
       // Verify on public endpoint
       const verifyRes = await request(app).get("/api/public/profile")
       expect(verifyRes.body.data.location).toBe("Addis Ababa, Ethiopia")
+    })
+  })
+
+  describe("Services Resource", () => {
+    let serviceId = ""
+
+    it("creates, reads, updates, and deletes a service", async () => {
+      // 1. Create service
+      const createRes = await request(app)
+        .post("/api/admin/services")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          title: "Full-Stack Web App Development",
+          description: "Building responsive, fast, and accessible web applications using React, Next.js, and TypeScript.",
+          icon_name: "Globe",
+          stack: "React • Next.js • TypeScript • Tailwind CSS",
+          contact_url: "https://sam-nu-fawn.vercel.app/contact",
+          display_order: 1,
+          is_active: true,
+        })
+
+      expect(createRes.status).toBe(201)
+      const created = Array.isArray(createRes.body.data) ? createRes.body.data[0] : createRes.body.data
+      expect(created.id).toBeDefined()
+      expect(created.title).toBe("Full-Stack Web App Development")
+      serviceId = created.id
+
+      // 2. Read public services
+      const publicRes = await request(app).get("/api/public/services")
+      expect(publicRes.status).toBe(200)
+      expect(Array.isArray(publicRes.body.data)).toBe(true)
+      const found = publicRes.body.data.find((s: any) => s.id === serviceId)
+      expect(found).toBeDefined()
+      expect(found.stack).toBe("React • Next.js • TypeScript • Tailwind CSS")
+
+      // 3. Update service
+      const patchRes = await request(app)
+        .patch(`/api/admin/services/${serviceId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          stack: "React • Next.js • TypeScript • Tailwind CSS • Shadcn",
+        })
+
+      expect(patchRes.status).toBe(200)
+      expect(patchRes.body.data.stack).toBe("React • Next.js • TypeScript • Tailwind CSS • Shadcn")
+
+      // 4. Delete service
+      const delRes = await request(app)
+        .delete(`/api/admin/services/${serviceId}`)
+        .set("Authorization", `Bearer ${token}`)
+
+      expect(delRes.status).toBe(204)
     })
   })
 })

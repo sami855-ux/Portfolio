@@ -72,4 +72,39 @@ describe("Upload Content Validation Integration Tests", () => {
     expect(res.status).toBe(201)
     expect(res.body.data.url).toMatch(/^https:\/\/res\.cloudinary\.com\//)
   }, 20_000)
+
+  it("successfully uploads multiple authentic PNG images via /api/uploads/images", async () => {
+    const validPng1 = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "base64"
+    )
+    const validPng2 = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
+      "base64"
+    )
+
+    const res = await request(app)
+      .post("/api/uploads/images")
+      .set("Authorization", `Bearer ${token}`)
+      .attach("images", validPng1, { filename: "screenshot1.png", contentType: "image/png" })
+      .attach("images", validPng2, { filename: "screenshot2.png", contentType: "image/png" })
+
+    expect(res.status).toBe(201)
+    expect(Array.isArray(res.body.data)).toBe(true)
+    expect(res.body.data.length).toBe(2)
+    expect(res.body.data[0].url).toMatch(/^https:\/\/res\.cloudinary\.com\//)
+    expect(res.body.data[1].url).toMatch(/^https:\/\/res\.cloudinary\.com\//)
+  }, 30_000)
+
+  it("rejects /api/uploads/images without admin authentication", async () => {
+    const validPng = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "base64"
+    )
+    const res = await request(app)
+      .post("/api/uploads/images")
+      .attach("images", validPng, { filename: "screenshot.png", contentType: "image/png" })
+
+    expect(res.status).toBe(401)
+  })
 })
