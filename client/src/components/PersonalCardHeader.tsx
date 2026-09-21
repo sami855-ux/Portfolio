@@ -13,25 +13,24 @@ export function PersonalCardHeader({
 }: PersonalCardHeaderProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, scale: 0.9, y: 15 }}
       animate={{
-        opacity: [0, 0.5, 0.7, 0],
+        opacity: [0, 0.85, 0.85, 0],
+        scale: [0.95, 1, 1, 0.95],
       }}
       transition={{
         duration: 7,
         repeat: Infinity,
         ease: "easeInOut",
-        times: [0, 0.25, 0.5],
+        times: [0, 0.2, 0.75, 1],
       }}
-      className={`hidden md:block absolute z-100 ${position} -translate-x-1/2 rounded-2xl p-8 bg-gradient-to-r from-primary/5 to-purple-500/5 dark:from-primary/10 dark:to-purple-500/10 w-fit`}
+      className={`hidden md:flex items-center gap-3 absolute z-40 ${position} -translate-x-1/2 rounded-full px-4 py-2 bg-white/[0.05] backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] pointer-events-none border-0`}
     >
-      <div className="flex flex-col items-center text-center gap-4">
-        <div>
-          <h2 className="text-lg font-bold bg-gradient-to-r from-green-500 to-blue-600 bg-clip-text text-transparent">
-            {name}
-          </h2>
-          <p className="text-muted-foreground mt-1">{title}</p>
-        </div>
+      <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/80 animate-pulse" />
+      <div className="flex items-center gap-2 text-xs font-outfit">
+        <span className="font-semibold text-white tracking-tight">{name}</span>
+        <span className="text-zinc-500">•</span>
+        <span className="text-zinc-400 font-normal">{title}</span>
       </div>
     </motion.div>
   )

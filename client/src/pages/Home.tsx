@@ -1,7 +1,5 @@
 import { motion } from "framer-motion"
-import { Github, Linkedin, Twitter, Instagram, Facebook, Globe, Mail, FileText, Send } from "lucide-react"
-import { useState } from "react"
-
+import { Github, Linkedin, Twitter, Instagram, Facebook, Globe, Mail, FileText } from "lucide-react"
 import { PersonalCardHeader } from "@/components/PersonalCardHeader"
 import {
   Tooltip,
@@ -9,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { SiTelegram, SiYoutube, SiDiscord, SiWhatsapp, SiMedium, SiGmail } from "react-icons/si"
+import { SiTelegram, SiYoutube, SiDiscord, SiWhatsapp, SiMedium } from "react-icons/si"
 import type { SocialLink } from "@/types/ui"
 
 import { useProfileSettingsQuery, useContactLinksQuery, useFloatingCardsQuery } from "@/hooks/usePortfolioQueries"
@@ -32,7 +30,6 @@ const defaultSocialLinks: SocialLink[] = [
 ]
 
 export default function Home() {
-  const [isHovered, setIsHovered] = useState<boolean>(false)
   const { data: profileData } = useProfileSettingsQuery()
   const { data: dbContactLinks } = useContactLinksQuery()
   const { data: dbFloatingCards } = useFloatingCardsQuery()
@@ -54,76 +51,61 @@ export default function Home() {
   const cvUrl = profile.resume_url || "#"
   const avatarUrl = profile.avatar_url
 
-  // Parse name into first and last for styling
   const nameParts = fullName.split(" ")
   const firstName = nameParts[0] || ""
   const lastName = nameParts.slice(1).join(" ") || ""
 
   return (
     <>
-      <div className="w-full min-h-screen flex items-center justify-center flex-col relative overflow-hidden px-4 md:px-6 pt-28 pb-16">
-        <motion.div
-          className="absolute inset-0 -z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-green-500/20 blur-3xl"></div>
-          <div className="absolute bottom-1/3 right-1/4 w-40 h-40 rounded-full bg-blue-500/20 blur-3xl"></div>
-        </motion.div>
+      <div className="w-full min-h-[92vh] flex items-center justify-center flex-col relative overflow-hidden px-4 md:px-6 pt-32 pb-20">
+        {/* Apple subtle ambient aura */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-emerald-500/[0.07] rounded-full blur-[120px] pointer-events-none -z-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/3 -translate-y-1/3 w-[400px] h-[300px] bg-cyan-500/[0.05] rounded-full blur-[140px] pointer-events-none -z-10" />
 
         <motion.div
-          initial={{ y: -30, opacity: 0 }}
+          initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-center justify-center text-center my-auto max-w-3xl mx-auto"
         >
-          {/* Profile image with playful interaction */}
-
-          <h2 className="font-bold text-4xl md:text-6xl text-white mb-2 relative flex items-center justify-center flex-wrap gap-2">
-            <span>Hi, I'm {firstName}</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-600">
+          {/* Headline in Apple Keynote display style */}
+          <h1 className="font-outfit font-semibold text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-[1.1] mb-3">
+            <span>Hi, I'm {firstName} </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
               {lastName}
             </span>
-            <motion.span
-              className="inline-block ml-1 text-3xl md:text-5xl select-none origin-[70%_70%]"
-              animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                repeatDelay: 1,
-                ease: "easeInOut",
-              }}
-              style={{
-                textShadow: "0 2px 10px rgba(74, 222, 128, 0.3)",
-              }}
-            >
-              👋
-            </motion.span>
-          </h2>
+            <span className="text-emerald-400">.</span>
+          </h1>
 
+          {/* Subtitle */}
           <motion.p
-            className="py-3 text-lg md:text-xl text-white font-bold"
+            className="text-lg sm:text-2xl text-zinc-200 font-medium tracking-tight mb-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
           >
             {titleText}
           </motion.p>
 
+          {/* Narrative bio */}
           <motion.p
-            className="text-center text-base text-gray-400 max-w-xl mx-auto leading-relaxed mb-6"
+            className="text-sm sm:text-base text-zinc-400 max-w-xl mx-auto leading-relaxed mb-8 font-normal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
           >
             {bioText}
           </motion.p>
 
-          {/* Profile Avatar / Image (No fallback placeholder, enhanced size, lazy loaded) */}
+          {/* Apple Frosted Portrait Frame */}
           {avatarUrl ? (
-            <div className="relative mb-6 flex items-center justify-center group">
-              <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-full p-1 bg-white/[0.02]">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.35, duration: 0.7 }}
+              className="relative mb-8 flex items-center justify-center group"
+            >
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-full p-1.5 bg-white/[0.04] backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
                 <img
                   src={avatarUrl}
                   alt={fullName}
@@ -133,36 +115,36 @@ export default function Home() {
                     (e.currentTarget as HTMLImageElement).classList.remove("opacity-0")
                     ;(e.currentTarget as HTMLImageElement).classList.add("opacity-100")
                   }}
-                  className="w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-500 ease-out"
+                  className="w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-700 ease-out"
                 />
               </div>
-            </div>
+            </motion.div>
           ) : null}
 
-          {/* Single Clean See My CV Button */}
+          {/* Apple-Style High-Contrast Action Pill */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="mb-6"
+            transition={{ delay: 0.45 }}
+            className="mb-8"
           >
             <a
               href={cvUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider text-slate-950 bg-gradient-to-r from-green-400 to-emerald-500 hover:opacity-90 transition-all cursor-pointer shadow-lg shadow-green-500/20 hover:scale-[1.02]"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider text-zinc-950 bg-white hover:bg-zinc-200 transition-all cursor-pointer shadow-xl shadow-white/10 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <FileText className="w-4 h-4 text-slate-950" />
+              <FileText className="w-4 h-4 text-zinc-950" />
               <span>See My CV</span>
             </a>
           </motion.div>
 
-          {/* Social links */}
+          {/* Apple Frosted Glass Social Icons */}
           <motion.div
-            className="flex gap-4 mt-2"
+            className="flex items-center gap-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
+            transition={{ delay: 0.55 }}
           >
             {socialLinks.map((social) => (
               <motion.a
@@ -170,77 +152,51 @@ export default function Home() {
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/70 hover:text-white transition-colors"
-                whileTap={{ scale: 0.9 }}
+                className="w-10 h-10 rounded-full bg-white/[0.05] hover:bg-white/[0.12] backdrop-blur-md flex items-center justify-center text-zinc-400 hover:text-white transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
                 title={social.name}
               >
-                <span className={`icon-${social.icon}`}>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center">
-                          {social.icon === "github" ? (
-                            <div className="text-gray-400 hover:text-green-500 transition-colors">
-                              <Github size={20} />
-                            </div>
-                          ) : social.icon === "linkedin" ? (
-                            <div className="text-gray-400 hover:text-blue-400 transition-colors">
-                              <Linkedin size={20} />
-                            </div>
-                          ) : social.icon === "telegram" ? (
-                            <div className="text-gray-400 hover:text-cyan-400 transition-colors">
-                              <SiTelegram size={20} />
-                            </div>
-                          ) : social.icon === "twitter" || social.icon === "x" ? (
-                            <div className="text-gray-400 hover:text-sky-400 transition-colors">
-                              <Twitter size={20} />
-                            </div>
-                          ) : social.icon === "instagram" ? (
-                            <div className="text-gray-400 hover:text-rose-400 transition-colors">
-                              <Instagram size={20} />
-                            </div>
-                          ) : social.icon === "facebook" ? (
-                            <div className="text-gray-400 hover:text-blue-500 transition-colors">
-                              <Facebook size={20} />
-                            </div>
-                          ) : social.icon === "youtube" ? (
-                            <div className="text-gray-400 hover:text-red-500 transition-colors">
-                              <SiYoutube size={20} />
-                            </div>
-                          ) : social.icon === "discord" ? (
-                            <div className="text-gray-400 hover:text-indigo-400 transition-colors">
-                              <SiDiscord size={20} />
-                            </div>
-                          ) : social.icon === "whatsapp" ? (
-                            <div className="text-gray-400 hover:text-green-400 transition-colors">
-                              <SiWhatsapp size={20} />
-                            </div>
-                          ) : social.icon === "medium" ? (
-                            <div className="text-gray-400 hover:text-white transition-colors">
-                              <SiMedium size={20} />
-                            </div>
-                          ) : social.icon === "email" || social.icon === "gmail" || social.icon === "mail" ? (
-                            <div className="text-gray-400 hover:text-emerald-400 transition-colors">
-                              <Mail size={20} />
-                            </div>
-                          ) : (
-                            <div className="text-gray-400 hover:text-green-500 transition-colors">
-                              <Globe size={20} />
-                            </div>
-                          )}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="capitalize">{social.icon}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex items-center justify-center">
+                        {social.icon === "github" ? (
+                          <Github className="w-4 h-4" />
+                        ) : social.icon === "linkedin" ? (
+                          <Linkedin className="w-4 h-4" />
+                        ) : social.icon === "telegram" ? (
+                          <SiTelegram className="w-4 h-4" />
+                        ) : social.icon === "twitter" || social.icon === "x" ? (
+                          <Twitter className="w-4 h-4" />
+                        ) : social.icon === "instagram" ? (
+                          <Instagram className="w-4 h-4" />
+                        ) : social.icon === "facebook" ? (
+                          <Facebook className="w-4 h-4" />
+                        ) : social.icon === "youtube" ? (
+                          <SiYoutube className="w-4 h-4" />
+                        ) : social.icon === "discord" ? (
+                          <SiDiscord className="w-4 h-4" />
+                        ) : social.icon === "whatsapp" ? (
+                          <SiWhatsapp className="w-4 h-4" />
+                        ) : social.icon === "medium" ? (
+                          <SiMedium className="w-4 h-4" />
+                        ) : social.icon === "email" || social.icon === "gmail" || social.icon === "mail" ? (
+                          <Mail className="w-4 h-4" />
+                        ) : (
+                          <Globe className="w-4 h-4" />
+                        )}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-zinc-900 text-zinc-200 border-none shadow-xl text-xs rounded-xl px-2.5 py-1">
+                      <p className="capitalize">{social.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </motion.a>
             ))}
           </motion.div>
         </motion.div>
       </div>
+
       {floatingCards.map((card, idx) => (
         <PersonalCardHeader
           key={card.id || idx}

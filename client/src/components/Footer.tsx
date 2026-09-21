@@ -1,4 +1,4 @@
-import { Mail, Heart, ExternalLink, Globe } from "lucide-react"
+import { Mail, ExternalLink, Globe } from "lucide-react"
 import {
   FaGithub,
   FaLinkedin,
@@ -9,7 +9,6 @@ import {
   FaDiscord,
   FaEnvelope,
 } from "react-icons/fa"
-import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { useProfileSettingsQuery, useContactLinksQuery } from "@/hooks/usePortfolioQueries"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -31,7 +30,7 @@ export function Footer() {
   const { data: profile, isLoading } = useProfileSettingsQuery()
   const { data: contactLinks } = useContactLinksQuery()
   const email = profile?.email || (profile as { contact_email?: string } | undefined)?.contact_email || ""
-  const fullName = profile?.full_name || ""
+  const fullName = profile?.full_name || "Samuel Tale"
 
   const linksToDisplay = contactLinks && contactLinks.length > 0
     ? contactLinks
@@ -41,52 +40,53 @@ export function Footer() {
       ]
 
   return (
-    <footer className="mt-16 border-t border-[#262626] dark:border-gray-800 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Mini Site Map */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
-          <Button
-            variant="ghost"
-            asChild
-            className="hover:bg-[#262626] hover:text-white text-xs h-8 px-3"
+    <footer className="mt-20 border-t border-white/[0.06] py-12 text-zinc-400">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Apple-style Directory Navigation Links */}
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-8 text-xs font-medium">
+          <Link
+            to="/"
+            className="text-zinc-400 hover:text-white transition-colors cursor-pointer"
           >
-            <Link to="/projects" className="flex items-center gap-1.5">
-              <ExternalLink className="w-3.5 h-3.5" />
-              Projects
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            asChild
-            className="hover:bg-[#262626] hover:text-white text-xs h-8 px-3"
+            Home
+          </Link>
+          <a
+            href="/#services"
+            className="text-zinc-400 hover:text-white transition-colors cursor-pointer"
           >
-            <Link to="/contact" className="flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5" />
-              Contact
-            </Link>
-          </Button>
+            Services
+          </a>
+          <Link
+            to="/projects"
+            className="text-zinc-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1"
+          >
+            Projects
+            <ExternalLink className="w-3 h-3 text-zinc-500" />
+          </Link>
+          <Link
+            to="/contact"
+            className="text-zinc-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1"
+          >
+            Contact
+            <Mail className="w-3 h-3 text-zinc-500" />
+          </Link>
+
           {linksToDisplay.map((link) => (
-            <Button
+            <a
               key={link.id || link.name}
-              variant="ghost"
-              asChild
-              className="hover:bg-[#262626] hover:text-white text-xs h-8 px-3"
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5"
             >
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5"
-              >
-                {renderFooterSocialIcon(link.icon_name, link.name)}
-                {link.name}
-              </a>
-            </Button>
+              {renderFooterSocialIcon(link.icon_name, link.name)}
+              <span>{link.name}</span>
+            </a>
           ))}
         </div>
 
-        {/* Email and Copyright */}
-        <div className="text-center mb-4 flex flex-col items-center justify-center min-h-[48px]">
+        {/* Email, Copyright, and Apple-style Disclaimer */}
+        <div className="text-center space-y-2 pt-6 border-t border-white/[0.04]">
           {isLoading ? (
             <div className="flex flex-col items-center gap-2">
               <Skeleton className="h-4 w-48 bg-white/10" />
@@ -95,25 +95,21 @@ export function Footer() {
           ) : (
             <>
               {email && (
-                <a
-                  href={`mailto:${email}`}
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-green-400"
-                >
-                  <Mail className="w-4 h-4" />
-                  {email}
-                </a>
+                <p className="text-xs text-zinc-400">
+                  Direct Inquiries:{" "}
+                  <a
+                    href={`mailto:${email}`}
+                    className="text-zinc-300 hover:text-emerald-400 transition-colors font-medium"
+                  >
+                    {email}
+                  </a>
+                </p>
               )}
-              <p className="mt-2 text-xs text-muted-foreground">
-                © {new Date().getFullYear()} {fullName}. All rights reserved.
+              <p className="text-[11px] text-zinc-500 font-normal">
+                Copyright © {new Date().getFullYear()} {fullName}. Designed with precision and engineered for performance.
               </p>
             </>
           )}
-        </div>
-
-        {/* Cute Message */}
-        <div className="flex justify-center items-center gap-2 text-sm text-muted-foreground">
-          <Heart className="w-4 h-4 fill-current text-rose-500" />
-          <span>Built with ☕ & React. Deployed on Vercel.</span>
         </div>
       </div>
     </footer>

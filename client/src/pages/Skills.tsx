@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { motion } from "framer-motion"
+import { useState, useMemo } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { renderSkillIcon } from "@/lib/skillIcons"
 import { useSkillsQuery } from "@/hooks/usePortfolioQueries"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -10,67 +10,104 @@ export default function Skills() {
 
   const skills = dbSkills || []
 
-  const filteredSkills = skills.filter(
-    (s) => activeCategory === "All" || s.category === activeCategory
-  )
+  // Extract unique categories dynamically
+  const categories = useMemo(() => {
+    const unique = Array.from(new Set(skills.map((s) => s.category).filter(Boolean))) as string[]
+    return ["All", ...unique]
+  }, [skills])
+
+  const filteredSkills = useMemo(() => {
+    return skills.filter((s) => activeCategory === "All" || s.category === activeCategory)
+  }, [skills, activeCategory])
 
   return (
-    <div className="min-h-[70vh] flex flex-col justify-center max-w-5xl mx-auto px-4 py-8 relative">
+    <section className="py-20 sm:py-28 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-x-clip">
       {/* Ambient background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-[500px] h-[350px] bg-emerald-500/[0.05] rounded-full blur-[140px] pointer-events-none -z-10" />
 
-      {/* Header Title */}
-      <div className="text-center mb-4 space-y-1">
+      {/* Section Header */}
+      <div className="text-center mb-12 sm:mb-16 space-y-2">
         <motion.h2
-          className="text-3xl md:text-4xl font-extrabold text-white tracking-tight"
+          className="text-3xl sm:text-5xl lg:text-6xl font-semibold text-white tracking-tight font-outfit"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true }}
         >
-          My{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-green-400">
-            Technical Stack
+          Technical{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+            Stack.
           </span>
         </motion.h2>
-        <p className="text-xs md:text-sm text-gray-400 max-w-lg mx-auto">
-          Technologies and tools I use to architect scalable web apps, mobile solutions, and cloud infrastructure.
+        <p className="text-sm sm:text-base text-zinc-400 max-w-xl mx-auto font-normal leading-relaxed">
+          Technologies and tools engineered to build resilient architectures, cross-platform apps, and cloud services.
         </p>
       </div>
 
-      {/* Skills Showcase Grid */}
+      {/* Transparent Tabs Container (No Scroll, Responsive Wrap) */}
+      {categories.length > 2 && (
+        <div className="flex justify-center mb-8 sm:mb-10">
+          <div className="flex flex-wrap justify-center items-center gap-1.5 p-1 rounded-full bg-transparent border-0 max-w-full">
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`relative px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 cursor-pointer ${
+                    isActive ? "text-zinc-950 font-semibold" : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeCategoryPill"
+                      className="absolute inset-0 rounded-full bg-white shadow-md shadow-white/10"
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">{cat}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Transparent Skills Grid with smaller, refined icons */}
       {isLoading ? (
-        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 gap-1.5 sm:gap-2 mt-4">
-          {Array.from({ length: 15 }).map((_, index) => (
-            <div key={index} className="flex flex-col items-center justify-center p-2 rounded-xl bg-white/5 border border-white/5">
-              <Skeleton className="w-8 h-8 rounded-full bg-white/10" />
-              <Skeleton className="mt-2 h-2.5 w-10 rounded bg-white/10" />
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3 sm:gap-4">
+          {Array.from({ length: 18 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-center p-2 bg-transparent border-0"
+            >
+              <Skeleton className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10" />
             </div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 gap-1.5 sm:gap-2 mt-4">
-          {skills.map((skill, index) => (
-            <motion.div
-              key={skill.id || skill.name || index}
-              layout
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3, delay: index * 0.02 }}
-              className="flex flex-col items-center justify-center p-1.5 rounded-xl transition-all duration-300 hover:-translate-y-0.5 group"
-            >
-              <div className="flex items-center justify-center transition-transform group-hover:scale-105">
-                {renderSkillIcon(skill.icon_name, skill.name, 42)}
-              </div>
-              <p className="mt-1 text-[11px] font-bold text-gray-300 group-hover:text-green-400 transition-colors text-center truncate w-full">
-                {skill.name}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+        <motion.div layout className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3 sm:gap-4">
+          <AnimatePresence>
+            {filteredSkills.map((skill, index) => (
+              <motion.div
+                key={skill.id || skill.name || index}
+                layout
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.85 }}
+                transition={{ duration: 0.2, delay: index * 0.01 }}
+                title={skill.name}
+                className="flex items-center justify-center p-2 bg-transparent hover:bg-transparent transition-all duration-200 group hover:-translate-y-1 cursor-pointer border-0"
+              >
+                <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                  {renderSkillIcon(skill.icon_name, skill.name, 34)}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
-    </div>
+    </section>
   )
 }
-

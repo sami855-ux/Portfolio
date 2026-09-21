@@ -205,10 +205,10 @@ export default function AdminServices() {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
             <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
-            <span>Core Capabilities & Services</span>
+            <span>Services & Specializations</span>
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Manage your technical specializations, architectural offerings, and client solution cards.
+            Manage your technical specializations, architectural offerings, and client solutions.
           </p>
         </div>
 
