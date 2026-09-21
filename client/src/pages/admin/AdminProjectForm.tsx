@@ -629,15 +629,15 @@ export default function AdminProjectForm() {
                 placeholder="Paste Image URL (https://...)..."
                 className="bg-zinc-900/70 border-zinc-800 focus:border-emerald-500 text-white text-xs rounded-xl h-10 px-3.5 flex-1"
               />
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <Button
                   type="button"
                   onClick={addImageUrl}
-                  className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold rounded-xl h-10 px-4 shrink-0 cursor-pointer"
+                  className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold rounded-xl h-10 px-4 cursor-pointer flex-1 sm:flex-initial justify-center"
                 >
                   <Plus className="w-3.5 h-3.5 mr-1" /> Add URL
                 </Button>
-                <label className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-4 h-10 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors shrink-0">
+                <label className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-4 h-10 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors flex-1 sm:flex-initial whitespace-nowrap">
                   <Upload className="w-3.5 h-3.5" />
                   <span>Upload Multiple Images</span>
                   <input
@@ -648,7 +648,7 @@ export default function AdminProjectForm() {
                     className="hidden"
                   />
                 </label>
-                <label className="bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/80 text-xs font-semibold px-3.5 h-10 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0" title="Upload and set primary cover directly">
+                <label className="bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/80 text-xs font-semibold px-3.5 h-10 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors flex-1 sm:flex-initial whitespace-nowrap" title="Upload and set primary cover directly">
                   <ImageIcon className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Cover Banner</span>
                   <input
