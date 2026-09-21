@@ -17,6 +17,9 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
+  Layers,
+  Menu,
+  X,
 } from "lucide-react"
 
 import { toast } from "sonner"
@@ -33,6 +36,7 @@ export default function AdminLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [statusMsg, setStatusMsg] = useState("")
   const [profile, setProfile] = useState<ProfileSettings | null>(null)
   const [unreadCount, setUnreadCount] = useState(0)
@@ -40,6 +44,7 @@ export default function AdminLayout() {
     projects: 0,
     skills: 0,
     journey: 0,
+    services: 0,
     links: 0,
   })
 
@@ -50,6 +55,7 @@ export default function AdminLayout() {
     if (currentPath.includes("/admin/projects")) return "projects"
     if (currentPath.includes("/admin/skills")) return "skills"
     if (currentPath.includes("/admin/journey")) return "journey"
+    if (currentPath.includes("/admin/services")) return "services"
     if (currentPath.includes("/admin/links")) return "links"
     if (currentPath.includes("/admin/messages")) return "messages"
     return "overview"
@@ -64,10 +70,11 @@ export default function AdminLayout() {
 
       // Fetch sidebar counts
       if (isApiConfigured) {
-        const [pRes, sRes, jRes, lRes, mRes] = await Promise.all([
+        const [pRes, sRes, jRes, srvRes, lRes, mRes] = await Promise.all([
           apiClient.from("projects").select("id", { count: "exact" }),
           apiClient.from("skills").select("id", { count: "exact" }),
           apiClient.from("journey_timeline").select("id", { count: "exact" }),
+          apiClient.from("services").select("id", { count: "exact" }),
           apiClient.from("contact_links").select("id", { count: "exact" }),
           apiClient.from("messages").select("id", { count: "exact" }).eq("is_read", false),
         ])
@@ -76,6 +83,7 @@ export default function AdminLayout() {
           projects: pRes.count || 0,
           skills: sRes.count || 0,
           journey: jRes.count || 0,
+          services: srvRes.count || 0,
           links: lRes.count || 0,
         })
         setUnreadCount(mRes.count || 0)
@@ -87,7 +95,20 @@ export default function AdminLayout() {
 
   useEffect(() => {
     loadHeaderData()
+    setIsMobileMenuOpen(false)
   }, [location.pathname])
+
+  // Prevent background scrolling when mobile navigation drawer is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [isMobileMenuOpen])
 
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -137,6 +158,7 @@ export default function AdminLayout() {
     { id: "overview", label: "Overview", icon: LayoutDashboard, path: "/admin" },
     { id: "profile", label: "Profile", icon: UserCheck, path: "/admin/profile" },
     { id: "projects", label: "Projects", icon: FolderGit2, path: "/admin/projects", count: counts.projects },
+    { id: "services", label: "Capabilities", icon: Layers, path: "/admin/services", count: counts.services },
     { id: "skills", label: "Skills", icon: Cpu, path: "/admin/skills", count: counts.skills },
     { id: "journey", label: "Journey", icon: Milestone, path: "/admin/journey", count: counts.journey },
     { id: "links", label: "Social Links", icon: Share2, path: "/admin/links", count: counts.links },
@@ -167,18 +189,146 @@ export default function AdminLayout() {
         )}
       </AnimatePresence>
 
-      {/* VERCEL / LINEAR STYLE LEFT VERTICAL SIDEBAR */}
+      {/* MOBILE & TABLET SLIDE-OVER DRAWER WITH BACKDROP */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 lg:hidden"
+            />
+
+            {/* Slide-over Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 26, stiffness: 260 }}
+              className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-[#1a1a1a] border-r border-[#262626] z-50 flex flex-col justify-between p-5 shadow-2xl lg:hidden overflow-y-auto"
+            >
+              <div>
+                {/* Brand Logo & Close Button */}
+                <div className="flex items-center justify-between gap-3 mb-6 pb-4 border-b border-[#262626]">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {profile?.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={profile.full_name}
+                        className="w-10 h-10 rounded-2xl object-cover border border-[#333] shadow-lg shadow-emerald-500/10 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-r from-emerald-400 to-green-500 flex items-center justify-center font-extrabold text-slate-950 text-base shadow-lg shrink-0">
+                        ST
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <h2 className="font-bold text-sm text-white truncate">
+                        {profile?.full_name || "Samuel Tale"}
+                      </h2>
+                      <div className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5 mt-0.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                        <span className="truncate">Admin Control</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-[#252525] transition-colors cursor-pointer shrink-0"
+                    aria-label="Close menu"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Navigation Links */}
+                <nav className="space-y-1">
+                  {navItems.map((tab) => {
+                    const Icon = tab.icon
+                    const isActive = activeTab === tab.id
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => {
+                          navigate(tab.path)
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+                          isActive
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-bold"
+                            : "text-gray-400 hover:text-white hover:bg-[#222] border-transparent"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-emerald-400" : "text-gray-400"}`} />
+                          <span>{tab.label}</span>
+                        </div>
+                        {tab.count !== undefined && tab.count > 0 && (
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              tab.hasBadge
+                                ? "bg-emerald-400 text-slate-950 animate-bounce"
+                                : "bg-white/10 text-gray-300"
+                            }`}
+                          >
+                            {tab.count}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </nav>
+              </div>
+
+              {/* Mobile Drawer Footer Actions */}
+              <div className="pt-4 border-t border-[#262626] space-y-2 mt-6">
+                <button
+                  onClick={() => {
+                    navigate("/")
+                    setIsMobileMenuOpen(false)
+                  }}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-gray-400 hover:text-white hover:bg-[#202020] transition-colors cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>View Live Site</span>
+                  </span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    setLogoutDialogOpen(true)
+                  }}
+                  className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4 shrink-0" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* DESKTOP VERCEL / LINEAR STYLE LEFT VERTICAL SIDEBAR */}
       <motion.aside
         animate={{ width: isCollapsed ? 80 : 256 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`bg-[#1a1a1a] border-r border-[#262626] flex flex-col justify-between shrink-0 h-screen sticky top-0 ${isCollapsed ? "p-3" : "p-5"
-          } overflow-hidden z-40`}
+        className={`hidden lg:flex bg-[#1a1a1a] border-r border-[#262626] flex-col justify-between shrink-0 h-screen sticky top-0 ${
+          isCollapsed ? "p-3" : "p-5"
+        } overflow-hidden z-40`}
       >
         <div>
           {/* Brand Logo & Collapse Toggle */}
           <div
-            className={`flex ${isCollapsed ? "flex-col items-center gap-3" : "items-center justify-between gap-3"
-              } mb-8`}
+            className={`flex ${
+              isCollapsed ? "flex-col items-center gap-3" : "items-center justify-between gap-3"
+            } mb-8`}
           >
             {profile?.avatar_url ? (
               <img
@@ -229,11 +379,13 @@ export default function AdminLayout() {
                   key={tab.id}
                   onClick={() => navigate(tab.path)}
                   title={isCollapsed ? tab.label : undefined}
-                  className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
-                    } py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border bg-transparent ${isActive
+                  className={`w-full flex items-center ${
+                    isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
+                  } py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border bg-transparent ${
+                    isActive
                       ? "text-emerald-400 font-extrabold border-transparent"
                       : "text-gray-400 hover:text-white border-transparent"
-                    }`}
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-emerald-400" : "text-gray-400"}`} />
@@ -241,10 +393,11 @@ export default function AdminLayout() {
                   </div>
                   {!isCollapsed && tab.count !== undefined && tab.count > 0 && (
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${tab.hasBadge
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        tab.hasBadge
                           ? "bg-emerald-400 text-slate-950 animate-bounce"
                           : "bg-white/10 text-gray-300"
-                        }`}
+                      }`}
                     >
                       {tab.count}
                     </span>
@@ -260,8 +413,9 @@ export default function AdminLayout() {
           <button
             onClick={() => navigate("/")}
             title={isCollapsed ? "View Live Site" : undefined}
-            className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
-              } py-2.5 rounded-xl text-xs text-gray-400 hover:text-white hover:bg-[#202020] transition-colors cursor-pointer`}
+            className={`w-full flex items-center ${
+              isCollapsed ? "justify-center px-0" : "justify-between px-3.5"
+            } py-2.5 rounded-xl text-xs text-gray-400 hover:text-white hover:bg-[#202020] transition-colors cursor-pointer`}
           >
             <span className="flex items-center gap-2">
               <Globe className="w-4 h-4 text-green-500 shrink-0" />
@@ -272,8 +426,9 @@ export default function AdminLayout() {
           <button
             onClick={() => setLogoutDialogOpen(true)}
             title={isCollapsed ? "Sign Out" : undefined}
-            className={`w-full flex items-center ${isCollapsed ? "justify-center" : ""
-              } gap-2 px-3.5 py-2.5 rounded-xl text-xs text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer`}
+            className={`w-full flex items-center ${
+              isCollapsed ? "justify-center" : ""
+            } gap-2 px-3.5 py-2.5 rounded-xl text-xs text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
             {!isCollapsed && <span>Sign Out</span>}
@@ -284,28 +439,41 @@ export default function AdminLayout() {
       {/* MAIN WORKSPACE CONTENT AREA */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
         {/* Top Action Header Bar */}
-        <header className="sticky top-0 z-30 bg-[#141414]/90 backdrop-blur-xl border-b border-[#242424] px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <span>Admin</span>
-            <ChevronRight className="w-3.5 h-3.5 text-gray-600" />
-            <span className="text-white font-bold capitalize">{activeTab}</span>
+        <header className="sticky top-0 z-30 bg-[#141414]/90 backdrop-blur-xl border-b border-[#242424] px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Mobile/Tablet Hamburger Toggle */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-2 -ml-1 rounded-xl text-gray-300 hover:text-white hover:bg-[#222] transition-colors cursor-pointer"
+              aria-label="Open navigation menu"
+            >
+              <Menu className="w-5 h-5 text-gray-200" />
+            </button>
+
+            <div className="flex items-center gap-2 text-xs text-gray-400">
+              <span className="hidden sm:inline">Admin</span>
+              <ChevronRight className="w-3.5 h-3.5 text-gray-600 hidden sm:inline" />
+              <span className="text-white font-bold capitalize">{activeTab}</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               variant="outline"
               size="sm"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="bg-[#202020] border-none hover:bg-[#2a2a2a] text-gray-300 rounded-xl flex items-center gap-1.5 text-xs h-9 cursor-pointer disabled:opacity-50"
+              className="bg-[#202020] border-none hover:bg-[#2a2a2a] text-gray-300 rounded-xl flex items-center gap-1.5 text-xs h-9 px-3 sm:px-4 cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-emerald-400" : ""}`} /> Refresh
+              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-emerald-400" : ""}`} />
+              <span className="hidden xs:inline sm:inline">Refresh</span>
             </Button>
 
             {/* Profile Avatar Pill */}
             <div
               onClick={() => navigate("/admin/profile")}
-              className="flex items-center gap-2.5 bg-[#202020] hover:bg-[#262626] border-none px-3 py-1.5 rounded-xl cursor-pointer transition-colors"
+              className="flex items-center gap-2 bg-[#202020] hover:bg-[#262626] border-none px-2.5 sm:px-3 py-1.5 rounded-xl cursor-pointer transition-colors"
+              title="Profile Settings"
             >
               {profile?.avatar_url ? (
                 <img
@@ -318,7 +486,7 @@ export default function AdminLayout() {
                   ST
                 </div>
               )}
-              <span className="text-xs font-semibold text-gray-300 hidden sm:inline">
+              <span className="text-xs font-semibold text-gray-300 hidden md:inline">
                 {profile?.full_name || "Samuel"}
               </span>
             </div>
@@ -326,7 +494,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Dynamic Page Outlet */}
-        <div className="p-8 max-w-7xl w-full mx-auto">
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto min-w-0">
           <Outlet context={{ triggerToast, loadHeaderData }} />
         </div>
       </main>
