@@ -1,37 +1,33 @@
 import { Globe, Smartphone, Server, CreditCard, ArrowRight, Layers } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useServicesQuery } from "@/hooks/usePortfolioQueries"
+import { defaultServices } from "@/lib/api"
+import type { Service } from "@/types/api"
+
+const getServiceIcon = (iconName?: string) => {
+  switch (iconName?.toLowerCase()) {
+    case "smartphone":
+    case "mobile":
+      return <Smartphone className="w-5 h-5 text-emerald-400" />
+    case "server":
+    case "database":
+    case "backend":
+      return <Server className="w-5 h-5 text-emerald-400" />
+    case "creditcard":
+    case "credit-card":
+    case "payment":
+    case "telebirr":
+      return <CreditCard className="w-5 h-5 text-emerald-400" />
+    case "globe":
+    case "web":
+    default:
+      return <Globe className="w-5 h-5 text-emerald-400" />
+  }
+}
 
 export default function Services() {
-  const services = [
-    {
-      title: "Full-Stack Web App Development",
-      description:
-        "Building responsive, fast, and accessible web applications using React, Next.js, and TypeScript.",
-      icon: <Globe className="w-5 h-5 text-emerald-400" />,
-      stack: "React • Next.js • TypeScript • Tailwind CSS",
-    },
-    {
-      title: "Cross-Platform Mobile Apps",
-      description:
-        "Developing iOS and Android mobile apps from a single codebase using React Native and Expo.",
-      icon: <Smartphone className="w-5 h-5 text-emerald-400" />,
-      stack: "React Native • Expo • TypeScript • Mobile UI",
-    },
-    {
-      title: "Backend & API Architecture",
-      description:
-        "Designing scalable REST and GraphQL APIs, database schemas, and microservices.",
-      icon: <Server className="w-5 h-5 text-emerald-400" />,
-      stack: "Node.js • Express • Golang • PostgreSQL • MongoDB",
-    },
-    {
-      title: "Ethiopian Payment Integration",
-      description:
-        "Integrating localized digital payments and identity verification with Telebirr, Chapa, and Fayda.",
-      icon: <CreditCard className="w-5 h-5 text-emerald-400" />,
-      stack: "Telebirr • Fayda SDK • Chapa • Payment APIs",
-    },
-  ]
+  const { data: dbServices, isLoading } = useServicesQuery()
+  const services: Service[] = (dbServices && dbServices.length > 0) ? dbServices : defaultServices
 
   return (
     <section id="services" className="py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto scroll-mt-10 sm:scroll-mt-2">
@@ -54,41 +50,59 @@ export default function Services() {
         </p>
       </div>
 
-      {/* Cards Grid - Styled with transparent borders */}
+      {/* Cards Grid - Styled with transparent borders and dynamic content */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {services.map((item, i) => (
-          <div
-            key={i}
-            className="group rounded-2xl sm:rounded-3xl border border-transparent bg-gradient-to-b from-[#18181c]/90 to-[#101014]/90 backdrop-blur-xl p-6 shadow-2xl transition-all duration-300 flex flex-col justify-between space-y-4"
-          >
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-[#22222a] border border-transparent text-emerald-400 shadow-sm">
-                  {item.icon}
+        {services.map((item, i) => {
+          const contactUrl = item.contact_url || "/contact"
+          const isExternal = contactUrl.startsWith("http://") || contactUrl.startsWith("https://")
+
+          return (
+            <div
+              key={item.id || i}
+              className="group rounded-2xl sm:rounded-3xl border border-transparent bg-gradient-to-b from-[#18181c]/90 to-[#101014]/90 backdrop-blur-xl p-6 shadow-2xl transition-all duration-300 flex flex-col justify-between space-y-4 hover:border-emerald-500/30"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-[#22222a] border border-transparent text-emerald-400 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                    {getServiceIcon(item.icon_name)}
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-emerald-400 transition-colors duration-300">
+                    {item.title}
+                  </h3>
                 </div>
-                <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-emerald-400 transition-colors duration-300">
-                  {item.title}
-                </h3>
+
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  {item.description}
+                </p>
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                {item.description}
-              </p>
+              <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-2 text-xs text-gray-400 font-mono">
+                <span className="truncate text-zinc-400">{item.stack}</span>
+                {isExternal ? (
+                  <a
+                    href={contactUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold shrink-0 cursor-pointer transition-colors"
+                  >
+                    <span>Contact</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                ) : (
+                  <Link
+                    to={contactUrl}
+                    className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold shrink-0 cursor-pointer transition-colors"
+                  >
+                    <span>Contact</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                )}
+              </div>
             </div>
-
-            <div className="pt-3 border-t border-white/5 flex items-center justify-between gap-2 text-xs text-gray-400 font-mono">
-              <span className="truncate">{item.stack}</span>
-              <Link
-                to="/contact"
-                className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold shrink-0"
-              >
-                <span>Contact</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </section>
   )
 }
+
