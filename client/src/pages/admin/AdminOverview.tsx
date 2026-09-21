@@ -113,12 +113,12 @@ export default function AdminOverview() {
         </div>
       )}
       {/* Hero Welcome Banner */}
-      <div className="bg-[#202020] border-none rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-2xl">
+      <div className="bg-[#202020] border-none rounded-3xl p-5 sm:p-7 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden shadow-2xl">
         <div className="space-y-1 relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold">
             Welcome back, {profile?.full_name || "Samuel"}!
           </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-white">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white">
             Portfolio Control <span className="text-green-500">Center</span>
           </h2>
           <p className="text-gray-400 text-xs leading-relaxed max-w-lg">
@@ -126,16 +126,16 @@ export default function AdminOverview() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5 relative z-10 shrink-0">
+        <div className="flex flex-wrap items-center gap-2.5 relative z-10 shrink-0 w-full sm:w-auto">
           <Button
             onClick={() => navigate("/admin/projects")}
-            className="bg-green-500 hover:bg-green-600 text-slate-950 font-bold px-4 py-2.5 rounded-2xl text-xs flex items-center gap-2 cursor-pointer"
+            className="bg-green-500 hover:bg-green-600 text-slate-950 font-bold px-4 py-2.5 rounded-2xl text-xs flex items-center justify-center gap-2 cursor-pointer flex-1 sm:flex-initial"
           >
             <Plus className="w-4 h-4" /> Manage Projects
           </Button>
           <Button
             onClick={() => navigate("/admin/profile")}
-            className="bg-[#181818] hover:bg-[#282828] text-gray-200 font-medium px-4 py-2.5 rounded-2xl text-xs flex items-center gap-2 border-none cursor-pointer"
+            className="bg-[#181818] hover:bg-[#282828] text-gray-200 font-medium px-4 py-2.5 rounded-2xl text-xs flex items-center justify-center gap-2 border-none cursor-pointer flex-1 sm:flex-initial"
           >
             <UserCheck className="w-4 h-4 text-green-500" /> Edit Profile
           </Button>
@@ -183,7 +183,7 @@ export default function AdminOverview() {
             <div
               key={idx}
               onClick={() => navigate(s.path)}
-              className="bg-[#202020] border-none p-6 rounded-3xl hover:bg-[#252525] transition-all cursor-pointer group"
+              className="bg-[#202020] border-none p-5 sm:p-6 rounded-3xl hover:bg-[#252525] transition-all cursor-pointer group"
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -193,7 +193,7 @@ export default function AdminOverview() {
                   <Icon className="w-5 h-5" />
                 </div>
               </div>
-              <div className="text-4xl font-extrabold text-white mb-2">{s.value}</div>
+              <div className="text-3xl sm:text-4xl font-extrabold text-white mb-2">{s.value}</div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-[11px] font-semibold text-gray-500 bg-[#181818] px-2 py-0.5 rounded-lg">
                   {s.badge}
@@ -210,7 +210,7 @@ export default function AdminOverview() {
       {/* 60/40 Split Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left Column (3/5 width): Recent Visitor Messages */}
-        <div className="lg:col-span-3 bg-[#202020] border-none p-6 rounded-3xl space-y-4">
+        <div className="lg:col-span-3 bg-[#202020] border-none p-5 sm:p-6 rounded-3xl space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Mail className="w-4.5 h-4.5 text-green-500" />
@@ -234,7 +234,7 @@ export default function AdminOverview() {
                 <div
                   key={m.id}
                   onClick={() => navigate("/admin/messages")}
-                  className="bg-[#181818] border-none p-4 rounded-2xl hover:bg-[#252525] transition-all cursor-pointer space-y-2"
+                  className="bg-[#181818] border-none p-3.5 sm:p-4 rounded-2xl hover:bg-[#252525] transition-all cursor-pointer space-y-2"
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
@@ -266,7 +266,7 @@ export default function AdminOverview() {
         {/* Right Column (2/5 width): Quick Actions & API Info */}
         <div className="lg:col-span-2 space-y-6">
           {/* Quick Action Center */}
-          <div className="bg-[#202020] border-none p-6 rounded-3xl space-y-4">
+          <div className="bg-[#202020] border-none p-5 sm:p-6 rounded-3xl space-y-4">
             <h3 className="font-bold text-base text-white">
               Quick Actions
             </h3>
