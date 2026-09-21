@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  googleSubject String? @unique @map("google_subject")
+  githubUserId  String? @unique @map("github_user_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  oauthCodes   OAuthCode[]
+
+  @@map("admins")
+}
+
+model OAuthCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  codeHash  String   @unique @map("code_hash")
+  adminId   String   @db.Uuid @map("admin_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@map("oauth_codes")
+}
+
+model Project {
+  id           String   @id @default(uuid()) @db.Uuid
+  title        String
+  description  String
+  category     String   @default("Fullstack")
+  tags         String[] @default([])
+  github       String   @default("")
+  live         String   @default("")
+  image        String   @default("")
+  images       String[] @default([])
+  featured     Boolean  @default(false)
+  features     String[] @default([])
+  challenges   String[] @default([])
+  solutions    String[] @default([])
+  architecture String   @default("")
+  results      String   @default("")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@map("projects")
+}
+
+model Skill {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  category     String
+  iconName     String   @default("SiCode") @map("icon_name")
+  color        String   @default("#3ECF8E")
+  proficiency  Int      @default(90)
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([displayOrder])
+  @@map("skills")
+}
+
+model JourneyItem {
+  id           String   @id @default(uuid()) @db.Uuid
+  title        String
+  description  String
+  dateRange    String   @default("") @map("date_range")
+  iconName     String   @default("Briefcase") @map("icon_name")
+  side         String   @default("left")
+  color        String   @default("#3ECF8E")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([displayOrder])
+  @@map("journey_timeline")
+}
+
+model ContactLink {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  url          String
+  iconName     String   @default("github") @map("icon_name")
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, displayOrder])
+  @@map("contact_links")
+}
+
+model FloatingCard {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  title        String
+  position     String   @default("")
+  isActive     Boolean  @default(true) @map("is_active")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, displayOrder])
+  @@map("floating_cards")
+}
+
+model Message {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  email     String
+  subject   String   @default("Portfolio Inquiry")
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([isRead, createdAt(sort: Desc)])
+  @@map("messages")
+}
+
+model ProfileSettings {
+  id              String   @id @default(uuid()) @db.Uuid
+  fullName        String   @default("Samuel Tale") @map("full_name")
+  heroTitle       String   @default("Full-Stack Software Engineer") @map("hero_title")
+  heroDescription String   @default("") @map("hero_description")
+  aboutBio        String   @default("") @map("about_bio")
+  avatarUrl       String   @default("") @map("avatar_url")
+  resumeUrl       String   @default("") @map("resume_url")
+  email           String
+  phone           String   @default("")
+  location        String   @default("Addis Ababa, Ethiopia")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("profile_settings")
+}

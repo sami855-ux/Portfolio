@@ -32,6 +32,3 @@ dist-ssr
 # Database files
 *.db
 *.sqlite
-
-# Supabase CLI
-.supabase
