@@ -143,3 +143,20 @@ model ProfileSettings {
 
   @@map("profile_settings")
 }
+
+model Service {
+  id           String   @id @default(uuid()) @db.Uuid
+  title        String
+  description  String
+  iconName     String   @default("Globe") @map("icon_name")
+  stack        String   @default("")
+  contactUrl   String   @default("https://sam-nu-fawn.vercel.app/contact") @map("contact_url")
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, displayOrder])
+  @@map("services")
+}
+
