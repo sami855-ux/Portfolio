@@ -69,12 +69,12 @@ const Header = () => {
     >
       <div
         ref={headerRef}
-        className={`pointer-events-auto w-full max-w-4xl transition-all duration-300 ${
+        className={`pointer-events-auto w-full max-w-4xl transition-all duration-300 border-0 ${
           mobileOpen ? "rounded-3xl" : "rounded-full"
         } ${
           scrolled || mobileOpen
-            ? "bg-[#111116]/95 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/50"
-            : "bg-[#16161e]/80 backdrop-blur-2xl border border-white/10 shadow-lg shadow-black/20"
+            ? "bg-[#101016]/65 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.45)]"
+            : "bg-white/[0.07] backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
         }`}
       >
         <div className="px-4 sm:px-5 py-2.5 flex items-center justify-between">
@@ -106,7 +106,7 @@ const Header = () => {
                   {isActive && (
                     <motion.div
                       layoutId="activeHeaderPill"
-                      className="absolute inset-0 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30"
+                      className="absolute inset-0 rounded-full bg-emerald-500/20 backdrop-blur-md shadow-sm shadow-emerald-500/15"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -128,7 +128,7 @@ const Header = () => {
           <div className="hidden md:flex items-center">
             <Link
               to="/contact"
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-outfit font-bold uppercase tracking-wider text-white bg-gradient-to-r from-emerald-500/25 to-blue-500/25 hover:from-emerald-500/35 hover:to-blue-500/35 backdrop-blur-md border border-white/10 transition-all duration-300 cursor-pointer hover:scale-105"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-outfit font-bold uppercase tracking-wider text-white bg-gradient-to-r from-emerald-500/25 to-blue-500/25 hover:from-emerald-500/35 hover:to-blue-500/35 backdrop-blur-md shadow-sm shadow-black/20 transition-all duration-300 cursor-pointer hover:scale-105"
             >
               <span>Let's Talk</span>
               <Send className="w-3 h-3 text-emerald-400" />
@@ -158,7 +158,7 @@ const Header = () => {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="overflow-hidden md:hidden border-t border-white/10 px-4 pt-2 pb-4 space-y-1"
+              className="overflow-hidden md:hidden px-4 pt-1 pb-4 space-y-1"
             >
               {navItems.map((item) => {
                 const isActive =
@@ -175,7 +175,7 @@ const Header = () => {
                     }}
                     className={`flex items-center justify-between px-4 py-2.5 rounded-2xl text-xs font-outfit font-semibold transition-all ${
                       isActive
-                        ? "bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/25"
+                        ? "bg-emerald-500/15 text-emerald-400 font-bold"
                         : "text-gray-300 hover:text-white hover:bg-white/5"
                     }`}
                   >
