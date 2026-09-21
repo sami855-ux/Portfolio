@@ -4,7 +4,9 @@ import {
   getSkills,
   getJourney,
   getContactLinks,
+  getAdminContactLinks,
   getFloatingCards,
+  getAdminFloatingCards,
   getProfileSettings,
   getServices,
   updateProfileSettings,
@@ -18,7 +20,9 @@ export const QUERY_KEYS = {
   skills: ["skills"] as const,
   journey: ["journey"] as const,
   contactLinks: ["contactLinks"] as const,
+  adminContactLinks: ["adminContactLinks"] as const,
   floatingCards: ["floatingCards"] as const,
+  adminFloatingCards: ["adminFloatingCards"] as const,
   profileSettings: ["profileSettings"] as const,
   messages: ["messages"] as const,
   services: ["services"] as const,
@@ -73,11 +77,29 @@ export function useContactLinksQuery() {
   })
 }
 
+export function useAdminContactLinksQuery() {
+  return useQuery<ContactLink[]>({
+    queryKey: QUERY_KEYS.adminContactLinks,
+    queryFn: getAdminContactLinks,
+    staleTime: 1000 * 60 * 5,
+    gcTime: GC_TIME,
+  })
+}
+
 export function useFloatingCardsQuery() {
   return useQuery<FloatingCard[]>({
     queryKey: QUERY_KEYS.floatingCards,
     queryFn: getFloatingCards,
     staleTime: STALE_TIME,
+    gcTime: GC_TIME,
+  })
+}
+
+export function useAdminFloatingCardsQuery() {
+  return useQuery<FloatingCard[]>({
+    queryKey: QUERY_KEYS.adminFloatingCards,
+    queryFn: getAdminFloatingCards,
+    staleTime: 1000 * 60 * 5,
     gcTime: GC_TIME,
   })
 }

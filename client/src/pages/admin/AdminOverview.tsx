@@ -22,7 +22,7 @@ import type { Message } from "@/types/api"
 import {
   useProjectsQuery,
   useSkillsQuery,
-  useContactLinksQuery,
+  useAdminContactLinksQuery,
   useProfileSettingsQuery,
 } from "@/hooks/usePortfolioQueries"
 
@@ -33,7 +33,7 @@ export default function AdminOverview() {
 
   const { data: projectsData, isLoading: pLoading } = useProjectsQuery()
   const { data: skillsData, isLoading: sLoading } = useSkillsQuery()
-  const { data: linksData, isLoading: lLoading } = useContactLinksQuery()
+  const { data: linksData, isLoading: lLoading } = useAdminContactLinksQuery()
   const { data: profileData, isLoading: profLoading } = useProfileSettingsQuery()
 
   const projects = projectsData || []

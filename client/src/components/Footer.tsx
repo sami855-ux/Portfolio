@@ -1,69 +1,88 @@
-import { Github, Linkedin, Mail, Heart, ExternalLink } from "lucide-react"
+import { Mail, Heart, ExternalLink, Globe } from "lucide-react"
+import {
+  FaGithub,
+  FaLinkedin,
+  FaTwitter,
+  FaTelegram,
+  FaInstagram,
+  FaYoutube,
+  FaDiscord,
+  FaEnvelope,
+} from "react-icons/fa"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
-import { useProfileSettingsQuery } from "@/hooks/usePortfolioQueries"
+import { useProfileSettingsQuery, useContactLinksQuery } from "@/hooks/usePortfolioQueries"
 import { Skeleton } from "@/components/ui/skeleton"
+
+function renderFooterSocialIcon(iconName?: string, name?: string) {
+  const key = (iconName || name || "").toLowerCase()
+  if (key.includes("github")) return <FaGithub className="w-3.5 h-3.5" />
+  if (key.includes("linkedin")) return <FaLinkedin className="w-3.5 h-3.5" />
+  if (key.includes("twitter") || key.includes("x")) return <FaTwitter className="w-3.5 h-3.5" />
+  if (key.includes("telegram")) return <FaTelegram className="w-3.5 h-3.5" />
+  if (key.includes("instagram")) return <FaInstagram className="w-3.5 h-3.5" />
+  if (key.includes("youtube")) return <FaYoutube className="w-3.5 h-3.5" />
+  if (key.includes("discord")) return <FaDiscord className="w-3.5 h-3.5" />
+  if (key.includes("email") || key.includes("mail")) return <FaEnvelope className="w-3.5 h-3.5" />
+  return <Globe className="w-3.5 h-3.5" />
+}
 
 export function Footer() {
   const { data: profile, isLoading } = useProfileSettingsQuery()
+  const { data: contactLinks } = useContactLinksQuery()
   const email = profile?.email || (profile as { contact_email?: string } | undefined)?.contact_email || ""
   const fullName = profile?.full_name || ""
+
+  const linksToDisplay = contactLinks && contactLinks.length > 0
+    ? contactLinks
+    : [
+        { id: "gh", name: "GitHub", url: "https://github.com/sami855-ux", icon_name: "github" },
+        { id: "li", name: "LinkedIn", url: "https://www.linkedin.com/in/samiux855/", icon_name: "linkedin" },
+      ]
 
   return (
     <footer className="mt-16 border-t border-[#262626] dark:border-gray-800 py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Mini Site Map */}
-        <div className="flex flex-wrap justify-center gap-4 mb-6">
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
           <Button
             variant="ghost"
             asChild
-            className="hover:bg-[#262626] hover:text-white"
+            className="hover:bg-[#262626] hover:text-white text-xs h-8 px-3"
           >
-            <Link to="/projects" className="flex items-center gap-2">
-              <ExternalLink className="w-4 h-4" />
+            <Link to="/projects" className="flex items-center gap-1.5">
+              <ExternalLink className="w-3.5 h-3.5" />
               Projects
             </Link>
           </Button>
           <Button
             variant="ghost"
             asChild
-            className="hover:bg-[#262626] hover:text-white"
+            className="hover:bg-[#262626] hover:text-white text-xs h-8 px-3"
           >
-            <Link to="/contact" className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
+            <Link to="/contact" className="flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5" />
               Contact
             </Link>
           </Button>
-          <Button
-            variant="ghost"
-            asChild
-            className="hover:bg-[#262626] hover:text-white"
-          >
-            <Link
-              to="https://github.com/sami855-ux"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
+          {linksToDisplay.map((link) => (
+            <Button
+              key={link.id || link.name}
+              variant="ghost"
+              asChild
+              className="hover:bg-[#262626] hover:text-white text-xs h-8 px-3"
             >
-              <Github className="w-4 h-4" />
-              GitHub
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            asChild
-            className="hover:bg-[#262626] hover:text-white"
-          >
-            <Link
-              to="https://www.linkedin.com/in/samiux855/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <Linkedin className="w-4 h-4" />
-              LinkedIn
-            </Link>
-          </Button>
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5"
+              >
+                {renderFooterSocialIcon(link.icon_name, link.name)}
+                {link.name}
+              </a>
+            </Button>
+          ))}
         </div>
 
         {/* Email and Copyright */}

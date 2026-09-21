@@ -281,7 +281,7 @@ export default function AdminJourney() {
             <Milestone className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Career Journey Timeline</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Career Journey Timeline</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               Curate career milestones, education, internships, and engineering goals
             </p>
@@ -293,7 +293,7 @@ export default function AdminJourney() {
             setIsEditingJourney({ title: "", description: "", date_range: "", icon_name: "Briefcase", side: "left" })
             setShowSheet(true)
           }}
-          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] shrink-0"
+          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center justify-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] w-full sm:w-auto shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add Milestone
         </Button>
@@ -313,7 +313,7 @@ export default function AdminJourney() {
               onDragStart={(e) => handleDragStart(e as unknown as React.DragEvent, idx)}
               onDragOver={(e) => handleDragOver(e, idx)}
               onDragEnd={() => handleDragEnd()}
-              className={`bg-[#1b1b1b] border p-6 rounded-3xl space-y-4 shadow-xl transition-all duration-300 group flex flex-col justify-between select-none ${
+              className={`bg-[#1b1b1b] border p-4 sm:p-6 rounded-3xl space-y-4 shadow-xl transition-all duration-300 group flex flex-col justify-between select-none ${
                 draggedIndex === idx
                   ? "border-green-500 bg-[#1e2b20] opacity-75 scale-[0.98] shadow-2xl shadow-green-500/20"
                   : "border-[#262626] hover:border-green-500/40"

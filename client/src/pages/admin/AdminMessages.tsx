@@ -195,7 +195,7 @@ export default function AdminMessages() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-white tracking-tight">Messages Inbox</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Messages Inbox</h2>
               {unreadCount > 0 && (
                 <span className="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-md animate-pulse">
                   {unreadCount} UNREAD

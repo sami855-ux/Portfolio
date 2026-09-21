@@ -11,23 +11,50 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import Header from "@/components/Header"
 import { submitContactMessage } from "@/lib/api"
-import { useSubmitContactMessageMutation } from "@/hooks/usePortfolioQueries"
+import {
+  useSubmitContactMessageMutation,
+  useContactLinksQuery,
+  useProfileSettingsQuery,
+} from "@/hooks/usePortfolioQueries"
+import {
+  FaGithub,
+  FaLinkedin,
+  FaTwitter,
+  FaTelegram,
+  FaInstagram,
+  FaYoutube,
+  FaDiscord,
+  FaGlobe,
+  FaEnvelope,
+} from "react-icons/fa"
 
-const socialLinks = [
-  { name: "GitHub", url: "https://github.com/sami855-ux", icon: "github" },
+const defaultSocialLinks = [
+  { name: "GitHub", url: "https://github.com/sami855-ux", icon_name: "github" },
   {
     name: "LinkedIn",
     url: "https://www.linkedin.com/in/samiux855/",
-    icon: "linkedin",
+    icon_name: "linkedin",
   },
   {
     name: "Instagram",
     url: "https://www.instagram.com/samii_211912/",
-    icon: "instagram",
+    icon_name: "instagram",
   },
-  { name: "Facebook", url: "#", icon: "facebook" },
-  { name: "Telegram", url: "https://t.me/Sami_hhtt", icon: "telegram" },
+  { name: "Telegram", url: "https://t.me/Sami_hhtt", icon_name: "telegram" },
 ]
+
+const renderSocialTagIcon = (iconName?: string, name?: string) => {
+  const key = (iconName || name || "").toLowerCase()
+  if (key.includes("github")) return <FaGithub className="w-3.5 h-3.5" />
+  if (key.includes("linkedin")) return <FaLinkedin className="w-3.5 h-3.5 text-blue-400" />
+  if (key.includes("twitter") || key.includes("x")) return <FaTwitter className="w-3.5 h-3.5 text-sky-400" />
+  if (key.includes("telegram")) return <FaTelegram className="w-3.5 h-3.5 text-cyan-400" />
+  if (key.includes("instagram")) return <FaInstagram className="w-3.5 h-3.5 text-rose-400" />
+  if (key.includes("youtube")) return <FaYoutube className="w-3.5 h-3.5 text-red-400" />
+  if (key.includes("discord")) return <FaDiscord className="w-3.5 h-3.5 text-indigo-400" />
+  if (key.includes("email") || key.includes("mail")) return <FaEnvelope className="w-3.5 h-3.5 text-emerald-400" />
+  return <FaGlobe className="w-3.5 h-3.5 text-green-400" />
+}
 
 interface FormData {
   name: string
@@ -46,6 +73,16 @@ export default function Contact() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const submitMutation = useSubmitContactMessageMutation()
+  const { data: dbContactLinks } = useContactLinksQuery()
+  const { data: profileSettings } = useProfileSettingsQuery()
+
+  const socialLinks = dbContactLinks && dbContactLinks.length > 0
+    ? dbContactLinks
+    : defaultSocialLinks
+
+  const email = profileSettings?.email || (profileSettings as any)?.contact_email || "samitale86@gmail.com"
+  const phone = profileSettings?.phone || "+251 978 109 304"
+  const location = profileSettings?.location || "Addis Ababa, Ethiopia"
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -150,7 +187,12 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-outfit font-bold text-sm text-white">Email</h3>
-                      <p className="text-xs text-gray-300 font-mono mt-0.5">samitale86@gmail.com</p>
+                      <a
+                        href={`mailto:${email}`}
+                        className="text-xs text-gray-300 hover:text-emerald-400 font-mono mt-0.5 block transition-colors"
+                      >
+                        {email}
+                      </a>
                     </div>
                   </div>
 
@@ -160,7 +202,12 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-outfit font-bold text-sm text-white">Phone</h3>
-                      <p className="text-xs text-gray-300 font-mono mt-0.5">+251 978 109 304</p>
+                      <a
+                        href={`tel:${phone.replace(/\s+/g, "")}`}
+                        className="text-xs text-gray-300 hover:text-emerald-400 font-mono mt-0.5 block transition-colors"
+                      >
+                        {phone}
+                      </a>
                     </div>
                   </div>
 
@@ -170,7 +217,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-outfit font-bold text-sm text-white">Location</h3>
-                      <p className="text-xs text-gray-300 mt-0.5">Addis Ababa, Ethiopia</p>
+                      <p className="text-xs text-gray-300 mt-0.5">{location}</p>
                     </div>
                   </div>
                 </div>
@@ -191,11 +238,12 @@ export default function Contact() {
                         href={social.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3.5 py-1.5 rounded-full bg-[#1c1c24] hover:bg-[#282834] text-gray-300 hover:text-white border border-white/10 text-xs font-mono font-medium transition-all"
+                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1c1c24] hover:bg-[#282834] text-gray-300 hover:text-white border border-white/10 text-xs font-medium transition-all"
                         whileHover={{ y: -2 }}
                         transition={{ delay: index * 0.05 }}
                       >
-                        {social.name}
+                        {renderSocialTagIcon(social.icon_name, social.name)}
+                        <span>{social.name}</span>
                       </motion.a>
                     ))}
                   </div>

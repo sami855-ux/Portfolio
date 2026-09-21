@@ -426,12 +426,36 @@ export async function getContactLinks(): Promise<ContactLink[]> {
   }
 }
 
+export async function getAdminContactLinks(): Promise<ContactLink[]> {
+  try {
+    const res = await apiClient.from<ContactLink[]>("contact_links").select("*")
+    if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+      return res.data
+    }
+    return await getContactLinks()
+  } catch {
+    return await getContactLinks()
+  }
+}
+
 export async function getFloatingCards(): Promise<FloatingCard[]> {
   try {
     const data = await request<FloatingCard[]>("/public/floating-cards")
     return data?.length ? data : defaultFloatingCards
   } catch {
     return defaultFloatingCards
+  }
+}
+
+export async function getAdminFloatingCards(): Promise<FloatingCard[]> {
+  try {
+    const res = await apiClient.from<FloatingCard[]>("floating_cards").select("*")
+    if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+      return res.data
+    }
+    return await getFloatingCards()
+  } catch {
+    return await getFloatingCards()
   }
 }
 

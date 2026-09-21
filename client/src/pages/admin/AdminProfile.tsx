@@ -108,7 +108,7 @@ export default function AdminProfile() {
               <UserCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white tracking-tight">Profile & Site Settings</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Profile & Site Settings</h2>
               <p className="text-xs text-gray-400 mt-0.5">
                 Manage your identity, avatar image, and contact details
               </p>
@@ -118,7 +118,7 @@ export default function AdminProfile() {
           <Button
             type="submit"
             disabled={isSaving || !hasChanges}
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-6 py-3 rounded-2xl text-xs flex items-center justify-center gap-2 border-none shadow-lg shadow-green-500/20 shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-6 py-3 rounded-2xl text-xs flex items-center justify-center gap-2 border-none shadow-lg shadow-green-500/20 w-full sm:w-auto shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
           >
             {isSaving ? (
               <>

@@ -47,6 +47,12 @@ import {
   getFloatingCards,
 } from "@/lib/api"
 import type { ContactLink, FloatingCard } from "@/types/api"
+import { useQueryClient } from "@tanstack/react-query"
+import {
+  useAdminContactLinksQuery,
+  useAdminFloatingCardsQuery,
+  QUERY_KEYS,
+} from "@/hooks/usePortfolioQueries"
 
 interface AdminContext {
   triggerToast: (msg: string) => void
@@ -85,7 +91,6 @@ export default function AdminLinks() {
   const triggerToast = context?.triggerToast || (() => { })
   const loadHeaderData = context?.loadHeaderData || (() => { })
   const [activeTab, setActiveTab] = useState<"links" | "floating">("links")
-  const [loading, setLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [contactLinks, setContactLinks] = useState<ContactLink[]>([])
   const [floatingCards, setFloatingCards] = useState<FloatingCard[]>([])
@@ -93,6 +98,34 @@ export default function AdminLinks() {
   const [isEditingFloating, setIsEditingFloating] = useState<FloatingCard | null>(null)
   const [showSheet, setShowSheet] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+
+  const queryClient = useQueryClient()
+  const { data: dbContactLinks, isLoading: linksLoading } = useAdminContactLinksQuery()
+  const { data: dbFloatingCards, isLoading: cardsLoading } = useAdminFloatingCardsQuery()
+
+  useEffect(() => {
+    if (dbContactLinks) {
+      setContactLinks(dbContactLinks)
+    }
+  }, [dbContactLinks])
+
+  useEffect(() => {
+    if (dbFloatingCards) {
+      setFloatingCards(dbFloatingCards)
+    }
+  }, [dbFloatingCards])
+
+  // Invalidate queries when top-bar refresh button is clicked
+  useEffect(() => {
+    const handleRefresh = () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminContactLinks })
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.contactLinks })
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminFloatingCards })
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.floatingCards })
+    }
+    window.addEventListener("admin-refresh", handleRefresh)
+    return () => window.removeEventListener("admin-refresh", handleRefresh)
+  }, [queryClient])
 
   // Drag & drop reordering state
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
@@ -107,51 +140,42 @@ export default function AdminLinks() {
     errorMessage?: string
   }>({ open: false, isLoading: false, isError: false })
 
-  const loadData = async () => {
-    setLoading(true)
-    try {
-      if (isApiConfigured) {
-        const { data: linkData } = await apiClient
-          .from("contact_links")
-          .select("*")
-          .order("display_order", { ascending: true })
-        if (linkData && linkData.length > 0) {
-          setContactLinks(linkData as ContactLink[])
-        } else {
-          const fallback = await getContactLinks()
-          setContactLinks(fallback)
-        }
+  const saveLinksOrder = async (items: ContactLink[]) => {
+    const updatedItems = items.map((item, idx) => ({
+      ...item,
+      display_order: idx + 1,
+    }))
+    setContactLinks(updatedItems)
 
-        const { data: cardData } = await apiClient
-          .from("floating_cards")
-          .select("*")
-          .order("display_order", { ascending: true })
-        if (cardData && cardData.length > 0) {
-          setFloatingCards(cardData as FloatingCard[])
-        } else {
-          const fallback = await getFloatingCards()
-          setFloatingCards(fallback)
-        }
-      } else {
-        const fallbackLinks = await getContactLinks()
-        setContactLinks(fallbackLinks)
-        const fallbackCards = await getFloatingCards()
-        setFloatingCards(fallbackCards)
+    if (isApiConfigured) {
+      try {
+        const updates = updatedItems
+          .filter((item) => item.id && !item.id.startsWith("demo"))
+          .map((item) =>
+            apiClient
+              .from("contact_links")
+              .update({ display_order: item.display_order })
+              .eq("id", item.id)
+          )
+        await Promise.all(updates)
+        await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminContactLinks })
+        await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.contactLinks })
+        toast.success("Social links order updated!")
+        loadHeaderData()
+      } catch (err: any) {
+        console.error("Error updating links order in database:", err)
+        toast.error("Failed to update links order")
       }
-    } catch (err) {
-      console.error("Error loading links & floating cards:", err)
-      const fallbackLinks = await getContactLinks()
-      setContactLinks(fallbackLinks)
-      const fallbackCards = await getFloatingCards()
-      setFloatingCards(fallbackCards)
-    } finally {
-      setLoading(false)
     }
   }
 
-  useEffect(() => {
-    loadData()
-  }, [])
+  const moveLink = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= contactLinks.length) return
+    const updated = [...contactLinks]
+    const [moved] = updated.splice(fromIndex, 1)
+    updated.splice(toIndex, 0, moved)
+    saveLinksOrder(updated)
+  }
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index)
@@ -171,14 +195,43 @@ export default function AdminLinks() {
 
   const handleDragEnd = () => {
     setDraggedIndex(null)
+    saveLinksOrder(contactLinks)
   }
 
-  const moveLink = (fromIndex: number, toIndex: number) => {
-    if (toIndex < 0 || toIndex >= contactLinks.length) return
-    const updated = [...contactLinks]
+  const saveFloatingCardsOrder = async (items: FloatingCard[]) => {
+    const updatedItems = items.map((item, idx) => ({
+      ...item,
+      display_order: idx + 1,
+    }))
+    setFloatingCards(updatedItems)
+
+    if (isApiConfigured) {
+      try {
+        const updates = updatedItems
+          .filter((item) => item.id && !item.id.startsWith("demo"))
+          .map((item) =>
+            apiClient
+              .from("floating_cards")
+              .update({ display_order: item.display_order })
+              .eq("id", item.id)
+          )
+        await Promise.all(updates)
+        await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminFloatingCards })
+        await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.floatingCards })
+        toast.success("Floating cards order updated!")
+      } catch (err: any) {
+        console.error("Error updating floating cards order in database:", err)
+        toast.error("Failed to update floating cards order")
+      }
+    }
+  }
+
+  const moveFloatingCard = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= floatingCards.length) return
+    const updated = [...floatingCards]
     const [moved] = updated.splice(fromIndex, 1)
     updated.splice(toIndex, 0, moved)
-    setContactLinks(updated)
+    saveFloatingCardsOrder(updated)
   }
 
   const handleSaveLink = async (e: React.FormEvent) => {
@@ -221,27 +274,11 @@ export default function AdminLinks() {
             .select()
 
           if (insertErr) throw new Error(insertErr.message)
-
-          if (inserted && inserted[0]) {
-            setContactLinks((prev) => [...prev, inserted[0] as ContactLink])
-            setShowSheet(false)
-            setIsEditingLink(null)
-            toast.success("Social link created successfully!", { id: toastId })
-            loadHeaderData()
-            return
-          }
         }
       }
 
-      // Update state locally
-      if (isEditingLink.id) {
-        setContactLinks((prev) =>
-          prev.map((l) => (l.id === isEditingLink.id ? isEditingLink : l))
-        )
-      } else {
-        const newLink = { ...isEditingLink, id: Date.now().toString() }
-        setContactLinks((prev) => [...prev, newLink])
-      }
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminContactLinks })
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.contactLinks })
 
       setShowSheet(false)
       setIsEditingLink(null)
@@ -308,7 +345,9 @@ export default function AdminLinks() {
       l.url.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  if (loading) {
+  const isLoading = (linksLoading && !contactLinks.length) || (cardsLoading && !floatingCards.length)
+
+  if (isLoading) {
     return (
       <div className="h-64 flex flex-col items-center justify-center gap-3">
         <div className="animate-spin rounded-full h-9 w-9 border-t-2 border-b-2 border-green-500" />
@@ -330,19 +369,19 @@ export default function AdminLinks() {
             <Share2 className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Social Channels & Floating Cards</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Social Channels & Floating Cards</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               Manage social media links, email handles, and dynamic hero floating widgets
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {/* Tab Selection Switcher */}
-          <div className="flex items-center bg-[#141414] p-1 rounded-2xl border border-[#2a2a2a]">
+          <div className="flex items-center bg-[#141414] p-1 rounded-2xl border border-[#2a2a2a] flex-1 sm:flex-initial justify-center">
             <button
               onClick={() => setActiveTab("links")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex-1 sm:flex-initial text-center ${
                 activeTab === "links"
                   ? "bg-green-500 text-slate-950 shadow-md"
                   : "text-gray-400 hover:text-white"
@@ -352,7 +391,7 @@ export default function AdminLinks() {
             </button>
             <button
               onClick={() => setActiveTab("floating")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex-1 sm:flex-initial text-center ${
                 activeTab === "floating"
                   ? "bg-green-500 text-slate-950 shadow-md"
                   : "text-gray-400 hover:text-white"
@@ -381,9 +420,9 @@ export default function AdminLinks() {
               }
               setShowSheet(true)
             }}
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all shrink-0"
+            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-2xl flex items-center justify-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] flex-1 sm:flex-initial"
           >
-            <Plus className="w-4 h-4 stroke-[3]" /> Add {activeTab === "links" ? "Link" : "Floating Card"}
+            <Plus className="w-4 h-4 stroke-[3]" /> Add {activeTab === "links" ? "Link" : "Card"}
           </Button>
         </div>
       </div>
@@ -401,10 +440,14 @@ export default function AdminLinks() {
             {contactLinks.map((l, idx) => (
               <motion.div
                 key={l.id || idx}
+                draggable
+                onDragStart={(e) => handleDragStart(e as any, idx)}
+                onDragOver={(e) => handleDragOver(e as any, idx)}
+                onDragEnd={handleDragEnd}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="bg-[#1b1b1b] border border-[#262626] hover:border-green-500/40 p-5 rounded-3xl space-y-3 shadow-xl transition-all duration-300 group flex flex-col justify-between"
+                className={`bg-[#1b1b1b] border ${draggedIndex === idx ? "border-green-500/80 scale-[1.02]" : "border-[#262626] hover:border-green-500/40"} p-5 rounded-3xl space-y-3 shadow-xl transition-all duration-300 group flex flex-col justify-between`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-3 min-w-0">
@@ -440,6 +483,26 @@ export default function AdminLinks() {
                   </div>
 
                   <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center bg-[#141414] rounded-lg border border-[#282828] p-0.5 mr-1">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => moveLink(idx, idx - 1)}
+                        className="p-1 text-gray-400 hover:text-white disabled:opacity-20 disabled:hover:text-gray-400 cursor-pointer transition-colors"
+                        title="Move Up"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === contactLinks.length - 1}
+                        onClick={() => moveLink(idx, idx + 1)}
+                        className="p-1 text-gray-400 hover:text-white disabled:opacity-20 disabled:hover:text-gray-400 cursor-pointer transition-colors"
+                        title="Move Down"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                     <button
                       onClick={() => {
                         setIsEditingLink(l)
@@ -501,6 +564,26 @@ export default function AdminLinks() {
                   </div>
 
                   <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center bg-[#141414] rounded-lg border border-[#282828] p-0.5 mr-1">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => moveFloatingCard(idx, idx - 1)}
+                        className="p-1 text-gray-400 hover:text-white disabled:opacity-20 disabled:hover:text-gray-400 cursor-pointer transition-colors"
+                        title="Move Up"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === floatingCards.length - 1}
+                        onClick={() => moveFloatingCard(idx, idx + 1)}
+                        className="p-1 text-gray-400 hover:text-white disabled:opacity-20 disabled:hover:text-gray-400 cursor-pointer transition-colors"
+                        title="Move Down"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                     <button
                       onClick={() => {
                         setIsEditingFloating(c)
@@ -753,7 +836,8 @@ export default function AdminLinks() {
                         .select()
                       if (error) throw error
                       if (inserted && inserted[0]) {
-                        setFloatingCards((prev) => [...prev, inserted[0] as FloatingCard])
+                        await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminFloatingCards })
+                        await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.floatingCards })
                         setShowSheet(false)
                         setIsEditingFloating(null)
                         toast.success("Floating card created!", { id: toastId })
@@ -762,14 +846,8 @@ export default function AdminLinks() {
                     }
                   }
 
-                  if (isEditingFloating.id) {
-                    setFloatingCards((prev) =>
-                      prev.map((c) => (c.id === isEditingFloating.id ? isEditingFloating : c))
-                    )
-                  } else {
-                    const newCard = { ...isEditingFloating, id: Date.now().toString() }
-                    setFloatingCards((prev) => [...prev, newCard])
-                  }
+                  await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminFloatingCards })
+                  await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.floatingCards })
 
                   setShowSheet(false)
                   setIsEditingFloating(null)
@@ -876,8 +954,12 @@ export default function AdminLinks() {
             }
             if (deleteDialog.type === "floating") {
               setFloatingCards((prev) => prev.filter((c) => c.id !== deleteDialog.id))
+              await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminFloatingCards })
+              await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.floatingCards })
             } else {
               setContactLinks((prev) => prev.filter((l) => l.id !== deleteDialog.id))
+              await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminContactLinks })
+              await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.contactLinks })
             }
             toast.success("Item deleted successfully.", { id: toastId })
             loadHeaderData()
