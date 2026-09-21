@@ -6,10 +6,11 @@ import {
   getContactLinks,
   getFloatingCards,
   getProfileSettings,
+  getServices,
   updateProfileSettings,
   submitContactMessage,
 } from "@/lib/api"
-import type { Project, Skill, JourneyItem, ContactLink, FloatingCard, ProfileSettings } from "@/types/api"
+import type { Project, Skill, JourneyItem, ContactLink, FloatingCard, ProfileSettings, Service } from "@/types/api"
 
 // QUERY KEYS CONSTANTS FOR REUSE & INVALIDATION
 export const QUERY_KEYS = {
@@ -20,12 +21,22 @@ export const QUERY_KEYS = {
   floatingCards: ["floatingCards"] as const,
   profileSettings: ["profileSettings"] as const,
   messages: ["messages"] as const,
+  services: ["services"] as const,
 }
 
 const STALE_TIME = 1000 * 60 * 15 // 15 minutes cache
 const GC_TIME = 1000 * 60 * 60 // 1 hour memory retention
 
 // CACHED DATA FETCHING HOOKS
+export function useServicesQuery() {
+  return useQuery<Service[]>({
+    queryKey: QUERY_KEYS.services,
+    queryFn: getServices,
+    staleTime: STALE_TIME,
+    gcTime: GC_TIME,
+  })
+}
+
 export function useProjectsQuery() {
   return useQuery<Project[]>({
     queryKey: QUERY_KEYS.projects,
