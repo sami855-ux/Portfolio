@@ -5,6 +5,7 @@ import type {
   ContactLink,
   ProfileSettings,
   FloatingCard,
+  Service,
 } from "@/types/api"
 
 const API_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "")
@@ -307,7 +308,7 @@ export const defaultProfileSettings: ProfileSettings = {
   phone: "+251 900 000 000",
   location: "Debre Berhan / Addis Ababa, Ethiopia",
   resume_url: "",
-  avatar_url: "",
+  avatar_url: "https://res.cloudinary.com/dxxovha85/image/upload/v1789989345/portfolio/avatars/mjywjpe5wqqxialzbgi3.jpg",
 }
 
 export const defaultFloatingCards: FloatingCard[] = [
@@ -337,7 +338,58 @@ export const defaultFloatingCards: FloatingCard[] = [
   },
 ]
 
+export const defaultServices: Service[] = [
+  {
+    id: "1",
+    title: "Full-Stack Web App Development",
+    description: "Building responsive, fast, and accessible web applications using React, Next.js, and TypeScript.",
+    icon_name: "Globe",
+    stack: "React • Next.js • TypeScript • Tailwind CSS",
+    contact_url: "https://sam-nu-fawn.vercel.app/contact",
+    display_order: 1,
+    is_active: true,
+  },
+  {
+    id: "2",
+    title: "Cross-Platform Mobile Apps",
+    description: "Developing iOS and Android mobile apps from a single codebase using React Native and Expo.",
+    icon_name: "Smartphone",
+    stack: "React Native • Expo • TypeScript • Mobile UI",
+    contact_url: "https://sam-nu-fawn.vercel.app/contact",
+    display_order: 2,
+    is_active: true,
+  },
+  {
+    id: "3",
+    title: "Backend & API Architecture",
+    description: "Designing scalable REST and GraphQL APIs, database schemas, and microservices.",
+    icon_name: "Server",
+    stack: "Node.js • Express • Golang • PostgreSQL • MongoDB",
+    contact_url: "https://sam-nu-fawn.vercel.app/contact",
+    display_order: 3,
+    is_active: true,
+  },
+  {
+    id: "4",
+    title: "Ethiopian Payment Integration",
+    description: "Integrating localized digital payments and identity verification with Telebirr, Chapa, and Fayda.",
+    icon_name: "CreditCard",
+    stack: "Telebirr • Fayda SDK • Chapa • Payment APIs",
+    contact_url: "https://sam-nu-fawn.vercel.app/contact",
+    display_order: 4,
+    is_active: true,
+  },
+]
+
 // DATA FETCHERS WITH FALLBACKS
+export async function getServices(): Promise<Service[]> {
+  try {
+    const data = await request<Service[]>("/public/services")
+    return data?.length ? data : defaultServices
+  } catch {
+    return defaultServices
+  }
+}
 export async function getProjects(): Promise<Project[]> {
   try {
     const data = await request<Project[]>("/public/projects")
@@ -489,3 +541,43 @@ export async function uploadImage(
     return { success: false, error: err instanceof Error ? err.message : "Failed to upload image" }
   }
 }
+
+export async function uploadImages(
+  files: File[],
+  _bucketName: string = "portfolio-images",
+  pathPrefix: string = "projects"
+): Promise<{ success: boolean; urls: string[]; error?: string }> {
+  if (!files || files.length === 0) {
+    return { success: true, urls: [] }
+  }
+
+  try {
+    const formData = new FormData()
+    for (const file of files) {
+      formData.append("images", file)
+    }
+    formData.append("folder", `portfolio/${pathPrefix}`)
+
+    const data = await request<Array<{ url: string; publicId: string }>>("/uploads/images", {
+      method: "POST",
+      body: formData,
+    }, true)
+
+    const urls = (data || []).map((item) => item.url).filter(Boolean)
+    return { success: true, urls }
+  } catch (batchErr: unknown) {
+    console.warn("Batch /uploads/images request failed, falling back to parallel /uploads/image:", batchErr)
+    try {
+      const uploadPromises = files.map((file) => uploadImage(file, _bucketName, pathPrefix))
+      const results = await Promise.all(uploadPromises)
+      const successfulUrls = results.filter((r) => r.success && r.url).map((r) => r.url as string)
+      if (successfulUrls.length > 0) {
+        return { success: true, urls: successfulUrls }
+      }
+      return { success: false, urls: [], error: batchErr instanceof Error ? batchErr.message : "Failed to upload images" }
+    } catch (fallbackErr: unknown) {
+      return { success: false, urls: [], error: fallbackErr instanceof Error ? fallbackErr.message : "Failed to upload images" }
+    }
+  }
+}
+
