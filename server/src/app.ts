@@ -12,12 +12,29 @@ import { healthRouter } from "./routes/health.js"
 import { requestLogger } from "./middleware/requestLogger.js"
 import { logger } from "./utils/logger.js"
 
+import { isOriginAllowed } from "./utils/cors.js"
+
 export const app = express()
 app.set("trust proxy", 1)
 app.disable("x-powered-by")
 app.use(requestLogger)
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }))
-app.use(cors({ origin: (origin, done) => !origin || config.corsOrigins.includes(origin) ? done(null, true) : done(new Error("Origin not allowed")), credentials: false }))
+app.use(
+  cors({
+    origin: (origin, done) => {
+      if (isOriginAllowed(origin, config.corsOrigins, config.NODE_ENV)) {
+        done(null, true)
+      } else {
+        logger.warn("CORS origin not allowed", {
+          origin,
+          allowedOrigins: config.corsOrigins,
+        })
+        done(null, false)
+      }
+    },
+    credentials: false,
+  })
+)
 app.use(compression())
 app.use(express.json({ limit: "1mb" }))
 app.use("/api", rateLimit({
@@ -44,6 +61,7 @@ app.use((error: any, req: express.Request, res: express.Response, _next: express
     method: req.method,
     url: req.originalUrl,
     ip: req.ip,
+    origin: req.headers.origin,
   })
 
   if (error?.code === "LIMIT_FILE_SIZE") {

@@ -46,8 +46,18 @@ if (!parsed.success) {
   throw new Error(`Invalid server environment: ${parsed.error.issues.map((issue) => issue.path.join(".")).join(", ")}`)
 }
 
+const configuredOrigins = parsed.data.CORS_ORIGINS.split(",")
+  .map((origin) => origin.trim().replace(/\/+$/, ""))
+  .filter(Boolean)
+
+const clientUrlNormalized = parsed.data.CLIENT_URL.trim().replace(/\/+$/, "")
+if (clientUrlNormalized && !configuredOrigins.includes(clientUrlNormalized)) {
+  configuredOrigins.push(clientUrlNormalized)
+}
+
 export const config = {
   ...parsed.data,
-  corsOrigins: parsed.data.CORS_ORIGINS.split(",").map((origin) => origin.trim()).filter(Boolean),
+  corsOrigins: configuredOrigins,
   cloudinaryConfigured: Boolean(parsed.data.CLOUDINARY_CLOUD_NAME && parsed.data.CLOUDINARY_API_KEY && parsed.data.CLOUDINARY_API_SECRET),
 }
+
