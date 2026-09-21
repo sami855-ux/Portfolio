@@ -32,6 +32,7 @@ import {
   apiClient,
   isApiConfigured,
   uploadImage,
+  uploadImages,
 } from "@/lib/api"
 import type { Project } from "@/types/api"
 import { useQueryClient } from "@tanstack/react-query"
@@ -199,7 +200,7 @@ export default function AdminProjectForm() {
     loadProject()
   }, [id, isEditing, dbProjects, navigate])
 
-  // Cover Image Upload Handler
+  // Cover Image Upload Handler (Uploads single cover banner)
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -218,80 +219,43 @@ export default function AdminProjectForm() {
             images: updatedImages,
           }
         })
-        toast.success("Cover image uploaded!", { id: toastId })
+        toast.success("Cover image uploaded and set!", { id: toastId })
       } else {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          if (typeof reader.result === "string") {
-            const dataUrl = reader.result as string
-            setProject((prev) => {
-              const currentImages = prev.images || (prev.image ? [prev.image] : [])
-              const updatedImages = Array.from(new Set([dataUrl, ...currentImages])).filter(Boolean)
-              return {
-                ...prev,
-                image: dataUrl,
-                images: updatedImages,
-              }
-            })
-            toast.info("Using local preview image", { id: toastId })
-          }
-        }
-        reader.readAsDataURL(file)
+        toast.error(res.error || "Failed to upload cover image.", { id: toastId })
       }
     } catch (err: any) {
       toast.error("Failed to upload image: " + err.message, { id: toastId })
+    } finally {
+      e.target.value = ""
     }
   }
 
-  // Gallery Images Upload Handler (Supports Multiple Files)
+  // Gallery Images Upload Handler (Supports Multiple Files at Once)
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
 
     const toastId = toast.loading(`Uploading ${files.length} image(s)...`)
     try {
-      const uploadPromises = files.map((f) =>
-        uploadImage(f, "portfolio-images", "projects")
-      )
-      const results = await Promise.all(uploadPromises)
-      const newUrls = results
-        .filter((r) => r.success && r.url)
-        .map((r) => r.url as string)
-
-      if (newUrls.length > 0) {
+      const res = await uploadImages(files, "portfolio-images", "projects")
+      if (res.success && res.urls && res.urls.length > 0) {
         setProject((prev) => {
           const currentImages = prev.images || (prev.image ? [prev.image] : [])
-          const combined = Array.from(new Set([...currentImages, ...newUrls])).filter(Boolean)
+          const combined = Array.from(new Set([...currentImages, ...res.urls])).filter(Boolean)
           return {
             ...prev,
             image: prev.image || combined[0] || "",
             images: combined,
           }
         })
-        toast.success(`Uploaded and added ${newUrls.length} image(s)!`, { id: toastId })
+        toast.success(`Uploaded and added ${res.urls.length} image(s) to gallery!`, { id: toastId })
       } else {
-        const readLocalPromises = files.map(
-          (file) =>
-            new Promise<string>((resolve) => {
-              const reader = new FileReader()
-              reader.onloadend = () => resolve(reader.result as string)
-              reader.readAsDataURL(file)
-            })
-        )
-        const localUrls = await Promise.all(readLocalPromises)
-        setProject((prev) => {
-          const currentImages = prev.images || (prev.image ? [prev.image] : [])
-          const combined = Array.from(new Set([...currentImages, ...localUrls])).filter(Boolean)
-          return {
-            ...prev,
-            image: prev.image || combined[0] || "",
-            images: combined,
-          }
-        })
-        toast.info(`Attached ${localUrls.length} local image(s).`, { id: toastId })
+        toast.error(res.error || "Failed to upload images. Please check your network and try again.", { id: toastId })
       }
     } catch (err: any) {
       toast.error("Gallery upload failed: " + err.message, { id: toastId })
+    } finally {
+      e.target.value = ""
     }
   }
 
@@ -364,7 +328,7 @@ export default function AdminProjectForm() {
 
   // Persist through the authenticated portfolio API.
   const saveProjectToApi = async (projPayload: Project, isUpdate: boolean) => {
-    const { id: projId, ...dataToSave } = projPayload
+    const { id: projId, created_at, ...dataToSave } = projPayload
 
     if (projId) {
       try {
@@ -373,61 +337,27 @@ export default function AdminProjectForm() {
     }
 
     if (isUpdate && projId && !projId.startsWith("demo")) {
-      // 1. Try sending images as string array
-      const { error } = await apiClient.from("projects").update(projPayload).eq("id", projId)
+      const { error } = await apiClient.from("projects").update(dataToSave).eq("id", projId)
       if (!error) return { success: true, id: projId }
 
-      console.warn("API array update notice:", error.message)
+      console.warn("API update notice:", error.message)
 
-      // 2. Try sending images as stringified JSON
-      const payloadJSON = {
-        ...projPayload,
-        images: JSON.stringify(projPayload.images || []),
-      }
-      const { error: err2 } = await apiClient.from("projects").update(payloadJSON).eq("id", projId)
-      if (!err2) return { success: true, id: projId }
-
-      // 3. Try sending images as comma separated text
-      const payloadComma = {
-        ...projPayload,
-        images: (projPayload.images || []).join(","),
-      }
-      const { error: err3 } = await apiClient.from("projects").update(payloadComma).eq("id", projId)
-      if (!err3) return { success: true, id: projId }
-
-      // 4. Last fallback: update without images column
-      const { images, ...payloadNoImages } = projPayload
-      const { error: err4 } = await apiClient.from("projects").update(payloadNoImages).eq("id", projId)
-      if (err4) throw new Error(err4.message)
+      // Fallback update without images column if backend schema lacked it
+      const { images, ...payloadNoImages } = dataToSave
+      const { error: err2 } = await apiClient.from("projects").update(payloadNoImages).eq("id", projId)
+      if (err2) throw new Error(err2.message)
       return { success: true, id: projId }
     } else {
-      // 1. Try insert as string array
       const { data, error } = await apiClient.from("projects").insert([dataToSave]).select().single()
       if (!error && data) return { success: true, id: data.id }
 
-      console.warn("API array insert notice:", error?.message)
+      console.warn("API insert notice:", error?.message)
 
-      // 2. Try insert with stringified JSON
-      const payloadJSON = {
-        ...dataToSave,
-        images: JSON.stringify(dataToSave.images || []),
-      }
-      const { data: d2, error: err2 } = await apiClient.from("projects").insert([payloadJSON]).select().single()
-      if (!err2 && d2) return { success: true, id: d2.id }
-
-      // 3. Try insert as comma separated text
-      const payloadComma = {
-        ...dataToSave,
-        images: (dataToSave.images || []).join(","),
-      }
-      const { data: d3, error: err3 } = await apiClient.from("projects").insert([payloadComma]).select().single()
-      if (!err3 && d3) return { success: true, id: d3.id }
-
-      // 4. Last fallback
+      // Fallback insert without images column
       const { images, ...payloadNoImages } = dataToSave
-      const { data: d4, error: err4 } = await apiClient.from("projects").insert([payloadNoImages]).select().single()
-      if (err4) throw new Error(err4.message)
-      return { success: true, id: d4?.id }
+      const { data: d2, error: err2 } = await apiClient.from("projects").insert([payloadNoImages]).select().single()
+      if (err2) throw new Error(err2.message)
+      return { success: true, id: d2?.id }
     }
   }
 
@@ -677,9 +607,14 @@ export default function AdminProjectForm() {
 
           {/* Add Image URL Input & File Upload Button */}
           <div className="space-y-4 bg-zinc-900/30 p-4 rounded-2xl border border-zinc-800/80">
-            <label className="block font-semibold text-zinc-200">
-              Add New Screenshot / Image to Gallery
-            </label>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <label className="block font-semibold text-zinc-200">
+                Add Screenshots & Images to Gallery
+              </label>
+              <span className="text-[11px] text-zinc-400">
+                Cloudinary Optimized
+              </span>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Input
@@ -694,17 +629,17 @@ export default function AdminProjectForm() {
                 placeholder="Paste Image URL (https://...)..."
                 className="bg-zinc-900/70 border-zinc-800 focus:border-emerald-500 text-white text-xs rounded-xl h-10 px-3.5 flex-1"
               />
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button
                   type="button"
                   onClick={addImageUrl}
-                  className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold rounded-xl h-10 px-4 shrink-0"
+                  className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold rounded-xl h-10 px-4 shrink-0 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5 mr-1" /> Add URL
                 </Button>
                 <label className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-4 h-10 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors shrink-0">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>Upload Files</span>
+                  <span>Upload Multiple Images</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -713,10 +648,20 @@ export default function AdminProjectForm() {
                     className="hidden"
                   />
                 </label>
+                <label className="bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/80 text-xs font-semibold px-3.5 h-10 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0" title="Upload and set primary cover directly">
+                  <ImageIcon className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Cover Banner</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverUpload}
+                    className="hidden"
+                  />
+                </label>
               </div>
             </div>
             <p className="text-[11px] text-zinc-500">
-              Tip: You can select multiple images from your device or paste direct web URLs above.
+              Tip: You can select multiple images from your computer at once. The first or designated photo serves as the primary showcase banner.
             </p>
           </div>
 
