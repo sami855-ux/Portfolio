@@ -120,7 +120,7 @@ export default function AdminProjects() {
 
         <Button
           onClick={() => navigate("/admin/projects/new")}
-          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
+          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-2xl flex items-center justify-center gap-2 text-xs cursor-pointer shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02] w-full sm:w-auto shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add New Project
         </Button>
@@ -242,7 +242,7 @@ export default function AdminProjects() {
                 className="bg-gradient-to-b from-[#1c1c21] to-[#141417] border border-[#27272a] rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl transition-all duration-300 group"
               >
                 {/* Project Image Banner */}
-                <div className="relative h-52 bg-[#0d0d0f] overflow-hidden flex items-center justify-center border-b border-[#27272a]">
+                <div className="relative h-44 sm:h-52 bg-[#0d0d0f] overflow-hidden flex items-center justify-center border-b border-[#27272a]">
                   {p.image ? (
                     <img
                       src={p.image}
@@ -270,7 +270,7 @@ export default function AdminProjects() {
                   </div>
                 </div>
 
-                <div className="p-6 pt-3 space-y-4 flex-1 flex flex-col justify-between">
+                <div className="p-4 sm:p-6 pt-3 space-y-4 flex-1 flex flex-col justify-between">
                   <div className="space-y-3">
                     <h3 className="font-bold text-lg text-white group-hover:text-emerald-400 transition-colors flex items-center justify-between">
                       <span>{p.title}</span>
