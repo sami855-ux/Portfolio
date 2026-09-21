@@ -218,6 +218,8 @@ export default function AdminLayout() {
                       <img
                         src={profile.avatar_url}
                         alt={profile.full_name}
+                        loading="lazy"
+                        decoding="async"
                         className="w-10 h-10 rounded-2xl object-cover border border-[#333] shadow-lg shadow-emerald-500/10 shrink-0"
                       />
                     ) : (
@@ -334,6 +336,8 @@ export default function AdminLayout() {
               <img
                 src={profile.avatar_url}
                 alt={profile.full_name}
+                loading="lazy"
+                decoding="async"
                 className="w-10 h-10 rounded-2xl object-cover border border-[#333] shadow-lg shadow-green-500/10 shrink-0"
               />
             ) : (
@@ -479,6 +483,8 @@ export default function AdminLayout() {
                 <img
                   src={profile.avatar_url}
                   alt={profile.full_name}
+                  loading="lazy"
+                  decoding="async"
                   className="w-6 h-6 rounded-lg object-cover border border-[#333]"
                 />
               ) : (

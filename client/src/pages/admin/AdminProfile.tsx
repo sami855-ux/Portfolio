@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react"
 import { useOutletContext } from "react-router-dom"
 import { motion } from "framer-motion"
-import { UserCheck, Upload, FileText, ExternalLink } from "lucide-react"
+import { UserCheck, Upload, FileText, ExternalLink, Trash2 } from "lucide-react"
 
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { AlertDialog } from "@/components/ui/alert-dialog"
-import { defaultProfileSettings, uploadImage } from "@/lib/api"
+import { defaultProfileSettings, uploadImage, uploadCV } from "@/lib/api"
 import {
   useProfileSettingsQuery,
   useUpdateProfileSettingsMutation,
@@ -55,6 +55,23 @@ export default function AdminProfile() {
     } else {
       toast.error(res.error || "Image upload failed", { id: toastId })
     }
+    e.target.value = ""
+  }
+
+  const handleCVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const toastId = toast.loading(`Uploading CV (${file.name})...`)
+    const res = await uploadCV(file, "portfolio/documents")
+
+    if (res.success && res.url) {
+      setProfile((prev) => ({ ...prev, resume_url: res.url as string }))
+      toast.success("CV document uploaded! Click Save Profile Settings to apply.", { id: toastId })
+    } else {
+      toast.error(res.error || "Failed to upload CV", { id: toastId })
+    }
+    e.target.value = ""
   }
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -148,6 +165,8 @@ export default function AdminProfile() {
                   <img
                     src={profile.avatar_url}
                     alt="Avatar Preview"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -208,15 +227,28 @@ export default function AdminProfile() {
                         <p className="text-[10px] text-gray-400 font-mono truncate">{profile.resume_url}</p>
                       </div>
                     </div>
-                    <a
-                      href={profile.resume_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-1.5 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-lg shrink-0 transition-colors"
-                      title="Preview CV Document"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <a
+                        href={profile.resume_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-lg shrink-0 transition-colors"
+                        title="Preview CV Document"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfile((prev) => ({ ...prev, resume_url: "" }))
+                          toast.info("CV removed. Click Save Profile Settings to apply.")
+                        }}
+                        className="p-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg shrink-0 transition-colors cursor-pointer"
+                        title="Remove CV"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-xs text-gray-500 py-2 font-medium">No CV file linked yet</div>
@@ -225,20 +257,8 @@ export default function AdminProfile() {
                 <input
                   type="file"
                   id="cv-file-input"
-                  accept=".pdf,.doc,.docx"
                   className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (!file) return
-                    const reader = new FileReader()
-                    reader.onloadend = () => {
-                      if (typeof reader.result === "string") {
-                        setProfile((prev) => ({ ...prev, resume_url: reader.result as string }))
-                        triggerToast("CV document loaded from device! Click Save Profile Settings to apply.")
-                      }
-                    }
-                    reader.readAsDataURL(file)
-                  }}
+                  onChange={handleCVUpload}
                 />
 
                 <Button
@@ -246,11 +266,11 @@ export default function AdminProfile() {
                   onClick={() => document.getElementById("cv-file-input")?.click()}
                   className="w-full bg-[#262626] hover:bg-[#323232] text-gray-200 font-bold text-xs rounded-2xl h-10 border border-[#333] flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
-                  <Upload className="w-4 h-4 text-green-400" /> Upload CV (PDF/DOC)
+                  <Upload className="w-4 h-4 text-green-400" /> Upload CV File
                 </Button>
 
                 <Input
-                  placeholder="Or paste direct Google Drive / PDF URL..."
+                  placeholder="Or paste direct Google Drive / PDF / Doc URL..."
                   value={profile.resume_url || ""}
                   onChange={(e) => setProfile({ ...profile, resume_url: e.target.value })}
                   className="h-10 bg-[#141414] border border-[#2a2a2a] focus:border-green-500 text-white text-xs rounded-xl px-3 font-mono"

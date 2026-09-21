@@ -605,3 +605,31 @@ export async function uploadImages(
   }
 }
 
+export async function uploadCV(
+  file: File,
+  folder: string = "portfolio/documents"
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  try {
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("folder", folder)
+    const data = await request<{ url: string }>("/uploads/document", { method: "POST", body: formData }, true)
+    return { success: true, url: data.url }
+  } catch (err: unknown) {
+    console.warn("Server document upload endpoint failed, using direct data reader fallback:", err)
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          resolve({ success: true, url: reader.result })
+        } else {
+          resolve({ success: false, error: "Failed to process document file" })
+        }
+      }
+      reader.onerror = () => resolve({ success: false, error: "Failed to read document file" })
+      reader.readAsDataURL(file)
+    })
+  }
+}
+
+

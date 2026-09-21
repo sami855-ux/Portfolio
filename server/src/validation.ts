@@ -34,7 +34,7 @@ export const schemas = {
   profile_settings: z.object({
     full_name: z.string().trim().min(1).max(160), hero_title: z.string().trim().min(1).max(200),
     hero_description: z.string().trim().max(5000), about_bio: z.string().trim().max(10000),
-    avatar_url: z.string().trim().max(1000).optional(), resume_url: z.string().trim().max(1000).optional(),
+    avatar_url: z.string().trim().optional(), resume_url: z.string().trim().optional(),
     email: z.string().email().max(320), phone: z.string().trim().max(50).optional(), location: z.string().trim().max(200).optional(),
   }),
   services: z.object({

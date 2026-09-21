@@ -120,16 +120,20 @@ export default function Home() {
             {bioText}
           </motion.p>
 
-          {/* Profile Avatar / Image (No fallback placeholder, enhanced size) */}
+          {/* Profile Avatar / Image (No fallback placeholder, enhanced size, lazy loaded) */}
           {avatarUrl ? (
             <div className="relative mb-6 flex items-center justify-center group">
-              <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-full p-1  ">
+              <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-full p-1 bg-white/[0.02]">
                 <img
                   src={avatarUrl}
                   alt={fullName}
-                  loading="eager"
+                  loading="lazy"
                   decoding="async"
-                  className="w-full h-full rounded-full object-cover"
+                  onLoad={(e) => {
+                    (e.currentTarget as HTMLImageElement).classList.remove("opacity-0")
+                    ;(e.currentTarget as HTMLImageElement).classList.add("opacity-100")
+                  }}
+                  className="w-full h-full rounded-full object-cover opacity-0 transition-opacity duration-500 ease-out"
                 />
               </div>
             </div>

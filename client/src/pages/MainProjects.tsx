@@ -250,6 +250,8 @@ export function MainProjects() {
                               key={currentActiveIdx}
                               src={activePhoto}
                               alt={project.title}
+                              loading="lazy"
+                              decoding="async"
                               initial={{ opacity: 0.7 }}
                               animate={{ opacity: 1 }}
                               transition={{ duration: 0.3 }}
@@ -327,7 +329,13 @@ export function MainProjects() {
                                       : "border-white/10 opacity-50 hover:opacity-100 hover:border-white/30"
                                   }`}
                                 >
-                                  <img src={thumbUrl} alt={`Thumbnail ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                                  <img
+                                    src={thumbUrl}
+                                    alt={`Thumbnail ${imgIdx + 1}`}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="w-full h-full object-cover"
+                                  />
                                 </button>
                               )
                             })}

@@ -120,3 +120,67 @@ uploadRouter.post(
     }
   }
 )
+
+const uploadDocument = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 50 * 1024 * 1024, files: 1 },
+})
+
+async function uploadDocumentToCloudinary(buffer: Buffer, _originalname: string, folder: string) {
+  return new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "auto",
+        use_filename: true,
+        unique_filename: true,
+      },
+      (error, response) => {
+        if (error || !response) reject(error ?? new Error("Cloudinary document upload failed"))
+        else resolve(response as any)
+      },
+    )
+    stream.end(buffer)
+  })
+}
+
+// Single document upload (CV / Resume, PDF, DOC, DOCX, etc.)
+uploadRouter.post(
+  "/document",
+  requireAdmin,
+  uploadDocument.single("file"),
+  async (req, res) => {
+    const file = req.file
+    if (!file) {
+      return res.status(400).json({ error: { message: "A document file is required" } })
+    }
+
+    const folder = typeof req.body.folder === "string" && /^[a-z0-9/_-]+$/i.test(req.body.folder)
+      ? req.body.folder
+      : "portfolio/documents"
+
+    try {
+      const result = await uploadDocumentToCloudinary(file.buffer, file.originalname, folder)
+      return res.status(201).json({
+        data: {
+          url: result.secure_url,
+          publicId: result.public_id,
+          name: file.originalname,
+          size: file.size,
+        },
+      })
+    } catch {
+      // If Cloudinary is not configured or in offline mode, fall back to base64 data URI
+      const mime = file.mimetype || "application/pdf"
+      const base64Uri = `data:${mime};base64,${file.buffer.toString("base64")}`
+      return res.status(201).json({
+        data: {
+          url: base64Uri,
+          name: file.originalname,
+          size: file.size,
+        },
+      })
+    }
+  }
+)
+

@@ -148,6 +148,8 @@ export const SleekLightbox = ({
               <img
                 src={currentImg}
                 alt={`${title} image ${activeIdx + 1}`}
+                loading="lazy"
+                decoding="async"
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl select-none"
                 draggable={false}
               />
@@ -201,7 +203,13 @@ export const SleekLightbox = ({
                         : "border-white/10 opacity-40 hover:opacity-100"
                     }`}
                   >
-                    <img src={url} alt={`Thumb ${idx + 1}`} className="w-full h-full object-cover" />
+                    <img
+                      src={url}
+                      alt={`Thumb ${idx + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 )
               })}
