@@ -203,8 +203,8 @@ export default function AdminServices() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-zinc-800/80">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-            <Layers className="w-6 h-6 text-emerald-400" />
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
+            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
             <span>Core Capabilities & Services</span>
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
@@ -214,20 +214,20 @@ export default function AdminServices() {
 
         <Button
           onClick={handleOpenNew}
-          className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl h-10 px-5 cursor-pointer shadow-lg shadow-emerald-500/20 flex items-center gap-2 shrink-0"
+          className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl h-10 px-5 cursor-pointer shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 w-full sm:w-auto shrink-0"
         >
           <Plus className="w-4 h-4" /> Add New Service
         </Button>
       </div>
 
       {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
         {services.map((item, idx) => (
           <motion.div
             key={item.id || idx}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#18181c] border border-zinc-800/80 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-zinc-700 transition-colors shadow-xl"
+            className="bg-[#18181c] border border-zinc-800/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between space-y-4 hover:border-zinc-700 transition-colors shadow-xl"
           >
             <div className="space-y-3">
               <div className="flex items-start justify-between gap-3">
