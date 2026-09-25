@@ -7,6 +7,7 @@ export interface Project {
   live: string
   image?: string
   images?: string[]
+  image_position?: string
   featured?: boolean
   category?: string
   features?: string[]

@@ -14,6 +14,38 @@ import { useProjectsQuery } from "@/hooks/usePortfolioQueries"
 import { parseProjectImages } from "./Projects"
 import { SleekLightbox } from "@/components/SleekLightbox"
 
+export const parseList = (val: any): string[] => {
+  if (!val) return []
+
+  const cleanItem = (s: string) => {
+    return s
+      .replace(/^(\s*(\d+[\.\)\:\-]\s*|\(\d+\)\s*|\[\d+\]\s*|[\-\*\+\•\⁃\‣\▪\▫\◦\⦿\→\➢\✔\✓]\s*|\[[ xX]?\]\s*))+/, "")
+      .trim()
+  }
+
+  if (Array.isArray(val)) {
+    return val
+      .map((item) => cleanItem(typeof item === "string" ? item : String(item || "")))
+      .filter(Boolean)
+  }
+
+  if (typeof val === "string" && val.trim().length > 0) {
+    try {
+      const parsed = JSON.parse(val)
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => cleanItem(String(item || ""))).filter(Boolean)
+      }
+    } catch { }
+
+    return val
+      .split(/\r?\n/)
+      .map(cleanItem)
+      .filter(Boolean)
+  }
+
+  return []
+}
+
 export function MainProjects() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
@@ -39,19 +71,24 @@ export function MainProjects() {
   const allProjects = useMemo(() => {
     return rawProjects.map((p, idx) => {
       const allImages = parseProjectImages(p as any)
+      const features = parseList(p.features)
+      const challenges = parseList(p.challenges)
+      const solutions = parseList(p.solutions)
+
       return {
         id: p.id || idx + 100,
         title: p.title,
         description: p.description,
         technologies: p.tags || [],
-        features: Array.isArray(p.features) && p.features.length > 0 ? p.features : ["Full Stack Architecture", "High Performance UI"],
-        challenges: Array.isArray(p.challenges) ? p.challenges.join(". ") : p.challenges || "Optimizing data sync and UI responsiveness",
-        solutions: Array.isArray(p.solutions) ? p.solutions.join(". ") : p.solutions || "Implemented caching and modular architecture",
-        results: p.results || "Enhanced performance and user engagement",
+        features: features.length > 0 ? features : ["Full Stack Architecture", "High Performance UI"],
+        challenges: challenges.length > 0 ? challenges : ["Optimizing data sync and UI responsiveness"],
+        solutions: solutions.length > 0 ? solutions : ["Implemented caching and modular architecture"],
+        results: p.results || "",
         githubUrl: p.github || "",
         liveUrl: p.live || "",
         imageUrl: allImages[0],
         images: allImages,
+        image_position: p.image_position || (p.id ? localStorage.getItem(`portfolio_project_cover_pos_${p.id}`) : null) || "50% 50%",
         architecture: p.architecture || "",
       }
     })
@@ -291,6 +328,12 @@ export function MainProjects() {
                             initial={{ opacity: 0.8 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3 }}
+                            style={{
+                              objectPosition:
+                                currentActiveIdx === 0
+                                  ? (project.image_position || "50% 50%")
+                                  : "50% 50%",
+                            }}
                             className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/img:scale-105"
                           />
                         </AnimatePresence>
@@ -416,31 +459,76 @@ export function MainProjects() {
                         } space-y-5 sm:space-y-6 min-w-0`}
                       >
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                          <div className="space-y-1.5 min-w-0">
-                            <h4 className="font-mono text-xs font-semibold text-amber-400 uppercase tracking-wider">
-                              Engineering Challenges
-                            </h4>
-                            <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed break-words">
-                              {Array.isArray(project.challenges)
-                                ? project.challenges.join(". ")
-                                : typeof project.challenges === "object" && project.challenges !== null
-                                  ? JSON.stringify(project.challenges)
-                                  : project.challenges || "N/A"}
-                            </p>
-                          </div>
-                          <div className="space-y-1.5 min-w-0">
-                            <h4 className="font-mono text-xs font-semibold text-emerald-400 uppercase tracking-wider">
-                              Architectural Solutions
-                            </h4>
-                            <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed break-words">
-                              {Array.isArray(project.solutions)
-                                ? project.solutions.join(". ")
-                                : typeof project.solutions === "object" && project.solutions !== null
-                                  ? JSON.stringify(project.solutions)
-                                  : project.solutions || "N/A"}
-                            </p>
-                          </div>
+                          {/* Engineering Challenges */}
+                          {project.challenges && project.challenges.length > 0 && (
+                            <div className="space-y-2.5 min-w-0">
+                              <h4 className="font-mono text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-amber-400 rounded-full shrink-0" />
+                                Engineering Challenges
+                              </h4>
+                              <ul className="space-y-2">
+                                {project.challenges.map((challenge, idx) => (
+                                  <li
+                                    key={idx}
+                                    className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-300 font-normal leading-relaxed break-words"
+                                  >
+                                    <span className="text-amber-400 font-bold leading-none mt-1 shrink-0">•</span>
+                                    <span className="break-words">{challenge}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Architectural Solutions */}
+                          {project.solutions && project.solutions.length > 0 && (
+                            <div className="space-y-2.5 min-w-0">
+                              <h4 className="font-mono text-xs font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full shrink-0" />
+                                Architectural Solutions
+                              </h4>
+                              <ul className="space-y-2">
+                                {project.solutions.map((solution, idx) => (
+                                  <li
+                                    key={idx}
+                                    className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-300 font-normal leading-relaxed break-words"
+                                  >
+                                    <span className="text-cyan-400 font-bold leading-none mt-1 shrink-0">•</span>
+                                    <span className="break-words">{solution}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
+
+                        {/* Optional System Architecture or Results if present */}
+                        {(project.architecture || project.results) && (
+                          <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-white/[0.06]">
+                            {project.architecture && (
+                              <div className="space-y-1">
+                                <h5 className="font-mono text-[11px] font-semibold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
+                                  <span className="w-1.5 h-1.5 bg-purple-400 rounded-full shrink-0" />
+                                  Architecture
+                                </h5>
+                                <p className="text-zinc-400 text-xs leading-relaxed">
+                                  {project.architecture}
+                                </p>
+                              </div>
+                            )}
+                            {project.results && (
+                              <div className="space-y-1">
+                                <h5 className="font-mono text-[11px] font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full shrink-0" />
+                                  Key Results
+                                </h5>
+                                <p className="text-zinc-400 text-xs leading-relaxed">
+                                  {project.results}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         {/* Tech Stack Pills */}
                         {project.technologies.length > 0 && (

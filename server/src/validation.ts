@@ -7,6 +7,7 @@ export const schemas = {
     category: z.string().trim().max(80).optional(), tags: z.array(z.string().trim().max(80)).max(50).optional(),
     github: z.string().trim().max(500).optional(), live: z.string().trim().max(500).optional(),
     image: z.string().trim().max(1000).optional(), images: z.array(z.string().trim().max(1000)).max(30).optional(),
+    image_position: z.string().trim().max(100).optional(),
     featured: z.boolean().optional(), features: z.array(z.string().trim().max(1000)).max(50).optional(),
     challenges: z.array(z.string().trim().max(1000)).max(50).optional(), solutions: z.array(z.string().trim().max(1000)).max(50).optional(),
     architecture: optionalText, results: optionalText,

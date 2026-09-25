@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useOutletContext, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Plus, Edit, Trash2, ExternalLink, Github, Image as ImageIcon, Search, Folder, FolderGit2, Layers, Star, Zap, Network, TrendingUp } from "lucide-react"
+import { Plus, Trash2, ExternalLink, Github, Image as ImageIcon, Search, Folder, FolderGit2, Layers, Star, Zap, Network, TrendingUp, AlertTriangle, Lightbulb } from "lucide-react"
 
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -239,7 +239,16 @@ export default function AdminProjects() {
             .map((p) => (
               <div
                 key={p.id}
-                className="bg-gradient-to-b from-[#1c1c21] to-[#141417] border border-[#27272a] rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl transition-all duration-300 group"
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(`/admin/projects/edit/${p.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    navigate(`/admin/projects/edit/${p.id}`)
+                  }
+                }}
+                className="bg-gradient-to-b from-[#1c1c21] to-[#141417] border border-[#27272a] rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
               >
                 {/* Project Image Banner */}
                 <div className="relative h-44 sm:h-52 bg-[#0d0d0f] overflow-hidden flex items-center justify-center border-b border-[#27272a]">
@@ -249,7 +258,11 @@ export default function AdminProjects() {
                       alt={p.title}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      style={{
+                        objectPosition:
+                          p.image_position || (p.id ? localStorage.getItem(`portfolio_project_cover_pos_${p.id}`) : null) || "50% 50%",
+                      }}
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-zinc-500">
@@ -274,7 +287,7 @@ export default function AdminProjects() {
 
                 <div className="p-4 sm:p-6 pt-3 space-y-4 flex-1 flex flex-col justify-between">
                   <div className="space-y-3">
-                    <h3 className="font-bold text-lg text-white group-hover:text-emerald-400 transition-colors flex items-center justify-between">
+                    <h3 className="font-bold text-lg text-white flex items-center justify-between">
                       <span>{p.title}</span>
                     </h3>
                     <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
@@ -293,18 +306,30 @@ export default function AdminProjects() {
                     </div>
 
                     {/* Case Study Badges */}
-                    {((p.features && p.features.length > 0) || p.results || p.architecture) && (
+                    {((p.features && p.features.length > 0) || (p.challenges && p.challenges.length > 0) || (p.solutions && p.solutions.length > 0) || p.results || p.architecture) && (
                       <div className="pt-2 flex flex-wrap items-center gap-2 text-[10px]">
                         {p.features && p.features.length > 0 && (
                           <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5">
                             <Zap className="w-3 h-3 text-emerald-400" />
-                            {Array.isArray(p.features) ? p.features.length : 1} Features List
+                            {Array.isArray(p.features) ? p.features.length : 1} Features
+                          </span>
+                        )}
+                        {p.challenges && p.challenges.length > 0 && (
+                          <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                            <AlertTriangle className="w-3 h-3 text-amber-400" />
+                            {Array.isArray(p.challenges) ? p.challenges.length : 1} Challenges
+                          </span>
+                        )}
+                        {p.solutions && p.solutions.length > 0 && (
+                          <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                            <Lightbulb className="w-3 h-3 text-cyan-400" />
+                            {Array.isArray(p.solutions) ? p.solutions.length : 1} Solutions
                           </span>
                         )}
                         {p.architecture && (
                           <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5">
                             <Network className="w-3 h-3 text-purple-400" />
-                            Architecture Defined
+                            Architecture
                           </span>
                         )}
                         {p.results && (
@@ -324,6 +349,7 @@ export default function AdminProjects() {
                           href={p.github}
                           target="_blank"
                           rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
                           className="p-2.5 rounded-xl bg-[#0f0f12] border border-[#27272a] hover:text-white hover:bg-[#202023] hover:border-zinc-500 transition-colors"
                           title={`GitHub: ${p.github}`}
                         >
@@ -335,6 +361,7 @@ export default function AdminProjects() {
                           href={p.live}
                           target="_blank"
                           rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
                           className="p-2.5 rounded-xl bg-[#0f0f12] border border-[#27272a] hover:text-white hover:bg-[#202023] hover:border-zinc-500 transition-colors"
                           title={`Live Demo: ${p.live}`}
                         >
@@ -343,19 +370,18 @@ export default function AdminProjects() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[11px] font-medium text-zinc-500 flex items-center gap-1">
+                        Edit details →
+                      </span>
                       <Button
                         size="sm"
-                        variant="outline"
-                        onClick={() => navigate(`/admin/projects/edit/${p.id}`)}
-                        className="bg-[#0f0f12] border border-[#27272a] hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400 text-zinc-300 text-xs rounded-xl px-4 py-2 cursor-pointer font-semibold transition-all"
-                      >
-                        <Edit className="w-3.5 h-3.5 mr-1.5" /> Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => promptDeleteProject(p)}
-                        className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs rounded-xl px-3.5 py-2 cursor-pointer font-semibold transition-all"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          promptDeleteProject(p)
+                        }}
+                        className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs rounded-xl px-3 py-2 cursor-pointer font-semibold transition-all"
+                        title="Delete Project"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>

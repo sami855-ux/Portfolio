@@ -42,6 +42,7 @@ model Project {
   live         String   @default("")
   image        String   @default("")
   images       String[] @default([])
+  imagePosition String  @default("50% 50%") @map("image_position")
   featured     Boolean  @default(false)
   features     String[] @default([])
   challenges   String[] @default([])

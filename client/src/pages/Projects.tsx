@@ -253,6 +253,12 @@ export const Projects = () => {
                           transition={{ duration: 0.3 }}
                           loading="lazy"
                           decoding="async"
+                          style={{
+                            objectPosition:
+                              activePhotoIdx === 0
+                                ? (project.image_position || (project.id ? localStorage.getItem(`portfolio_project_cover_pos_${project.id}`) : null) || "50% 50%")
+                                : "50% 50%",
+                          }}
                           className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/img:scale-105"
                         />
                       </AnimatePresence>
